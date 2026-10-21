@@ -1,0 +1,157 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "timeout": {
+      "startup": 90000,
+      "catalog": 45000
+    },
+    "servers": {
+      "bird": {
+        "type": "remote",
+        "url": "https://mcp.bird.com"
+      },
+      "sentry": {
+        "type": "remote",
+        "url": "https://mcp.sentry.dev/mcp"
+      },
+      "canva": {
+        "type": "remote",
+        "url": "https://mcp.canva.com/mcp"
+      },
+      "stripe": {
+        "type": "remote",
+        "url": "https://mcp.stripe.com"
+      },
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp"
+      },
+      "supabase": {
+        "type": "remote",
+        "url": "https://mcp.supabase.com/mcp"
+      },
+      "firecrawl": {
+        "type": "remote",
+        "url": "https://mcp.firecrawl.dev/v2/mcp-oauth"
+      },
+      "vercel": {
+        "type": "remote",
+        "url": "https://mcp.vercel.com"
+      },
+      "linear": {
+        "type": "remote",
+        "url": "https://mcp.linear.app/mcp"
+      },
+      "github": {
+        "type": "remote",
+        "url": "https://api.githubcopilot.com/mcp/"
+      },
+      "notion": {
+        "type": "remote",
+        "url": "https://mcp.notion.com/mcp"
+      },
+      "exa": {
+        "type": "remote",
+        "url": "https://mcp.exa.ai/mcp"
+      },
+      "cloudflare": {
+        "type": "remote",
+        "url": "https://mcp.cloudflare.com/mcp"
+      },
+      "zapier": {
+        "type": "remote",
+        "url": "https://mcp.zapier.com/api/v1/connect"
+      },
+      "grafana": {
+        "type": "remote",
+        "url": "https://mcp.grafana.com/mcp"
+      },
+      "resend": {
+        "type": "remote",
+        "url": "https://mcp.resend.com/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:RESEND_API_KEY}"
+        }
+      },
+      "google-docs": {
+        "type": "remote",
+        "url": "https://docsmcp.googleapis.com/mcp/v1",
+        "oauth": {
+          "client_id": "{env:GOOGLE_OAUTH_CLIENT_ID}",
+          "client_secret": "{env:GOOGLE_OAUTH_CLIENT_SECRET}",
+          "scope": "openid https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file",
+          "redirect_uri": "http://127.0.0.1:19876/callback",
+          "callback_port": 19876,
+          "auth_server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+        }
+      },
+      "google-sheets": {
+        "type": "remote",
+        "url": "https://sheetsmcp.googleapis.com/mcp/v1",
+        "oauth": {
+          "client_id": "{env:GOOGLE_OAUTH_CLIENT_ID}",
+          "client_secret": "{env:GOOGLE_OAUTH_CLIENT_SECRET}",
+          "scope": "openid https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file",
+          "redirect_uri": "http://127.0.0.1:19876/callback",
+          "callback_port": 19876,
+          "auth_server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+        }
+      },
+      "google-slides": {
+        "type": "remote",
+        "url": "https://slidesmcp.googleapis.com/mcp/v1",
+        "oauth": {
+          "client_id": "{env:GOOGLE_OAUTH_CLIENT_ID}",
+          "client_secret": "{env:GOOGLE_OAUTH_CLIENT_SECRET}",
+          "scope": "openid https://www.googleapis.com/auth/presentations.readonly https://www.googleapis.com/auth/presentations https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file",
+          "redirect_uri": "http://127.0.0.1:19876/callback",
+          "callback_port": 19876,
+          "auth_server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+        }
+      },
+      "figma": {
+        "type": "remote",
+        "url": "http://127.0.0.1:3845/mcp",
+        "oauth": false
+      },
+      "twilio": {
+        "type": "local",
+        "command": [
+          "cmd",
+          "/c",
+          "npx -y -p zod@3.25.76 -p @twilio-alpha/mcp twilio-mcp-server %TWILIO_ACCOUNT_SID%/%TWILIO_API_KEY%:%TWILIO_API_SECRET%"
+        ],
+        "environment": {
+          "TWILIO_ACCOUNT_SID": "{env:TWILIO_ACCOUNT_SID}",
+          "TWILIO_API_KEY": "{env:TWILIO_API_KEY}",
+          "TWILIO_API_SECRET": "{env:TWILIO_API_SECRET}"
+        },
+        "timeout": {
+          "startup": 120000,
+          "catalog": 60000
+        }
+      },
+      "git": {
+        "type": "local",
+        "command": [
+          "C:\\Users\\calos\\AppData\\Roaming\\Python\\Python313\\Scripts\\mcp-server-git.exe",
+          "--repository",
+          "C:\\Users\\calos\\CM-Risto"
+        ]
+      },
+      "chrome-devtools": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "chrome-devtools-mcp@latest"
+        ],
+        "timeout": {
+          "startup": 120000,
+          "catalog": 60000
+        }
+      }
+    }
+  }
+}
