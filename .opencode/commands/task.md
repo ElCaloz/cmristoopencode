@@ -42,7 +42,7 @@ Stato git corrente:
    - decisioni richieste all'utente.
    Se il lavoro cambia lo stato del progetto, aggiorna `docs/STATUS.md` e `docs/DECISIONS.md` come da protocollo di chiusura.
 
-9. **Salvataggio su GitHub.** Quando la modifica è completata e verificata (o quando l'utente lo richiede), esegui commit descrittivo e push sul repository GitHub del progetto (remoto `origin`, repository `cm-risto`) come da regola 12 di `AGENTS.md`. Prima del commit controlla `git status` e l'elenco dei file in staging: nessun segreto (`.env.local`, `local-service/.env`) e nessun artefatto (`test-results/`, `.next/`, `node_modules/`, `local-service/dist/`) deve entrare nel commit. Nel rapporto indica URL del repository, hash del commit e branch.
+9. **Salvataggio su GitHub.** Quando la modifica è completata e verificata (o quando l'utente lo richiede), esegui commit descrittivo e push sul repository GitHub del progetto (remoto `origin`, repository `ElCaloz/cmristoopencode`) come da regola 12 di `AGENTS.md`. Prima del commit controlla `git status` e l'elenco dei file in staging: nessun segreto (`.env.local`, `local-service/.env`) e nessun artefatto (`test-results/`, `.next/`, `node_modules/`, `local-service/dist/`) deve entrare nel commit. Nel rapporto indica URL del repository, hash del commit e branch.
 
 ## Limiti assoluti
 - Commit e push sono autorizzati in via permanente solo sul repository `origin` del progetto; push verso altri repository, deploy, `supabase db reset`/`push`, migrazioni su ambienti non locali, modifica di credenziali, installazione di dipendenze, cancellazioni rischiose e qualsiasi operazione verso l'esterno o in produzione richiedono approvazione esplicita dell'utente.

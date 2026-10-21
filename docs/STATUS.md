@@ -1,7 +1,7 @@
-# STATUS - CM Risto
+﻿# STATUS - CM Risto
 
 **Ultimo aggiornamento:** 21 ottobre 2026 (Fase 2 completata; base `local-service/` implementata; **magazzino, ricette/food cost, acquisti e piantina grafica della sala completati**, con giacenze, lotti, movimenti, ingredienti, sfridi, margini, ordini ai fornitori, ricezioni, posizioni/formazioni dei tavoli e arredi. Verifiche: **25/25 e2e**, **62/62 unit**, **656/656 pgTAP**, build **55 route** e 19 migrazioni. Restano non collegati provider vocale, numero telefonico, budget reale, cloud sync e stampanti fisiche).
-**Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch git `main`, repository GitHub `cm-risto`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+**Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch git `main`, repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
 
 ---
 
@@ -28,16 +28,16 @@
      - permesso `receptionist.manage` per owner/admin/manager; `host` mantiene `reservations.manage`;
      - RLS di lettura per i membri; scritture settings/orari/chiusure solo con `receptionist.manage`; scritture dirette a prenotazioni, chiamate e messaggi revocate ad `anon`/`authenticated`;
      - RPC `security definer`: `check_reservation_availability`, `create_reservation`, `set_reservation_status`, `update_reservation_notes`, `resolve_receptionist_tenant`, `begin_receptionist_call`, `end_receptionist_call`, `add_receptionist_message`;
-     - disponibilità verificata su data, preavviso, giorni massimi, chiusure, fasce orarie, capienza dei tavoli attivi e sovrapposizioni; lock advisory e idempotenza;
+     - disponibilitÃ  verificata su data, preavviso, giorni massimi, chiusure, fasce orarie, capienza dei tavoli attivi e sovrapposizioni; lock advisory e idempotenza;
      - prenotazioni AI (`phone_ai`) sempre `pending`, con `call_id` obbligatorio e nessuna conferma automatica;
      - fix del calcolo `too_late_notice` a cavallo della mezzanotte.
    - Server layer: `src/server/reservations/{types,queries,actions}.ts` e `src/server/receptionist/{types,queries,actions,internal-auth,internal,http}.ts`.
-   - API interne `/api/internal/voice/*`: avvio chiamata con token bootstrap, token di chiamata HMAC-SHA256, disponibilità, creazione prenotazione, messaggio di richiamata, trasferimento e chiusura chiamata. Le API usano il service role solo lato server e non espongono il database all'agente vocale.
+   - API interne `/api/internal/voice/*`: avvio chiamata con token bootstrap, token di chiamata HMAC-SHA256, disponibilitÃ , creazione prenotazione, messaggio di richiamata, trasferimento e chiusura chiamata. Le API usano il service role solo lato server e non espongono il database all'agente vocale.
    - Dashboard: `/dashboard/prenotazioni` (registro, ricerca, filtri, creazione, conferma, arrivo, completamento, no-show, annullamento, note) e `/dashboard/receptionist` (configurazione, orari, chiusure, registro chiamate). Card dei due moduli aggiunte a `/dashboard`.
    - `.env.example` aggiornato con `RECEPTIONIST_INTERNAL_TOKEN` e `RECEPTIONIST_INTERNAL_SECRET`. I valori locali di prova sono presenti solo in `.env.local` (mai committato).
-6. **Test e qualità (aggiornato al 21/10/2026):**
+6. **Test e qualitÃ  (aggiornato al 21/10/2026):**
    - `npx supabase test db`: **656/656 pgTAP** (inclusi **72 test** prenotazioni/receptionist, **23 test** magazzino, **34 test** ricette/food cost, **61 test** acquisti e **33 test** piantina sala);
-   - `npm test`: **62/62 unit** (token receptionist, servizio locale e quantità/valori del magazzino, costo ricette e acquisti inclusi);
+   - `npm test`: **62/62 unit** (token receptionist, servizio locale e quantitÃ /valori del magazzino, costo ricette e acquisti inclusi);
    - `npm run e2e`: **25/25 Playwright** (flussi menu, sala, piantina grafica reale e demo, POS, vendite, KDS, dispositivi, prenotazioni/receptionist, magazzino, ricette e acquisti; Mailpit sulla porta `55004`);
    - `npm run lint`: 0 errori, 0 warning;
    - `npm run typecheck`: nessun errore;
@@ -47,37 +47,37 @@
 9. **Fase 2 - restyling e navigazione demo (21/10/2026).**
    - Fix del blocco demo/KDS: rimosso il redirect forzato da `/app/cucina`; KDS demo full-screen per admin/super admin/cucina, controllo permessi prima del ramo KDS, link a dashboard e sito, ruoli demo con accesso a `dashboard`.
    - Design system: nuovi token (`shadow-card`, `shadow-lift`, `radius-card`, `ease-smooth`), `PageHeader` con eyebrow, `StatCard` premium, `Button` rifinito, sidebar con indicatore brand.
-   - Landing `src/app/page.tsx` riscritta: hero, trust strip, anteprima interattiva, KDS, moduli, problemi/outcomes, ruoli, trasparenza, prezzi, FAQ, CTA; copy “Funzioni reali, non promesse.” e ticket KDS coerenti.
+   - Landing `src/app/page.tsx` riscritta: hero, trust strip, anteprima interattiva, KDS, moduli, problemi/outcomes, ruoli, trasparenza, prezzi, FAQ, CTA; copy â€œFunzioni reali, non promesse.â€ e ticket KDS coerenti.
    - `ProductPreview`: tab Panoramica/Cucina/Prenotazioni, altezza mobile automatica, footer demo corretto.
    - Dashboard demo e prenotazioni: KPI 2 colonne mobile, card premium, filtri brand con `aria-pressed`, lista prenotazioni `md:grid-cols-2`, grafico dark con variabili CSS.
    - KDS demo riscritto con layout full-screen, filtri postazione, KPI, ticket masonry responsive e azioni; KDS reale e prenotazioni reali rifiniti senza cambiare la logica operativa.
-   - Accessibilità: `aria-current` su sidebar/nav pubblica/nav cameriere; animazioni `pulse` rimosse rispettando `prefers-reduced-motion`.
+   - AccessibilitÃ : `aria-current` su sidebar/nav pubblica/nav cameriere; animazioni `pulse` rimosse rispettando `prefers-reduced-motion`.
    - Test: aggiunta regressione navigazione demo/KDS; aggiornati test dark mode. Verifica finale all'epoca: lint/typecheck puliti, unit 47/47, e2e 21/21, build 53 route.
    - `next.config.ts`: `experimental.instantInsights.validationLevel = "manual-warning"` per il falso positivo dev `instant-unrendered-segment` dovuto a `StoreGate`; build segnala l'esperimento, nessun impatto runtime.
    - Rifinitura finale: eyebrow coerente su tutte le pagine demo, `DataTable` con raggio/ombra del design system e `aria-sort`, filtri sala/comande in brand con `aria-pressed`, skeleton di caricamento per `/dashboard`, animazioni di apertura per dialog/sheet, skip link "Vai al contenuto", metadati SEO/Open Graph della home.
    - Notifiche Sonner spostate in basso a destra (offset mobile sopra la nav) per non coprire i comandi di navigazione: il test POS reale aveva rilevato un toast che intercettava il link Dashboard.
    - QA visiva con screenshot desktop/mobile/tablet/dark in `C:\Users\calos\AppData\Local\Temp\opencode\after-*.png` e `final-*.png`; script temporanei rimossi.
-10. **Audit accessibilità e SEO tecnica (21/10/2026).**
-   - Lighthouse 13.5.0 eseguito su home, prezzi, login, privacy, contatti, funzionalità, documentazione e tutte le 15 pagine demo: **accessibilità 100/100** sulle pagine verificate.
+10. **Audit accessibilitÃ  e SEO tecnica (21/10/2026).**
+   - Lighthouse 13.5.0 eseguito su home, prezzi, login, privacy, contatti, funzionalitÃ , documentazione e tutte le 15 pagine demo: **accessibilitÃ  100/100** sulle pagine verificate.
    - Corretti i contrasti delle etichette secondarie in dark mode, i link fornitore sotto i 24 px, l'associazione delle intestazioni di tabella (`scope="col"`), il nome accessibile del pulsante notifiche, il landmark `main` nelle pagine auth, KDS e stato "accesso negato", l'ordine dei titoli in `/prezzi`.
    - Aggiunti `src/app/robots.ts` e `src/app/sitemap.ts`; `metadataBase` nel root layout; `noindex, nofollow` per `/app/*` e `/dashboard/*`. Le aree private non vengono indicizzate.
    - `npm run build` all'epoca: **53 route** (aggiunti `robots.txt` e `sitemap.xml`).
-   - Docker Desktop era stato arrestato: il primo run e2e è fallito per Supabase non raggiungibile; riavviati Docker e Supabase, la suite completa è poi passata **20/20**.
+   - Docker Desktop era stato arrestato: il primo run e2e Ã¨ fallito per Supabase non raggiungibile; riavviati Docker e Supabase, la suite completa Ã¨ poi passata **20/20**.
 11. **Servizio locale - base operativa (21/10/2026).**
    - Nuovo pacchetto `local-service/` (Node 24 + TypeScript, processo separato): coda persistente SQLite con WAL, idempotenza, retry con backoff, recupero job `processing` al riavvio.
    - Adapter stampante `file` (spool per test/sviluppo) e `network` TCP ESC/POS; formattazione comanda, note e taglio.
-   - Adapter sync HTTP con bearer e `Idempotency-Key`; modalità test esplicita che scrive su spool locale senza chiamare servizi esterni.
+   - Adapter sync HTTP con bearer e `Idempotency-Key`; modalitÃ  test esplicita che scrive su spool locale senza chiamare servizi esterni.
    - API locale autenticata: `GET /health`, `GET /jobs/stats`, `POST /jobs`, `POST /worker/run`; payload Zod e limite body 64 KiB.
    - Configurazione in `local-service/.env.example`; script `npm run local-service` e `npm run local-service:build`; CI aggiornata con il build del servizio.
    - Test: **4 nuovi unit** su deduplica, recupero coda, ESC/POS e API; totale **41/41** all'epoca; con magazzino, ricette e acquisti il totale e **62/62**.
-   - Limiti dichiarati: nessuna stampante fisica, nessun endpoint cloud reale, nessun WebSocket/realtime, discovery LAN e offline palmare non ancora collegati. Non dichiarare operativa la modalità offline.
+   - Limiti dichiarati: nessuna stampante fisica, nessun endpoint cloud reale, nessun WebSocket/realtime, discovery LAN e offline palmare non ancora collegati. Non dichiarare operativa la modalitÃ  offline.
 12. **Sprint 4 - magazzino reale (21/10/2026).**
    - Migrazioni `20261021100000_sprint4_inventory.sql`, `20261021101000_fix_inventory_select_policies.sql` e `20261021102000_inventory_delete_cascades.sql`: tabelle `suppliers`, `inventory_items` e `inventory_movements` con FK composite per ristorante/organizzazione, RLS, indici e audit.
-   - Quantità memorizzate in millesimi interi (`quantity_milli`, `min_quantity_milli`, `quantity_delta_milli`); costi in centesimi interi. Nessun `float`.
+   - QuantitÃ  memorizzate in millesimi interi (`quantity_milli`, `min_quantity_milli`, `quantity_delta_milli`); costi in centesimi interi. Nessun `float`.
    - RPC atomiche `create_inventory_item` (giacenza iniziale come primo carico) e `record_inventory_movement` (carico, scarico, spreco, rettifica), con idempotenza per ristorante, blocco della giacenza negativa, motivazioni spreco validate e audit.
-   - Trigger di protezione: le quantità si modificano solo tramite movimento; inserimenti diretti di articoli e movimenti non previsti dalle policy. Lettura riservata a `inventory.manage` (owner/admin/manager/warehouse e platform admin).
+   - Trigger di protezione: le quantitÃ  si modificano solo tramite movimento; inserimenti diretti di articoli e movimenti non previsti dalle policy. Lettura riservata a `inventory.manage` (owner/admin/manager/warehouse e platform admin).
    - Server layer `src/server/inventory/{types,queries,actions}.ts`, helper `src/lib/inventory.ts`, UI `/dashboard/magazzino` con KPI, ricerca, filtri, fornitori, registro movimenti, lotti e scadenze; card aggiunta a `/dashboard`.
-   - Test: **23 pgTAP** dedicati (isolamento tenant, permessi, idempotenza, stock negativo, sprechi, ruoli warehouse/cashier, audit); **6 unit** su quantità/valori; e2e reale con fornitore, articolo, carico, scarico, spreco, rettifica, modifica soglia e scadenza.
+   - Test: **23 pgTAP** dedicati (isolamento tenant, permessi, idempotenza, stock negativo, sprechi, ruoli warehouse/cashier, audit); **6 unit** su quantitÃ /valori; e2e reale con fornitore, articolo, carico, scarico, spreco, rettifica, modifica soglia e scadenza.
    - Limiti dichiarati: nessun ordine di acquisto, scansione barcode, conversione automatica delle unita o gestione lotti multipli; nessun hard delete di articoli/fornitori dalla UI.
 
 13. **Sprint 4 - ricette e food cost (21/10/2026).**
@@ -101,12 +101,12 @@
    - Migrazione `20261021130000_floor_plan_layout.sql`: colonne `shape` (`rect|round`), `pos_x`, `pos_y`, `width`, `height` su `restaurant_tables` con vincoli di griglia; nuova tabella `floor_objects` per arredi non-tavolo (`wall`, `counter`, `door`, `plant`, `label`) con FK composite, RLS e indici. Griglia logica 48x32 mezze-celle (24x16 celle); tutte le coordinate sono intere e i vincoli impediscono di uscire dalla piantina.
    - RPC atomica `security definer` `save_floor_layout(area, tables, objects, removeTableIds, removeObjectIds)`: aggiorna o inserisce tavoli e arredi, elimina esplicitamente gli elementi rimossi, verifica tenant e permesso `reservations.manage`, valida limiti/forme e registra audit `floor.layout_saved`. Nessuna scrittura diretta aggiuntiva: le policy RLS esistenti restano l'unico accesso alle tabelle.
    - Server layer `src/server/tables/{types,queries,actions}.ts` esteso con geometria, arredi e `saveFloorLayoutAction` (Zod su payload JSON, mapping errori, `revalidatePath`). I nuovi tavoli creati dal dialog classico ricevono una posizione libera calcolata dal server.
-   - UI `/dashboard/sala`: nuova sezione "Piantina sala" con tab per area, tavoli cliccabili, stato disponibile/sospeso e legenda; pulsante **Modifica sala** che apre un dialog ampio con trascinamento, ridimensionamento dall'angolo, snap a mezza cella, aggiunta/rimozione tavoli e arredi, pannello proprietà, ripristino e conferma prima di scartare. Il dialog classico e l'elenco tabellare restano disponibili per nome, posti, area, sospensione ed eliminazione.
+   - UI `/dashboard/sala`: nuova sezione "Piantina sala" con tab per area, tavoli cliccabili, stato disponibile/sospeso e legenda; pulsante **Modifica sala** che apre un dialog ampio con trascinamento, ridimensionamento dall'angolo, snap a mezza cella, aggiunta/rimozione tavoli e arredi, pannello proprietÃ , ripristino e conferma prima di scartare. Il dialog classico e l'elenco tabellare restano disponibili per nome, posti, area, sospensione ed eliminazione.
    - Demo `/app/sala`: la stessa piantina grafica con tab per sala, tavoli colorati per stato operativo (libero, occupato, prenotato, da riordinare), arredi e dialog **Modifica sala**. L'editor lavora sullo store demo persistito (`localStorage`, seed v2) con le stesse regole di trascinamento, ridimensionamento, aggiunta/rimozione e validazione; il salvataggio resta locale al browser. I dati demo v1 vengono ripristinati automaticamente al primo caricamento della nuova versione.
    - Test: **33 pgTAP** dedicati (geometria, vincoli, RLS tenant, permessi cashier/owner/platform, RPC, rimozioni, audit, anon); **2 e2e** dedicati (sala reale e demo) con creazione/trascinamento, arredo, salvataggio, riapertura e verifica persistenza. Verifica finale: 656 pgTAP, 62 unit, 25 e2e, lint/typecheck puliti, build 55 route.
 
 16. **Sistema di sviluppo multi-agente OpenCode (21/10/2026).**
-   - Configurazione permanente in `.opencode/`: agenti `backend`, `frontend`, `qa`, `security-reviewer` (tutti `mode: subagent`, con permessi mirati: qa e security-reviewer in sola lettura, nessun subagent annidato, lettura dei file `.env*` negata salvo `.env.example`) e comando `/task` (`.opencode/commands/task.md`) che orchestra analisi → piano di task → delega → QA → security review → correzioni → rapporto finale → commit/push.
+   - Configurazione permanente in `.opencode/`: agenti `backend`, `frontend`, `qa`, `security-reviewer` (tutti `mode: subagent`, con permessi mirati: qa e security-reviewer in sola lettura, nessun subagent annidato, lettura dei file `.env*` negata salvo `.env.example`) e comando `/task` (`.opencode/commands/task.md`) che orchestra analisi â†’ piano di task â†’ delega â†’ QA â†’ security review â†’ correzioni â†’ rapporto finale â†’ commit/push.
    - `AGENTS.md` esteso con architettura (richiamo), comandi di verifica reali, standard TypeScript, sicurezza e regole di coordinamento; regola 12 riscritta con l'autorizzazione permanente al salvataggio su GitHub.
    - Verifica reale: riconoscimento confermato via `opencode api get /api/agent` e `/api/command` con `location[directory]` sul progetto (agenti `backend`, `frontend`, `qa`, `security-reviewer` e comando `/task` presenti in OpenCode v2.1.2).
 
@@ -115,19 +115,19 @@
 ## In corso
 
 - **Sprint 3 - parte 2c:** base `local-service/` realizzata (coda, stampa ESC/POS, sync adapter, API). Restano WebSocket/realtime cloud, discovery LAN, integrazione con il palmare, riconciliazione conflitti e collaudo con stampante fisica (D-008).
-- **CI GitHub Actions** predisposta (D-029): prima esecuzione reale da verificare al primo push eseguito il 21/10/2026 su repository `cm-risto`.
+- **CI GitHub Actions** predisposta (D-029): prima esecuzione reale da verificare al primo push eseguito il 21/10/2026 su repository `ElCaloz/cmristoopencode`.
 - **QA responsive/visiva Fase 2:** completata su landing, dashboard, KDS, prenotazioni, POS, desktop/mobile/tablet/dark; resta la QA manuale su dispositivi fisici e palmare reale.
-- **Fase B del receptionist:** richiede approvazione esplicita, provider vocale, eventuale chiave OpenAI/budget, LiveKit Cloud e numero telefonico. Nessuna spesa o chiamata reale è stata effettuata.
+- **Fase B del receptionist:** richiede approvazione esplicita, provider vocale, eventuale chiave OpenAI/budget, LiveKit Cloud e numero telefonico. Nessuna spesa o chiamata reale Ã¨ stata effettuata.
 
 ---
 
 ## Mancante (non ancora iniziato)
 
 - **Offline palmare e stampa reale:** `local-service/` ha coda, adapter e API, ma mancano WebSocket/realtime cloud, discovery LAN, integrazione UI, riconciliazione conflitti e collaudo su stampante fisica.
-- **Telefonia reale:** provider vocale, numero, webhook firmati, trasferimento effettivo, gestione errori e costi. Le API interne sono pronte, ma la telefonia non è collegata.
-- **Budget receptionist:** `monthly_budget_cents` è configurato e mostrato, ma non ancora applicato perché manca un provider che esponga i costi reali.
+- **Telefonia reale:** provider vocale, numero, webhook firmati, trasferimento effettivo, gestione errori e costi. Le API interne sono pronte, ma la telefonia non Ã¨ collegata.
+- **Budget receptionist:** `monthly_budget_cents` Ã¨ configurato e mostrato, ma non ancora applicato perchÃ© manca un provider che esponga i costi reali.
 - **Sprint 4 restante:** report, CRM, personale e multi-sede. Magazzino, ricette/food cost e acquisti sono completati.
-- **Sprint 5 restante:** menu pubblico/QR/ordini online, inbox, marketing/fidelizzazione; il receptionist di Fase A è predisposto ma non telefonico.
+- **Sprint 5 restante:** menu pubblico/QR/ordini online, inbox, marketing/fidelizzazione; il receptionist di Fase A Ã¨ predisposto ma non telefonico.
 - **Sprint 6:** Stripe Billing, limiti piano server-side, monitoraggio, backup, collaudo e release.
 - **Legale/commerciale:** privacy, cookie e termini definitivi; prezzi e condizioni di prova.
 
@@ -136,24 +136,24 @@
 ## Problemi aperti
 
 1. ~~**Git bloccato:** `fatal: detected dubious ownership in repository at 'C:/Users/calos/CM-Risto'`.~~ **Risolto il 21/10/2026:** aggiunto `safe.directory` globale per il progetto; git funzionante.
-2. **Nessuna integrazione telefonica reale:** non dichiarare operativo il receptionist finché un provider non è collegato e verificato con chiamate reali.
-3. **Budget non applicato:** la configurazione è salvata; l'applicazione richiede il provider di costo.
+2. **Nessuna integrazione telefonica reale:** non dichiarare operativo il receptionist finchÃ© un provider non Ã¨ collegato e verificato con chiamate reali.
+3. **Budget non applicato:** la configurazione Ã¨ salvata; l'applicazione richiede il provider di costo.
 4. **Porte locali cambiate:** `.env.example`, `.env.local`, `supabase/config.toml` e `tests/e2e/support/auth.ts` usano `55001`/`55004`; eventuali istruzioni esterne con `543xx` vanno aggiornate.
 5. **Segreti locali:** `RECEPTIONIST_INTERNAL_TOKEN` e `RECEPTIONIST_INTERNAL_SECRET` esistono solo in `.env.local` per lo smoke test locale; in produzione vanno impostati come variabili server e ruotati.
 6. **Legale provvisorio:** privacy, cookie e termini sono segnaposto; non pubblicare senza testi definitivi.
-7. `npm audit`: 0 vulnerabilità di produzione; 5 `high` solo nella dev-chain ESLint. Non usare `npm audit fix --force`.
-8. **Warning dev Next:** `instant-unrendered-segment` (falso positivo da `StoreGate`) è stato silenziato con `instantInsights: manual-warning`; restano eventuali avvisi dev-only su `Date.now()`/`Performance.measure`, senza impatto su build e test.
+7. `npm audit`: 0 vulnerabilitÃ  di produzione; 5 `high` solo nella dev-chain ESLint. Non usare `npm audit fix --force`.
+8. **Warning dev Next:** `instant-unrendered-segment` (falso positivo da `StoreGate`) Ã¨ stato silenziato con `instantInsights: manual-warning`; restano eventuali avvisi dev-only su `Date.now()`/`Performance.measure`, senza impatto su build e test.
 
 ---
 
 ## Prossimi passi (in ordine)
 
 1. **Fase B (solo su approvazione esplicita):** collegare ambiente vocale di test con provider/LiveKit e numero dedicato, budget e observability; verificare con chiamate reali prima di dichiararla operativa.
-2. Completare lo **Sprint 3 parte 2c** oltre la base già realizzata: endpoint cloud reale, WebSocket/realtime, discovery LAN, integrazione palmare, riconciliazione conflitti e collaudo stampante fisica (D-008, D-040).
+2. Completare lo **Sprint 3 parte 2c** oltre la base giÃ  realizzata: endpoint cloud reale, WebSocket/realtime, discovery LAN, integrazione palmare, riconciliazione conflitti e collaudo stampante fisica (D-008, D-040).
 3. **Sprint 4 restante:** report, CRM, personale e multi-sede.
 4. Eseguire la CI su GitHub dopo il push e correggere eventuali problemi del runner.
 5. QA su dispositivi fisici/palmare e testi legali definitivi.
-6. ~~Effettuare il primo commit solo se richiesto esplicitamente.~~ Fatto: repository GitHub `cm-risto` creato e primo commit eseguito il 21/10/2026; da allora ogni modifica completata viene salvata (regola 12 di `AGENTS.md`).
+6. ~~Effettuare il primo commit solo se richiesto esplicitamente.~~ Fatto: repository GitHub `ElCaloz/cmristoopencode` creato e primo commit eseguito il 21/10/2026; da allora ogni modifica completata viene salvata (regola 12 di `AGENTS.md`).
 
 ---
 
