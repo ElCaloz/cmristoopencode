@@ -1,7 +1,16 @@
 ﻿# STATUS - CM Risto
 
-**Ultimo aggiornamento:** 21 ottobre 2026 (Fase 2 completata; base `local-service/` implementata; **magazzino, ricette/food cost, acquisti e piantina grafica della sala completati**, con giacenze, lotti, movimenti, ingredienti, sfridi, margini, ordini ai fornitori, ricezioni, posizioni/formazioni dei tavoli e arredi. Verifiche: **25/25 e2e**, **62/62 unit**, **656/656 pgTAP**, build **55 route** e 19 migrazioni. Restano non collegati provider vocale, numero telefonico, budget reale, cloud sync e stampanti fisiche).
+**Ultimo aggiornamento:** 22 ottobre 2026 (installazione e verifica delle 23 integrazioni MCP, vedi `docs/MCP_INSTALLATION_REPORT.md`; 21 ottobre 2026: Fase 2 completata; base `local-service/` implementata; **magazzino, ricette/food cost, acquisti e piantina grafica della sala completati**, con giacenze, lotti, movimenti, ingredienti, sfridi, margini, ordini ai fornitori, ricezioni, posizioni/formazioni dei tavoli e arredi. Verifiche: **25/25 e2e**, **62/62 unit**, **656/656 pgTAP**, build **55 route** e 19 migrazioni. Restano non collegati provider vocale, numero telefonico, budget reale, cloud sync e stampanti fisiche).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch git `main`, repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 21-22/10/2026 — Integrazioni MCP (installazione e verifica)
+
+- **Completato:** installate e configurate **23/23 integrazioni MCP** richieste in `opencode.json` (schema V2, `mcp.servers`): Bird, Canva, Context7, Figma, Firecrawl, Google Docs, Google Sheets, Google Slides, Linear, Notion, Resend, Sentry, Stripe, Supabase, Twilio, Vercel, GitHub, Grafana, Zapier, Exa, Cloudflare, Git, Chrome DevTools. Completati **11 login OAuth** con l'utente; eseguite verifiche reali con probe MCP diretti e chiamate di sola lettura. Report completo con schede, test e istruzioni: `docs/MCP_INSTALLATION_REPORT.md`.
+- **Stato:** 15 **INSTALLATO E TESTATO**, 7 **INSTALLATO, AUTENTICAZIONE PENDENTE** (Google Docs/Sheets/Slides, Resend, Twilio, GitHub, Grafana), 1 **CONFIGURATO, TEST BLOCCATO** (Figma: app desktop non installata). Nessuna voce abbandonata.
+- **Problemi aperti:** il repository locale non ha remoto `origin` configurato (`git remote -v` vuoto): il push previsto dalla regola 12 non è eseguibile finché non viene configurato l'URL del repository GitHub (questo documento indica `ElCaloz/cmristoopencode`, `AGENTS.md` indica `cm-risto`: da allineare). Servono inoltre le credenziali mancanti elencate al paragrafo 6 del report MCP.
+- **Prossimi passi:** OAuth client Google Cloud + variabili `GOOGLE_OAUTH_CLIENT_ID/SECRET`; `RESEND_API_KEY`; credenziali Twilio (`TWILIO_ACCOUNT_SID`, `TWILIO_API_KEY`, `TWILIO_API_SECRET`); `GITHUB_PAT`; completare il login Grafana indicando l'URL dello stack; installare Figma desktop e attivare il Dev Mode MCP.
 
 ---
 
