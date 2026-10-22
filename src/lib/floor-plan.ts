@@ -80,3 +80,58 @@ export function nextFloorTableName(names: string[]): string {
   while (used.has(`t${index}`)) index += 1;
   return `T${index}`;
 }
+
+// ---------------------------------------------------------------------------
+// Configurazione base della sala (allineata allo screenshot approvato).
+// Usata da demo e dalla creazione di nuovi ristoranti: resta modificabile
+// dall'editor piantina dopo il seed.
+// ---------------------------------------------------------------------------
+
+export type BaseRoomTable = {
+  name: string;
+  seats: number;
+  posX: number;
+  posY: number;
+  width: number;
+  height: number;
+};
+
+export type BaseRoomObject = {
+  kind: FloorObjectKind;
+  label: string;
+  posX: number;
+  posY: number;
+  width: number;
+  height: number;
+};
+
+export const BASE_ROOM_AREA_NAME = "Sala principale";
+
+export const BASE_ROOM_TABLES: BaseRoomTable[] = [
+  // Riga alta
+  { name: "28", seats: 4, posX: 3, posY: 3, width: 10, height: 4 },
+  { name: "26", seats: 4, posX: 15, posY: 3, width: 3, height: 5 },
+  { name: "25", seats: 4, posX: 19, posY: 3, width: 3, height: 5 },
+  { name: "24", seats: 4, posX: 26, posY: 3, width: 3, height: 5 },
+  { name: "23", seats: 4, posX: 30, posY: 3, width: 3, height: 5 },
+  { name: "22", seats: 2, posX: 34, posY: 3, width: 3, height: 3 },
+  { name: "21", seats: 2, posX: 38, posY: 3, width: 3, height: 3 },
+  { name: "20", seats: 2, posX: 42, posY: 3, width: 3, height: 3 },
+  // Fascia centrale
+  { name: "14", seats: 6, posX: 3, posY: 11, width: 3, height: 7 },
+  { name: "13", seats: 2, posX: 17, posY: 15, width: 3, height: 3 },
+  { name: "12", seats: 2, posX: 22, posY: 15, width: 3, height: 3 },
+  { name: "11", seats: 2, posX: 28, posY: 15, width: 3, height: 3 },
+  { name: "10", seats: 2, posX: 34, posY: 15, width: 3, height: 3 },
+  // Riga bassa
+  { name: "5", seats: 2, posX: 6, posY: 25, width: 3, height: 3 },
+  { name: "4", seats: 5, posX: 13, posY: 23, width: 3, height: 5 },
+  { name: "3", seats: 5, posX: 20, posY: 23, width: 3, height: 5 },
+  { name: "2", seats: 5, posX: 26, posY: 23, width: 3, height: 5 },
+  { name: "1", seats: 5, posX: 34, posY: 23, width: 3, height: 5 },
+];
+
+export const BASE_ROOM_OBJECTS: BaseRoomObject[] = [
+  { kind: "wall", label: "", posX: 22, posY: 4, width: 3, height: 3 },
+  { kind: "wall", label: "", posX: 45, posY: 14, width: 3, height: 4 },
+];

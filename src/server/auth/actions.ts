@@ -7,6 +7,7 @@ import { safeNextPath } from "@/lib/auth/redirect";
 import { getSiteUrl, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import type { AuthActionState } from "@/server/auth/types";
+import { seedBaseRoomPlan } from "@/server/tables/seed";
 
 const emailField = z
   .string()
@@ -344,6 +345,13 @@ export async function completeOnboardingAction(
       status: "error",
       message: "Configurazione non completata. Riprova tra poco.",
     };
+  }
+
+  if (row.new_restaurant_id) {
+    await seedBaseRoomPlan({
+      organizationId: row.new_organization_id,
+      restaurantId: row.new_restaurant_id,
+    });
   }
 
   redirect("/dashboard");

@@ -1,3 +1,8 @@
+import {
+  BASE_ROOM_AREA_NAME,
+  BASE_ROOM_OBJECTS,
+  BASE_ROOM_TABLES,
+} from "@/lib/floor-plan";
 import { addDays, toISODate } from "@/lib/utils";
 import type {
   ActivityEntry,
@@ -308,9 +313,29 @@ function buildTables(
   });
 }
 
+// Sala base dello screenshot approvato: stessa configurazione del seed reale.
+function buildBaseRoomTables(
+  restaurantId: string,
+  room: string,
+): RestaurantTable[] {
+  return BASE_ROOM_TABLES.map((table, index) => ({
+    id: `${restaurantId}-tbl-base${index + 1}`,
+    restaurantId,
+    name: table.name,
+    room,
+    seats: table.seats,
+    status: "free" as const,
+    shape: "rect" as const,
+    posX: table.posX,
+    posY: table.posY,
+    width: table.width,
+    height: table.height,
+  }));
+}
+
 function buildAllTables(): RestaurantTable[] {
   return [
-    ...buildTables("r1", "Sala principale", "T", [2, 2, 4, 4, 4, 6, 2, 6]),
+    ...buildBaseRoomTables("r1", BASE_ROOM_AREA_NAME),
     ...buildTables("r1", "Veranda", "V", [4, 4, 2, 6]),
     ...buildTables("r1", "Privé", "P", [8, 10]),
     ...buildTables("r2", "Sala forno", "F", [2, 4, 4, 2, 6, 4]),
@@ -332,6 +357,20 @@ function buildFloorObjects(tables: RestaurantTable[]): FloorObject[] {
   }
 
   return Array.from(rooms.values()).flatMap(({ restaurantId, room }, index) => {
+    if (room === BASE_ROOM_AREA_NAME) {
+      // Sala base: solo i due muri della configurazione approvata.
+      return BASE_ROOM_OBJECTS.map((object, objectIndex) => ({
+        id: `${restaurantId}-floor-base-${objectIndex + 1}`,
+        restaurantId,
+        room,
+        kind: object.kind,
+        label: object.label,
+        posX: object.posX,
+        posY: object.posY,
+        width: object.width,
+        height: object.height,
+      }));
+    }
     const base = `${restaurantId}-floor-${index + 1}`;
     return [
       {
@@ -668,7 +707,7 @@ export function buildSeedState(): DemoSeedState {
   const r1Order127 = buildActiveOrder({
     restaurantId: "r1",
     number: 127,
-    table: table("r1", "T2"),
+    table: table("r1", "26"),
     covers: 2,
     waiter: "Luca Marchetti",
     status: "preparing",
@@ -682,7 +721,7 @@ export function buildSeedState(): DemoSeedState {
   const r1Order128 = buildActiveOrder({
     restaurantId: "r1",
     number: 128,
-    table: table("r1", "T5"),
+    table: table("r1", "25"),
     covers: 4,
     waiter: "Sara Conti",
     status: "preparing",
@@ -709,7 +748,7 @@ export function buildSeedState(): DemoSeedState {
   const r1Order130 = buildActiveOrder({
     restaurantId: "r1",
     number: 130,
-    table: table("r1", "T7"),
+    table: table("r1", "13"),
     covers: 2,
     waiter: "Sara Conti",
     status: "ready",
@@ -851,7 +890,7 @@ export function buildSeedState(): DemoSeedState {
     );
     if (target) target.status = status;
   };
-  markTable("r1", "T4", "to_clean");
+  markTable("r1", "22", "to_clean");
   markTable("r1", "V1", "reserved");
   markTable("r2", "G6", "reserved");
   markTable("r2", "E2", "reserved");
@@ -913,8 +952,8 @@ export function buildSeedState(): DemoSeedState {
   }
 
   const reservations: Reservation[] = [
-    { id: "res-1", restaurantId: "r1", customerName: "Famiglia Bianchi", phone: "333 887 2211", date: today, time: "19:45", covers: 4, tableName: "T4", status: "confirmed", notes: "Seggiolone per bambino" },
-    { id: "res-2", restaurantId: "r1", customerName: "Laura Vanni", phone: "347 112 6677", date: today, time: "20:15", covers: 2, tableName: "T6", status: "confirmed" },
+    { id: "res-1", restaurantId: "r1", customerName: "Famiglia Bianchi", phone: "333 887 2211", date: today, time: "19:45", covers: 4, tableName: "28", status: "confirmed", notes: "Seggiolone per bambino" },
+    { id: "res-2", restaurantId: "r1", customerName: "Laura Vanni", phone: "347 112 6677", date: today, time: "20:15", covers: 2, tableName: "22", status: "confirmed" },
     { id: "res-3", restaurantId: "r1", customerName: "Roberto Fabbri", phone: "340 998 3366", date: today, time: "20:30", covers: 3, tableName: "V3", status: "pending", notes: "Possibile allergia al glutine" },
     { id: "res-4", restaurantId: "r1", customerName: "Giulia Pratesi", phone: "328 441 9900", date: today, time: "21:00", covers: 2, status: "pending" },
     { id: "res-5", restaurantId: "r1", customerName: "Marco Ricci", phone: "366 221 4477", date: dateFromNow(1), time: "20:00", covers: 6, tableName: "P1", status: "confirmed", notes: "Compleanno" },

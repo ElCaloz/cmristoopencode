@@ -15,8 +15,7 @@ import {
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { SignOutForm } from "@/components/dashboard/sign-out-form";
-import { Logo } from "@/components/brand/logo";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PLANS, type PlanId } from "@/lib/plans";
@@ -84,46 +83,32 @@ async function DashboardContent() {
   const plan = membership ? planName(membership.requestedPlan) : null;
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
-          <Link href="/dashboard" aria-label="CM Risto — dashboard">
-            <Logo />
-          </Link>
-          <div className="flex items-center gap-2">
-            <Badge variant="success" dot>
-              Area reale
-            </Badge>
-            <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
-              <Link href="/app/panoramica">
-                Demo
-                <ExternalLink />
-              </Link>
-            </Button>
-            <SignOutForm compact />
-          </div>
+    <DashboardShell
+      eyebrow="Dashboard reale"
+      title={
+        firstName(session.fullName, session.user.email)
+          ? `Ciao, ${firstName(session.fullName, session.user.email)}`
+          : "Benvenuto"
+      }
+      description={
+        membership
+          ? `Stai gestendo ${membership.organizationName}.`
+          : "Account amministratore della piattaforma."
+      }
+      actions={
+        <div className="flex items-center gap-2">
+          <p className="hidden text-xs text-zinc-500 dark:text-zinc-400 sm:block">
+            {session.user.email}
+          </p>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/app/panoramica">
+              Demo
+              <ExternalLink />
+            </Link>
+          </Button>
         </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-brand-700 dark:text-brand-400">
-              Dashboard reale
-            </p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-              {firstName(session.fullName, session.user.email)
-                ? `Ciao, ${firstName(session.fullName, session.user.email)}`
-                : "Benvenuto"}
-            </h1>
-            <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-              {membership
-                ? `Stai gestendo ${membership.organizationName}.`
-                : "Account amministratore della piattaforma."}
-            </p>
-          </div>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{session.user.email}</p>
-        </div>
+      }
+    >
 
         {!membership ? (
           <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/50 dark:bg-amber-950/40">
@@ -610,8 +595,7 @@ async function DashboardContent() {
             </Link>
           </Button>
         </section>
-      </main>
-    </div>
+    </DashboardShell>
   );
 }
 

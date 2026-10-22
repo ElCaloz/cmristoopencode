@@ -977,10 +977,15 @@ export const useDemoStore = create<DemoStore>()(
       version: SEED_VERSION,
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
-      migrate: (persisted, version) =>
-        version === SEED_VERSION
-          ? (persisted as DemoStore)
-          : buildSeedState(),
+      migrate: (persisted, version) => {
+        if (version !== SEED_VERSION) return buildSeedState();
+        const state = persisted as DemoStore;
+        // La console di piattaforma non è mai disponibile nella demo: lo stato
+        // salvato in precedenza con il ruolo Super Admin viene riportato ad admin.
+        return state.activeRole === "super_admin"
+          ? { ...state, activeRole: "admin" }
+          : state;
+      },
       onRehydrateStorage: () => (_state, error) => {
         notifyHydrationError(
           error

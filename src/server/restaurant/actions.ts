@@ -17,6 +17,7 @@ import {
   getActiveRestaurant,
 } from "@/server/restaurant/active";
 import type { LocationActionState } from "@/server/restaurant/types";
+import { seedBaseRoomPlan } from "@/server/tables/seed";
 
 const nameField = z
   .string()
@@ -189,6 +190,11 @@ export async function createRestaurantAction(
     entity_type: "restaurant",
     entity_id: created.id,
     metadata: { name: parsed.data.name, slug },
+  });
+
+  await seedBaseRoomPlan({
+    organizationId: membership.organizationId,
+    restaurantId: created.id as string,
   });
 
   const cookieStore = await cookies();

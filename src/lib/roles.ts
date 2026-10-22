@@ -94,5 +94,4 @@ export const DEMO_ROLES: Role[] = [
   "cassiere",
   "cameriere",
   "cucina",
-  "super_admin",
 ];
