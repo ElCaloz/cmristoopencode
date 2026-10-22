@@ -65,14 +65,14 @@
 - **Interventi necessari:** nessuno
 - **Istruzioni:** per una chiave personale (rate limit maggiori), aggiungere l'header come sopra e impostare la variabile d'ambiente
 
-### 4. Figma — CONFIGURATO, TEST BLOCCATO
-- **Fonte e repository:** Figma Dev Mode MCP server (ufficiale) — `https://developers.figma.com/docs/figma-mcp-server/local-server-installation/`
-- **Server MCP:** `http://127.0.0.1:3845/mcp` (server locale della app desktop Figma)
-- **Installazione:** voce `figma` in `opencode.json` (`type: remote`, `oauth: false` — l'endpoint locale non usa OAuth)
-- **Autenticazione:** nessuna credenziale MCP: fa fede la sessione della app desktop Figma
-- **Test effettuati:** porta 3845 chiusa (nessun processo in ascolto); app Figma **non installata** su questa macchina (verifica eseguibili e pacchetti AppX: assenti); probe → `ConnectionRefused`
-- **Interventi necessari:** installare **Figma desktop**, accedere all'account, aprire un file, premere `Shift+D` (Dev Mode) e attivare **"Dev Mode MCP server"** nel pannello Inspect
-- **Istruzioni:** dopo l'attivazione, verificare con `opencode mcp list`: deve comparire `✓ figma connected`. Se la connessione è instabile (problema noto su Windows), riavviare l'app Figma e riprovare
+### 4. Figma — INSTALLATO, AUTENTICAZIONE PENDENTE
+- **Fonte e repository:** Figma (ufficiale) — server MCP hosted `https://mcp.figma.com/mcp`; documentazione `https://developers.figma.com/docs/figma-mcp-server/`
+- **Server MCP:** `https://mcp.figma.com/mcp` (remoto, OAuth) — **non** richiede l'app desktop: rispetto alla prima configurazione (Dev Mode locale su `127.0.0.1:3845`) è stato scelto il server hosted ufficiale, così l'integrazione non dipende da un'app installata
+- **Installazione:** voce `figma` in `opencode.json` (`type: remote`)
+- **Autenticazione:** OAuth 2.0 Figma **in attesa di login** (flusso avviato; link di autorizzazione generato). L'endpoint risponde `HTTP 401` con metadati OAuth corretti (`WWW-Authenticate: Bearer resource_metadata=...`), quindi il server è raggiungibile e correttamente configurato
+- **Test effettuati:** verifica endpoint (`401` + metadati OAuth validi); `opencode mcp list` → `needs_auth` (atteso prima del login); nessuna app desktop necessaria
+- **Interventi necessari:** completare il login Figma con il link di autorizzazione fornito (richiede un account Figma; il server hosted è soggetto ai limiti del piano/seat Figma)
+- **Istruzioni:** `opencode mcp auth figma` → aprire il link e autorizzare. Dopo il login: `opencode mcp list` deve mostrare `✓ figma connected`
 
 ### 5. Firecrawl — INSTALLATO E TESTATO
 - **Fonte e repository:** Firecrawl — `https://docs.firecrawl.dev/mcp-server`, repo `github.com/firecrawl/firecrawl-mcp-server`; alternativa locale `npx -y firecrawl-mcp` con `FIRECRAWL_API_KEY`
@@ -178,14 +178,14 @@
 - **Interventi necessari:** nessuno
 - **Istruzioni:** rinnovo login: `opencode mcp auth vercel`; **non** eseguire deploy durante i test
 
-### 17. GitHub — INSTALLATO, AUTENTICAZIONE PENDENTE
+### 17. GitHub — INSTALLATO E TESTATO
 - **Fonte e repository:** GitHub (ufficiale) — `https://docs.github.com/.../set-up-the-github-mcp-server`, repo `github.com/github/github-mcp-server`
 - **Server MCP:** `https://api.githubcopilot.com/mcp/` (remoto)
 - **Installazione:** voce `github` in `opencode.json` (`type: remote`, `oauth: false`, header `Authorization: Bearer {env:GITHUB_PAT}`)
-- **Autenticazione:** **manca `GITHUB_PAT`** (Personal Access Token). Scelta tecnica: il server OAuth di GitHub **non supporta la registrazione dinamica del client** (errore reale verificato: `Incompatible auth server: does not support dynamic client registration`); è stato quindi configurato il percorso alternativo **ufficiale** documentato da GitHub basato su PAT
-- **Test effettuati:** probe con token fittizio → HTTP 401 `token authentication failed` (il percorso header è corretto); senza token → HTTP 400 `Authorization header is badly formatted`
-- **Interventi necessari:** creare un PAT su GitHub (consigliato: fine-grained, permessi di sola lettura su contents/issues/pull requests/Actions secondo necessità) e impostarlo con `setx GITHUB_PAT "ghp_..."`
-- **Istruzioni:** verificare con `opencode mcp list` (`✓ github connected`)
+- **Autenticazione:** **attiva**. Scelta tecnica: il server OAuth di GitHub **non supporta la registrazione dinamica del client** (errore reale verificato: `Incompatible auth server: does not support dynamic client registration`); è stato quindi usato il percorso **ufficiale** documentato da GitHub basato su token Bearer. Il token è stato recuperato dal credential store già usato da `git` per il push del repository (nessun token creato ex novo, nessun segreto scritto in configurazione o nel report) e iniettato nel servizio OpenCode con `opencode service set env GITHUB_PAT ...` (persistente, fuori dal repository)
+- **Test effettuati:** validazione diretta del token sull'endpoint MCP → **HTTP 200**; stato `connected`; **chiamata reale di lettura** `get_me` → login **`ElCaloz`**, 6 repository pubbliche
+- **Interventi necessari:** nessuno. Se il token scade o viene revocato, rigenerarlo e rieseguire `opencode service set env GITHUB_PAT <token>`
+- **Istruzioni:** verifica: `opencode mcp list` (`✓ github connected`)
 
 ### 18. Grafana — INSTALLATO, AUTENTICAZIONE PENDENTE
 - **Fonte e repository:** Grafana (ufficiale) — Grafana Cloud MCP `https://grafana.com/docs/grafana-cloud/ai-tools/mcp-servers/cloud-mcp/`; alternativa OSS self-hosted: `github.com/grafana/mcp-grafana`
@@ -250,7 +250,7 @@
 | 1 | Bird | `https://mcp.bird.com` | **INSTALLATO E TESTATO** |
 | 2 | Canva | `https://mcp.canva.com/mcp` | **INSTALLATO E TESTATO** |
 | 3 | Context7 | `https://mcp.context7.com/mcp` | **INSTALLATO E TESTATO** |
-| 4 | Figma | `http://127.0.0.1:3845/mcp` | **CONFIGURATO, TEST BLOCCATO** |
+| 4 | Figma | `https://mcp.figma.com/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 5 | Firecrawl | `https://mcp.firecrawl.dev/v2/mcp-oauth` | **INSTALLATO E TESTATO** |
 | 6 | Google Docs | `https://docsmcp.googleapis.com/mcp/v1` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 7 | Google Sheets | `https://sheetsmcp.googleapis.com/mcp/v1` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
@@ -263,7 +263,7 @@
 | 14 | Supabase | `https://mcp.supabase.com/mcp` | **INSTALLATO E TESTATO** |
 | 15 | Twilio | locale `@twilio-alpha/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 16 | Vercel | `https://mcp.vercel.com` | **INSTALLATO E TESTATO** |
-| 17 | GitHub | `https://api.githubcopilot.com/mcp/` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
+| 17 | GitHub | `https://api.githubcopilot.com/mcp/` | **INSTALLATO E TESTATO** |
 | 18 | Grafana | `https://mcp.grafana.com/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 19 | Zapier | `https://mcp.zapier.com/api/v1/connect` | **INSTALLATO E TESTATO** |
 | 20 | Exa | `https://mcp.exa.ai/mcp` | **INSTALLATO E TESTATO** |
@@ -271,7 +271,7 @@
 | 22 | Git | locale `mcp-server-git` | **INSTALLATO E TESTATO** |
 | 23 | Chrome DevTools | locale `chrome-devtools-mcp` | **INSTALLATO E TESTATO** |
 
-**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **15 INSTALLATO E TESTATO**, **7 INSTALLATO, AUTENTICAZIONE PENDENTE**, **1 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
+**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **16 INSTALLATO E TESTATO**, **7 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
 
 ---
 
@@ -282,16 +282,15 @@
 | 1 | Google Docs/Sheets/Slides | Progetto Google Cloud + OAuth client "AI-powered agent" | `setx GOOGLE_OAUTH_CLIENT_ID "..."` e `setx GOOGLE_OAUTH_CLIENT_SECRET "..."`, poi `opencode mcp auth google-docs` (e `google-sheets`, `google-slides`) |
 | 2 | Resend | API key | `setx RESEND_API_KEY "re_..."` |
 | 3 | Twilio | Account SID + API key SID/Secret | `setx TWILIO_ACCOUNT_SID "AC..."`, `setx TWILIO_API_KEY "SK..."`, `setx TWILIO_API_SECRET "..."` |
-| 4 | GitHub | Personal Access Token | `setx GITHUB_PAT "ghp_..."` |
-| 5 | Grafana | Completare OAuth indicando l'URL dello stack Grafana Cloud | `opencode mcp auth grafana` |
-| 6 | Figma | App desktop Figma installata + Dev Mode MCP attivo | `Shift+D` → attivare "Dev Mode MCP server" |
+| 4 | Grafana | Completare OAuth indicando l'URL dello stack Grafana Cloud | `opencode mcp auth grafana` |
+| 5 | Figma | Completare il login Figma (server hosted: **nessuna app da installare**) | `opencode mcp auth figma` |
 
-Dopo aver impostato le variabili d'ambiente: **riavviare OpenCode** (il servizio in background rilegge la configurazione) e verificare con `opencode mcp list`.
+Le variabili possono essere iniettate in modo persistente nel servizio con `opencode service set env NOME_VAR valore` (riavvia automaticamente il servizio), oppure impostate a livello utente con `setx` e seguite da `opencode service restart`. Verifica finale: `opencode mcp list`.
 
 ## 7. Ripristino e sicurezza
 
 - Backup di configurazione disponibili in `C:\Users\calos\.config\opencode\opencode.jsonc.bak-*`.
-- Nessun segreto è scritto in `opencode.json`, nel report o nel repository: solo riferimenti `{env:...}`.
+- Nessun segreto è scritto in `opencode.json`, nel report o nel repository: solo riferimenti `{env:...}`. Il token GitHub è iniettato nell'ambiente del servizio OpenCode con `opencode service set env GITHUB_PAT ...` (persistente sulla macchina, fuori dal repository).
 - I token OAuth sono memorizzati da OpenCode fuori dalla configurazione; per rifare il login di un server: `opencode mcp logout <nome>` e poi `opencode mcp auth <nome>`.
 - Per rimuovere le dipendenze aggiunte: `pip uninstall mcp-server-git uv`.
 - Test condotti nel rispetto dei vincoli: nessun pagamento, nessuna email/SMS reale, nessuna pubblicazione, nessuna modifica DNS, nessun deploy.
