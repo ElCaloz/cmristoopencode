@@ -249,7 +249,8 @@ Non esistono endpoint webhook da testare, quindi non è stata simulata alcuna ve
 | Webhook Stripe/Twilio/Resend | NON APPLICABILE (nessuna integrazione webhook) |
 | Segreti assenti dal repository/client | COMPLETATO E VERIFICATO (working tree) |
 | Scansione cronologia Git | NON IMPLEMENTATO |
-| CI security gates | COMPLETATO E VERIFICATO (run #39802102414: Security e CodeQL verdi; dependency review configurato ma saltato perché non c'è una PR) |
+| CI security gates | COMPLETATO E VERIFICATO (run #39802102414: Security e CodeQL verdi) |
+| Dependency review su PR | IMPLEMENTATO, NON ANCORA VERIFICATO (nessuna PR aperta in questa sessione) |
 | Dipendenze vulnerabili | PARZIALE — 0 in produzione; 5 high dev-only senza fix non-breaking |
 | MCP verificati in lettura | COMPLETATO E VERIFICATO |
 | Monitoraggio errori produzione | NON IMPLEMENTATO (Sentry non collegato al runtime) |

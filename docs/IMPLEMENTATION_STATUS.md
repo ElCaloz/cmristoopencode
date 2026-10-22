@@ -67,7 +67,7 @@
 | F-01 | Header di sicurezza assenti, `X-Powered-By` esposto | Media | `src/lib/security/headers.ts` + `next.config.ts` (CSP, HSTS prod, XFO, nosniff, Referrer, Permissions, poweredBy off) | `tests/unit/security-headers.test.ts` (3), `tests/e2e/security.spec.ts`, verifica HTTP produzione | COMPLETATO E VERIFICATO |
 | F-02 | Cookie sessione senza `HttpOnly`/`SameSite` espliciti | Media | `src/lib/supabase/cookie-options.ts` applicato ai client server | E2E su login reale: cookie `HttpOnly`, `SameSite=Lax` | COMPLETATO E VERIFICATO (Secure solo prod: implementato, non testato su HTTPS) |
 | F-03 | Nessun rate limit su avvio chiamata vocale | Bassa-media | `src/lib/security/rate-limit.ts` + 120 req/min per IP sulla route | `tests/unit/rate-limit.test.ts` (4); 401 anonimo verificato | PARZIALE (limiter in memoria, 429 non forzato E2E) |
-| F-04 | CI senza audit dipendenze/secret scan/CodeQL | Bassa | Script `security:*`, job `security`, `codeql`, `dependency-review`, permessi minimi | Scanner 285 file 0 finding; selftest 6/6; audit 0 vuln; CI run #39802102414 verde | COMPLETATO E VERIFICATO (run #39802102414: Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché si attiva solo sulle PR) |
+| F-04 | CI senza audit dipendenze/secret scan/CodeQL | Bassa | Script `security:*`, job `security`, `codeql`, `dependency-review`, permessi minimi | Scanner 285 file 0 finding; selftest 6/6; audit 0 vuln; CI run #39802102414 verde | COMPLETATO E VERIFICATO per Security, CodeQL e secret scan; Dependency review IMPLEMENTATO, NON ANCORA VERIFICATO (richiede una PR) |
 | F-05 | `h1` mancante in KDS e stato accesso negato | Bassa (a11y) | `h1` sr-only nel KDS; `EmptyState` con `headingLevel` | E2E 25/25 + browser build produzione (1 `h1` per pagina) | COMPLETATO E VERIFICATO |
 | F-06 | MFA assente per admin | Media | — | — | NON IMPLEMENTATO |
 | F-07 | `audit_logs` inseribili da membri del tenant | Bassa | Accettato per MVP | — | PARZIALE (rischio documentato) |
@@ -269,7 +269,8 @@ Nessuna funzionalità esistente è stata rimossa o riscritta. Nessuna nuova dipe
 | Lint/typecheck/test/build in CI | COMPLETATO E VERIFICATO (run #39802102414, job Quality) |
 | pgTAP in CI | COMPLETATO E VERIFICATO (run #39802102414, job Database) |
 | E2E in CI | COMPLETATO E VERIFICATO (run #39802102414, job E2E) |
-| Audit dipendenze/secret scan/CodeQL | COMPLETATO E VERIFICATO (run #39802102414: Security e CodeQL verdi; dependency review non eseguito perché non c'è una PR) |
+| Audit dipendenze/secret scan/CodeQL | COMPLETATO E VERIFICATO (run #39802102414: Security e CodeQL verdi) |
+| Dependency review su PR | IMPLEMENTATO, NON ANCORA VERIFICATO (nessuna PR aperta in questa sessione) |
 | Preview deploy | NON IMPLEMENTATO |
 | Deploy produzione | NON ESEGUITO (richiede approvazione) |
 
