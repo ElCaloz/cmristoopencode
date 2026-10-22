@@ -1,5 +1,14 @@
 import type { APIRequestContext } from "@playwright/test";
 
+for (const file of [".env.local", ".env"]) {
+  try {
+    process.loadEnvFile(file);
+    break;
+  } catch {
+    continue;
+  }
+}
+
 const MAILPIT_URL = process.env.MAILPIT_URL ?? "http://127.0.0.1:55004";
 
 type MailpitRecipient = { Address?: string };

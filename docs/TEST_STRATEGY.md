@@ -69,7 +69,7 @@
 - `database`: `supabase start`, `supabase test db`, stop.
 - `e2e`: `supabase start`, generazione `.env.local` da `supabase status -o env`, Playwright Chromium, suite completa, artifact `test-results/` in caso di errore, stop stack.
 
-**Stato CI:** workflow predisposto e ampliato. **Prima esecuzione (22/10/2026):** CodeQL e pgTAP verdi; `quality` fallito su `typecheck` perché i tipi `LayoutProps`/`PageProps` di Next non erano generati su checkout pulito; `security` fallito per un falso positivo dello scanner sul proprio pattern `private-key`. Correzioni applicate (`next typegen` nello script `typecheck`, auto-esclusione dello scanner con selftest 6/6); **seconda esecuzione da verificare** dopo il push.
+**Stato CI:** workflow predisposto e ampliato. **Prima esecuzione (22/10/2026):** CodeQL e pgTAP verdi; `quality` fallito su `typecheck` perché i tipi `LayoutProps`/`PageProps` di Next non erano generati su checkout pulito; `security` fallito per un falso positivo dello scanner sul proprio pattern `private-key`. Correzioni applicate (`next typegen` nello script `typecheck`, auto-esclusione dello scanner con selftest 6/6). Inoltre il job E2E carica `.env.local` nel processo Playwright e il workflow vi scrive `MAILPIT_URL` (54324 in CI, 55004 in locale). **Seconda esecuzione da verificare** dopo il push.
 
 ---
 

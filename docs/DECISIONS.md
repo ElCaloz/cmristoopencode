@@ -373,6 +373,7 @@ Formato: ID, data, decisione, motivazione, stato. Le decisioni superseded restan
 **D-049 - Correzioni dalla prima esecuzione CI: typegen e auto-esclusione dello scanner** (22/10/2026)
 - Decisione:
   - `npm run typecheck` esegue `next typegen` prima di `tsc --noEmit`, così i tipi globali delle route (`PageProps`, `LayoutProps`) vengono generati anche su un checkout pulito e la CI non dipende da una build precedente;
-  - `scripts/scan-secrets.mjs` esclude sé stesso dalla scansione, perché il file contiene i pattern di rilevamento e il fixture del selftest che producevano un falso positivo (`private-key` alla riga 143); aggiunto il caso di selftest "auto-esclusione dello scanner" (6/6).
+  - `scripts/scan-secrets.mjs` esclude sé stesso dalla scansione, perché il file contiene i pattern di rilevamento e il fixture del selftest che producevano un falso positivo (`private-key` alla riga 143); aggiunto il caso di selftest "auto-esclusione dello scanner" (6/6);
+  - il job E2E carica `.env.local` nel processo Playwright e il workflow vi scrive `MAILPIT_URL` (porta 54324 in CI, 55004 in locale), evitando il fallback errato alla porta locale.
 - Motivazione: la prima esecuzione CI (run #39799160801) ha fallito su `quality` (typecheck) e `security` (falso positivo), mentre CodeQL e pgTAP sono passati. Le correzioni rendono la pipeline riproducibile su runner Linux pulito senza indebolire i controlli.
 - Stato: attiva; verificata in locale (typecheck verde anche senza `.next`, scansione 285 file/0 finding, selftest 6/6). Seconda esecuzione CI da verificare.
