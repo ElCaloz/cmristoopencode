@@ -187,14 +187,14 @@
 - **Interventi necessari:** nessuno. Se il token scade o viene revocato, rigenerarlo e rieseguire `opencode service set env GITHUB_PAT <token>`
 - **Istruzioni:** verifica: `opencode mcp list` (`✓ github connected`)
 
-### 18. Grafana — INSTALLATO, AUTENTICAZIONE PENDENTE
+### 18. Grafana — INSTALLATO E TESTATO
 - **Fonte e repository:** Grafana (ufficiale) — Grafana Cloud MCP `https://grafana.com/docs/grafana-cloud/ai-tools/mcp-servers/cloud-mcp/`; alternativa OSS self-hosted: `github.com/grafana/mcp-grafana`
 - **Server MCP:** `https://mcp.grafana.com/mcp` (remoto, OAuth 2.1; solo Grafana Cloud)
 - **Installazione:** voce `grafana` in `opencode.json` (`type: remote`)
-- **Autenticazione:** OAuth **sospeso dall'utente** durante la sessione; lo stato attuale è `needs_auth`. Durante il flusso Grafana chiede l'URL dello stack (`https://<nome>.grafana.net`)
-- **Test effettuati:** endpoint raggiungibile (pre-auth HTTP 401 `missing or invalid Bearer token`); flusso OAuth avviato correttamente (pagina di consenso Grafana)
-- **Interventi necessari:** completare il login indicando l'URL del proprio stack Grafana Cloud; consigliato aggiungere l'header `X-Grafana-URL: {env:GRAFANA_CLOUD_URL}` per saltare il passaggio dello stack
-- **Istruzioni:** `opencode mcp auth grafana` (serve un account Grafana Cloud con ruolo `Assistant Cloud MCP User` o superiore). Per Grafana **self-hosted** questo server non è utilizzabile: sostituire con `mcp-grafana` locale (`docker run grafana/mcp-grafana -t stdio` con `GRAFANA_URL` e `GRAFANA_SERVICE_ACCOUNT_TOKEN`)
+- **Autenticazione:** **completata** con OAuth 2.1 sullo stack Grafana Cloud `https://jovialpeach1560.grafana.net` (il flusso richiede l'URL dell'istanza; token salvati da OpenCode fuori dalla configurazione)
+- **Test effettuati:** pre-auth HTTP 401 `missing or invalid Bearer token`; flusso OAuth completato (`Connected to grafana`); stato `connected`; **chiamata reale di lettura** `list_datasources` → **13 datasource** restituiti
+- **Interventi necessari:** nessuno
+- **Istruzioni:** rinnovo login: `opencode mcp auth grafana` (indicare `https://jovialpeach1560.grafana.net`). Per Grafana **self-hosted** questo server non è utilizzabile: sostituire con `mcp-grafana` locale (`docker run grafana/mcp-grafana -t stdio` con `GRAFANA_URL` e `GRAFANA_SERVICE_ACCOUNT_TOKEN`)
 
 ### 19. Zapier — **INSTALLATO E TESTATO**
 - **Fonte e repository:** Zapier (ufficiale) — `https://docs.zapier.com/mcp/overview/how-connections-work`, repo `github.com/zapier/zapier-mcp`
@@ -264,14 +264,14 @@
 | 15 | Twilio | locale `@twilio-alpha/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 16 | Vercel | `https://mcp.vercel.com` | **INSTALLATO E TESTATO** |
 | 17 | GitHub | `https://api.githubcopilot.com/mcp/` | **INSTALLATO E TESTATO** |
-| 18 | Grafana | `https://mcp.grafana.com/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
+| 18 | Grafana | `https://mcp.grafana.com/mcp` | **INSTALLATO E TESTATO** |
 | 19 | Zapier | `https://mcp.zapier.com/api/v1/connect` | **INSTALLATO E TESTATO** |
 | 20 | Exa | `https://mcp.exa.ai/mcp` | **INSTALLATO E TESTATO** |
 | 21 | Cloudflare | `https://mcp.cloudflare.com/mcp` | **INSTALLATO E TESTATO** |
 | 22 | Git | locale `mcp-server-git` | **INSTALLATO E TESTATO** |
 | 23 | Chrome DevTools | locale `chrome-devtools-mcp` | **INSTALLATO E TESTATO** |
 
-**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **16 INSTALLATO E TESTATO**, **7 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
+**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **17 INSTALLATO E TESTATO**, **6 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
 
 ---
 
@@ -282,8 +282,7 @@
 | 1 | Google Docs/Sheets/Slides | Progetto Google Cloud + OAuth client "AI-powered agent" | `setx GOOGLE_OAUTH_CLIENT_ID "..."` e `setx GOOGLE_OAUTH_CLIENT_SECRET "..."`, poi `opencode mcp auth google-docs` (e `google-sheets`, `google-slides`) |
 | 2 | Resend | API key | `setx RESEND_API_KEY "re_..."` |
 | 3 | Twilio | Account SID + API key SID/Secret | `setx TWILIO_ACCOUNT_SID "AC..."`, `setx TWILIO_API_KEY "SK..."`, `setx TWILIO_API_SECRET "..."` |
-| 4 | Grafana | Completare OAuth indicando l'URL dello stack Grafana Cloud | `opencode mcp auth grafana` |
-| 5 | Figma | Completare il login Figma (server hosted: **nessuna app da installare**) | `opencode mcp auth figma` |
+| 4 | Figma | Completare il login Figma (server hosted: **nessuna app da installare**) | `opencode mcp auth figma` |
 
 Le variabili possono essere iniettate in modo persistente nel servizio con `opencode service set env NOME_VAR valore` (riavvia automaticamente il servizio), oppure impostate a livello utente con `setx` e seguite da `opencode service restart`. Verifica finale: `opencode mcp list`.
 
