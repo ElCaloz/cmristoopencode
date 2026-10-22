@@ -126,6 +126,7 @@ export default function CucinaPage() {
 
   return (
     <div className="min-h-screen bg-[#080b0a] px-3 py-4 text-zinc-100 sm:px-5">
+      <h1 className="sr-only">Cucina demo</h1>
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(53,162,106,0.09),transparent_42%)]" />
       <div className="relative mx-auto max-w-[1500px]">
         <header className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 sm:p-4">

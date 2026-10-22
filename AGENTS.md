@@ -32,14 +32,16 @@ Alla fine di ogni sessione di lavoro significativa aggiorna:
 | `npm run build` | attivo e verificato (55 route/pagine, proxy/middleware attivo, 6 route API interne, robots.txt e sitemap.xml) |
 | `npm run lint` | attivo (0 errori, 0 warning) |
 | `npm run typecheck` | attivo e verificato (`tsc --noEmit` app + `tsc -p local-service/tsconfig.json`) |
-| `npm test` | attivo e verificato (Vitest, 62 test) |
+| `npm test` | attivo e verificato (Vitest, 70 test) |
 | `npm run local-service:build` | attivo e verificato (compila `local-service/` in `dist/`) |
 | `npm run local-service` | attivo; avvia il servizio locale su `127.0.0.1:4100`, richiede `local-service/.env` da `.env.example` |
-| `npm run e2e` | attivo e verificato (Playwright, 25 test: 15 auth reali incl. menu, sala, piantina grafica, POS, vendite, cucina KDS, dispositivi, accesso col PIN, prenotazioni/receptionist, magazzino, ricette e acquisti, 7 demo incl. piantina grafica, 3 dark mode; dev server su :3000; richiede stack Supabase attivo e `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` per la pulizia dati di prova) |
+| `npm run e2e` | attivo e verificato (Playwright, 26 test: 15 auth reali incl. menu, sala, piantina grafica, POS, vendite, cucina KDS, dispositivi, accesso col PIN, prenotazioni/receptionist, magazzino, ricette e acquisti, 1 security su header/redirect/API, 7 demo incl. piantina grafica, 3 dark mode; dev server su :3000; richiede stack Supabase attivo e `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` per la pulizia dati di prova) |
 | `npx supabase start` / `stop` | attivo; stack locale verificato il 20/10/2026. Porte locali: API `55001`, DB `55002`, Studio `55003`, Mailpit `55004`, Analytics `55005`, pooler `55006` (D-035) |
 | `npx supabase migration up` | attivo; 19 migrazioni applicate (schema v1, gerarchia ruoli, auth/onboarding, fix RPC onboarding, sprint 2 menu, sprint 2 sala/tavoli, sprint 2 POS, sprint 2 KDS, sprint 3 dispositivi, sprint 3 operatori/palmare, fix hash token operatore, filtro lockout scaduto, sprint 5/Fase A prenotazioni e receptionist, sprint 4 magazzino, fix policy inventario, cascades inventario, sprint 4 ricette/food cost, sprint 4 acquisti, piantina sala/arredi) |
 | `npx supabase test db` | attivo e verificato (pgTAP, 656 test: 30 RLS + 14 escalation + 28 auth/onboarding + 30 menu + 34 sala/tavoli + 33 piantina sala + 58 POS + 41 KDS + 59 dispositivi + 81 operatori/palmare + 72 prenotazioni/receptionist + 58 comande palmare + 23 magazzino + 34 ricette + 61 acquisti) |
-| CI GitHub Actions | predisposta in `.github/workflows/ci.yml` (qualità, pgTAP, e2e su stack locale); prima esecuzione reale da verificare al primo push (D-029) |
+| `npm run security:audit` | attivo e verificato (0 vulnerabilità di produzione al 22/10/2026) |
+| `npm run security:secrets` | attivo e verificato (273 file, 0 finding al 22/10/2026; selftest 5/5) |
+| CI GitHub Actions | predisposta in `.github/workflows/ci.yml` (qualità, security/audit/secret scan, CodeQL, dependency review, pgTAP, e2e su stack locale); prima esecuzione reale da verificare al primo push (D-029, D-048) |
 
 Le API interne del receptionist richiedono `RECEPTIONIST_INTERNAL_TOKEN` e `RECEPTIONIST_INTERNAL_SECRET` (almeno 32 caratteri) in `.env.local`, mai committati. La telefonia reale e il budget provider non sono collegati: non dichiarare operativa l'integrazione vocale.
 
@@ -72,7 +74,7 @@ Derivano dal prompt master del prodotto e vanno rispettate in ogni task:
 - `supabase/migrations/**` — migrazioni SQL; `supabase/tests/**` — test pgTAP.
 - `tests/unit/**` (Vitest), `tests/e2e/**` (Playwright).
 - `local-service/**` — servizio locale Node/TypeScript (stampa, sync).
-- `docs/` — STATUS, PRODUCT_SPEC, ARCHITECTURE, DECISIONS, AUDIT_COMPLETO. Il dettaglio architetturale è in `docs/ARCHITECTURE.md`.
+- `docs/` — STATUS, PRODUCT_SPEC, ARCHITECTURE, DECISIONS, AUDIT_COMPLETO, SECURITY_AUDIT, TEST_STRATEGY, IMPLEMENTATION_STATUS, MCP_INTEGRATION_PLAN, MCP_INVENTORY. Il dettaglio architetturale è in `docs/ARCHITECTURE.md`.
 
 ## Comandi di verifica (usare solo questi, realmente presenti)
 
@@ -131,3 +133,13 @@ Regole di coordinamento:
 - Next.js 16.4.2 (Turbopack), React 19.3.0, TypeScript 5 (strict), Tailwind CSS 4, ESLint 9 + eslint-config-next 16.4.2.
 - Supabase previsto: sviluppo locale via CLI + Docker, produzione su progetto cloud dedicato (in seguito).
 - Node.js v24.19.0, npm 11.17.0, Docker 29.2.0, git 2.43.0 (ambiente Windows).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

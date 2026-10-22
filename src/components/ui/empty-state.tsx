@@ -8,6 +8,7 @@ type EmptyStateProps = {
   description?: string;
   action?: React.ReactNode;
   className?: string;
+  headingLevel?: 1 | 2;
 };
 
 export function EmptyState({
@@ -16,7 +17,10 @@ export function EmptyState({
   description,
   action,
   className,
+  headingLevel = 2,
 }: EmptyStateProps) {
+  const Heading = headingLevel === 1 ? "h1" : "h2";
+
   return (
     <div
       className={cn(
@@ -28,7 +32,7 @@ export function EmptyState({
         <Icon className="size-5" />
       </div>
       <div className="space-y-1">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{title}</h2>
+        <Heading className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{title}</Heading>
         {description ? (
           <p className="mx-auto max-w-sm text-xs text-zinc-500 dark:text-zinc-400">
             {description}

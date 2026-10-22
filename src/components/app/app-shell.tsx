@@ -144,6 +144,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
             <EmptyState
               icon={ShieldAlert}
+              headingLevel={1}
               title="Area non disponibile per questo ruolo"
               description={`Il ruolo demo "${ROLE_LABELS[role]}" non ha accesso a questa sezione. Dal menu in alto a destra puoi cambiare ruolo e vedere l'interfaccia riservata.`}
               action={

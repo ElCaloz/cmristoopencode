@@ -12,7 +12,9 @@
     "test:watch": "vitest",
     "local-service:build": "tsc -p local-service/tsconfig.json --noEmit false",
     "local-service": "npm run local-service:build && node --env-file-if-exists=local-service/.env local-service/dist/index.js",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "security:secrets": "node scripts/scan-secrets.mjs",
+    "security:audit": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.3.1",

@@ -1,7 +1,24 @@
 ﻿# STATUS - CM Risto
 
-**Ultimo aggiornamento:** 22 ottobre 2026 (installazione e verifica delle 23 integrazioni MCP, vedi `docs/MCP_INSTALLATION_REPORT.md`; 21 ottobre 2026: Fase 2 completata; base `local-service/` implementata; **magazzino, ricette/food cost, acquisti e piantina grafica della sala completati**, con giacenze, lotti, movimenti, ingredienti, sfridi, margini, ordini ai fornitori, ricezioni, posizioni/formazioni dei tavoli e arredi. Verifiche: **25/25 e2e**, **62/62 unit**, **656/656 pgTAP**, build **55 route** e 19 migrazioni. Restano non collegati provider vocale, numero telefonico, budget reale, cloud sync e stampanti fisiche).
-**Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch git `main`, repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+**Ultimo aggiornamento:** 22 ottobre 2026 (audit di sicurezza, hardening, test completo e documentazione di audit: `docs/SECURITY_AUDIT.md`, `docs/TEST_STRATEGY.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs/MCP_INTEGRATION_PLAN.md`, `docs/MCP_INVENTORY.md`).
+**Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 22/10/2026 — Audit di sicurezza, hardening e verifica finale
+
+- **Perimetro:** intero repository escluso Revit; 178 file TS/TSX, 55 route, 6 route API interne, 12 moduli di Server Actions, 19 migrazioni, 36 tabelle, 15 file pgTAP, 13 file unit, 4 spec E2E, servizio locale, CI, documentazione e MCP.
+- **Correzioni implementate:**
+  - header di sicurezza globali con CSP, HSTS (solo produzione), `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` e `X-Powered-By` disattivato (`src/lib/security/headers.ts`, `next.config.ts`);
+  - cookie di sessione Supabase esplicitamente `HttpOnly`, `SameSite=Lax`, `Secure` in produzione (`src/lib/supabase/cookie-options.ts`);
+  - rate limiting in memoria (120 req/min per IP) sull'avvio chiamata vocale (`src/lib/security/rate-limit.ts` + route);
+  - secret scanner con selftest e script `security:audit`/`security:secrets`; CI ampliata con job security, CodeQL, dependency review e permessi minimi;
+  - accessibilità: `h1` nel KDS e nello stato "area non disponibile" (`EmptyState` con `headingLevel`);
+  - lint reso robusto rispetto agli artefatti Playwright.
+- **Verifiche reali:** `npm run lint` pulito; `npm run typecheck` pulito; **70/70 unit** (13 file); **656/656 pgTAP** (15 file); **26/26 E2E** (15 auth reali + 1 security + 7 demo + 3 dark mode); `npm run build` **55 route**; `npm audit --omit=dev` **0 vulnerabilità**; secret scan **273 file, 0 finding**; header verificati su build di produzione (`:3100`), `X-Powered-By` assente; browser QA su 16 pagine demo e pagine pubbliche con **0 errori console**; cookie `HttpOnly`/`Lax` verificati su login reale; `/dashboard` anonimo → 307 login; API vocale anonima → 401; nessun valore di `SUPABASE_SERVICE_ROLE_KEY` nel bundle client.
+- **MCP:** 20/23 server installati, connessi e testati in lettura; 3 Google parcheggiati su istruzione dell'utente; Revit non toccato. Nessun MCP è integrato nel runtime del prodotto (uso solo sviluppo/ops).
+- **Problemi aperti:** MFA admin non implementata; rate limiting non distribuito; CSP con `'unsafe-inline'`; Sentry SDK non collegato; scansione segreti solo working tree; CSRF senza test dedicato; `Secure` cookie verificabile solo in HTTPS; 5 advisory `high` dev-only nel tooling lint senza patch non-breaking; provider vocale, Stripe, Twilio e Resend non integrati nel prodotto; prima esecuzione CI da verificare al push.
+- **Prossimi passi:** push del branch (autorizzato), verifica CI, eventuale PR senza merge; approvazioni per deploy/Vercel, Supabase cloud, Cloudflare e provider esterni; completamento OAuth Google quando l'utente fornirà le credenziali.
 
 ---
 

@@ -88,6 +88,15 @@ test("accesso, logout, sessione scaduta e redirect sicuri", async ({ page }) => 
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.getByRole("heading", { name: /Ciao, Elena/ })).toBeVisible();
 
+  const authCookies = (await page.context().cookies()).filter((cookie) =>
+    /^sb-.*-auth-token(\.\d+)?$/.test(cookie.name),
+  );
+  expect(authCookies.length).toBeGreaterThan(0);
+  for (const cookie of authCookies) {
+    expect(cookie.httpOnly).toBe(true);
+    expect(cookie.sameSite).toBe("Lax");
+  }
+
   await page.goto("/onboarding");
   await expect(page).toHaveURL(/\/dashboard$/);
 

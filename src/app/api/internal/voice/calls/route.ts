@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from "next/server";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import {
   createCallToken,
   getBearerToken,
@@ -8,6 +9,9 @@ import {
 } from "@/server/receptionist/internal-auth";
 import { getAdminOrResponse } from "@/server/receptionist/internal";
 import { jsonError, rpcError } from "@/server/receptionist/http";
+
+const RATE_LIMIT_MAX = 120;
+const RATE_LIMIT_WINDOW_MS = 60_000;
 
 
 const bodySchema = z.object({
@@ -40,6 +44,33 @@ type TenantPayload = {
 };
 
 export async function POST(request: Request) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const clientIp =
+    forwarded?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip")?.trim() ||
+    "unknown";
+
+  const rate = checkRateLimit(
+    `voice-calls:${clientIp}`,
+    RATE_LIMIT_MAX,
+    RATE_LIMIT_WINDOW_MS,
+  );
+
+  if (!rate.allowed) {
+    return NextResponse.json(
+      {
+        error: {
+          code: "rate_limited",
+          message: "Troppe richieste: riprova tra qualche secondo.",
+        },
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSeconds) },
+      },
+    );
+  }
+
   const config = getInternalVoiceConfig();
 
   if (!config) {
