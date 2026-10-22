@@ -2,60 +2,94 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createConnection } from "node:net";
 import { join } from "node:path";
 import type { ServiceConfig } from "./config.js";
-import { formatTicket } from "./escpos.js";
-import type { Job, PrintTicketPayload } from "./types.js";
+import { formatPrintPayload } from "./escpos.js";
+import type { PrintPayload } from "./types.js";
 
 export interface PrinterAdapter {
-  print(ticket: PrintTicketPayload, job: Job): Promise<string>;
+  print(payload: PrintPayload, jobId: string): Promise<string>;
+}
+
+type Target = {
+  connection: "network" | "file";
+  host: string;
+  port: number;
+};
+
+function resolveTarget(payload: PrintPayload, config: ServiceConfig): Target {
+  const printTarget =
+    "printer" in payload && payload.printer ? payload.printer : undefined;
+
+  return {
+    connection: printTarget?.connection ?? config.printer.mode,
+    host: printTarget?.host?.trim() || config.printer.host,
+    port: printTarget?.port ?? config.printer.port,
+  };
+}
+
+function writeSpool(
+  spoolDir: string,
+  jobId: string,
+  data: Buffer,
+): Promise<string> {
+  return mkdir(spoolDir, { recursive: true }).then(async () => {
+    const path = join(spoolDir, `${jobId}.escpos`);
+    await writeFile(path, data);
+    return path;
+  });
+}
+
+function sendNetwork(
+  host: string,
+  port: number,
+  data: Buffer,
+  timeoutMs = 5000,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const socket = createConnection({ host, port });
+    let settled = false;
+    const finish = (error?: Error) => {
+      if (settled) return;
+      settled = true;
+      socket.destroy();
+      if (error) reject(error);
+      else resolve(`${host}:${port}`);
+    };
+
+    socket.setTimeout(timeoutMs);
+    socket.once("timeout", () => finish(new Error("printer_timeout")));
+    socket.once("error", (error) => finish(error));
+    socket.once("connect", () => {
+      socket.write(data, (error) => {
+        if (error) finish(error);
+        else finish();
+      });
+    });
+  });
 }
 
 export class FilePrinter implements PrinterAdapter {
   constructor(private readonly spoolDir: string) {}
 
-  async print(ticket: PrintTicketPayload, job: Job): Promise<string> {
-    await mkdir(this.spoolDir, { recursive: true });
-    const path = join(this.spoolDir, `${job.id}.escpos`);
-    await writeFile(path, formatTicket(ticket));
-    return path;
+  async print(payload: PrintPayload, jobId: string): Promise<string> {
+    return writeSpool(this.spoolDir, jobId, formatPrintPayload(payload));
   }
 }
 
-export class NetworkPrinter implements PrinterAdapter {
-  constructor(
-    private readonly host: string,
-    private readonly port: number,
-    private readonly timeoutMs = 5000,
-  ) {}
+export class PrinterRouter implements PrinterAdapter {
+  constructor(private readonly config: ServiceConfig) {}
 
-  print(ticket: PrintTicketPayload): Promise<string> {
-    const data = formatTicket(ticket);
-    return new Promise((resolve, reject) => {
-      const socket = createConnection({ host: this.host, port: this.port });
-      let settled = false;
-      const finish = (error?: Error) => {
-        if (settled) return;
-        settled = true;
-        socket.destroy();
-        if (error) reject(error);
-        else resolve(`${this.host}:${this.port}`);
-      };
+  async print(payload: PrintPayload, jobId: string): Promise<string> {
+    const data = formatPrintPayload(payload);
+    const target = resolveTarget(payload, this.config);
 
-      socket.setTimeout(this.timeoutMs);
-      socket.once("timeout", () => finish(new Error("printer_timeout")));
-      socket.once("error", (error) => finish(error));
-      socket.once("connect", () => {
-        socket.write(data, (error) => {
-          if (error) finish(error);
-          else finish();
-        });
-      });
-    });
+    if (target.connection === "file") {
+      return writeSpool(this.config.spoolDir, jobId, data);
+    }
+
+    return sendNetwork(target.host, target.port, data);
   }
 }
 
 export function createPrinter(config: ServiceConfig): PrinterAdapter {
-  if (config.printer.mode === "network") {
-    return new NetworkPrinter(config.printer.host, config.printer.port);
-  }
-  return new FilePrinter(config.spoolDir);
+  return new PrinterRouter(config);
 }

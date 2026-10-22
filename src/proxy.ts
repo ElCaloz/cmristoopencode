@@ -26,7 +26,7 @@ function redirectWithCookies(
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const { response, user, configured } = await updateSession(request);
+  const { response, user, assurance, configured } = await updateSession(request);
 
   if (!configured) {
     if (matchesPrefix(pathname, PROTECTED_PREFIXES)) {
@@ -59,6 +59,24 @@ export async function proxy(request: NextRequest) {
 
   if (user && matchesPrefix(pathname, AUTH_PAGES)) {
     return redirectWithCookies(request, "/dashboard", response, true);
+  }
+
+  // Verifica in due passaggi: se l'account ha un fattore attivo, la sessione
+  // deve essere elevata a aal2. La pagina di sicurezza resta accessibile per
+  // completare la verifica; senza fattori attivi nulla cambia.
+  if (
+    user &&
+    assurance?.nextLevel === "aal2" &&
+    assurance.currentLevel === "aal1" &&
+    matchesPrefix(pathname, ["/dashboard"]) &&
+    !matchesPrefix(pathname, ["/dashboard/sicurezza"])
+  ) {
+    return redirectWithCookies(
+      request,
+      "/dashboard/sicurezza?mfa=required",
+      response,
+      true,
+    );
   }
 
   if (matchesPrefix(pathname, PROTECTED_PREFIXES)) {

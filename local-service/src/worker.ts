@@ -1,6 +1,6 @@
 import type { PrinterAdapter } from "./printer.js";
 import type { JobQueue } from "./queue.js";
-import { printTicketSchema } from "./schemas.js";
+import { printPayloadSchema } from "./schemas.js";
 import type { SyncTransport } from "./sync.js";
 import type { Job } from "./types.js";
 
@@ -83,8 +83,8 @@ export class JobWorker {
 
   private async process(job: Job): Promise<string> {
     if (job.type === "print_ticket") {
-      const ticket = printTicketSchema.parse(job.payload);
-      return this.printer.print(ticket, job);
+      const payload = printPayloadSchema.parse(job.payload);
+      return this.printer.print(payload, job.id);
     }
     return this.sync.send(job);
   }

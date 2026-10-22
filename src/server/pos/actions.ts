@@ -8,6 +8,7 @@ import { parseEuroToCents } from "@/lib/utils";
 import { getSessionContext, type SessionContext } from "@/server/auth/session";
 import { canOperatePos } from "@/server/pos/queries";
 import type { PosActionState } from "@/server/pos/types";
+import { enqueueReceiptForOrder } from "@/server/printers/receipts";
 import {
   getActiveRestaurant,
   type ActiveRestaurant,
@@ -358,11 +359,23 @@ export async function payOrderAction(
     },
   );
 
+  let receiptQueued = false;
+  if (closed) {
+    const receipt = await enqueueReceiptForOrder({
+      orderId: parsed.data.orderId,
+      restaurant: context.restaurant,
+      userId: context.session.user.id,
+    });
+    receiptQueued = receipt.queued;
+  }
+
   revalidatePath("/dashboard/pos");
   return {
     status: "success",
     message: closed
-      ? "Conto incassato e chiuso."
+      ? receiptQueued
+        ? "Conto incassato e chiuso. Scontrino inviato alla stampante."
+        : "Conto incassato e chiuso. Nessuna stampante scontrini attiva: configura la stampante in Integrazioni."
       : "Pagamento registrato: il conto resta aperto per il saldo.",
   };
 }

@@ -8,6 +8,7 @@ export type TicketItem = {
   notes?: string;
 };
 
+/** Payload storico dei ticket cucina (mantenuto per compatibilità). */
 export type PrintTicketPayload = {
   restaurantName: string;
   orderNumber: string;
@@ -16,6 +17,57 @@ export type PrintTicketPayload = {
   items: TicketItem[];
   notes?: string;
 };
+
+export type PrintTarget = {
+  connection?: "network" | "file";
+  host?: string | null;
+  port?: number | null;
+  paperWidth?: 58 | 80;
+};
+
+export type ReceiptItemPayload = {
+  name: string;
+  quantity: number;
+  unitPriceCents: number;
+  lineTotalCents: number;
+  note?: string;
+};
+
+/** Scontrino fiscale/commerciale in formato 58/80 mm. */
+export type ReceiptPayload = {
+  kind: "receipt";
+  restaurantName: string;
+  address?: string;
+  phone?: string;
+  orderNumber: string;
+  tableName?: string | null;
+  createdAt: string;
+  items: ReceiptItemPayload[];
+  subtotalCents: number;
+  taxCents: number;
+  serviceChargeCents: number;
+  totalCents: number;
+  tipCents: number;
+  paymentMethod: string;
+  footer: string;
+  paperWidth: 58 | 80;
+  printer?: PrintTarget;
+};
+
+/** Comanda cucina in formato 58/80 mm. */
+export type KitchenPayload = {
+  kind: "kitchen";
+  restaurantName: string;
+  orderNumber: string;
+  tableName?: string | null;
+  createdAt: string;
+  items: Array<{ name: string; quantity: number; note?: string }>;
+  notes?: string;
+  paperWidth: 58 | 80;
+  printer?: PrintTarget;
+};
+
+export type PrintPayload = PrintTicketPayload | ReceiptPayload | KitchenPayload;
 
 export type SyncEventPayload = {
   event: string;
@@ -51,4 +103,9 @@ export type EnqueueResult = {
   created: boolean;
 };
 
-export type QueueStats = Record<JobStatus, number>;
+export type QueueStats = {
+  pending: number;
+  processing: number;
+  done: number;
+  failed: number;
+};

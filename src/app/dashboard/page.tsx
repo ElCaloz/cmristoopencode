@@ -458,6 +458,141 @@ async function DashboardContent() {
                   </Link>
                 </Button>
               </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Clienti e fedeltà
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Anagrafica clienti, consensi tracciati, punti fedeltà e
+                  messaggi diretti.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/clienti">
+                    Apri il CRM
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Marketing e inbox
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Campagne email e SMS verso contatti con consenso, con inbox
+                  unificata delle risposte.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/marketing">
+                    Apri il marketing
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Menu online e ordini
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Link con token non prevedibile, menu digitale e ordini
+                  trasformati in conti reali.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/online">
+                    Gestisci i canali online
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Report e statistiche
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Ricavi, ticket medio, canali online, prodotti top e confronto
+                  tra sedi.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/report">
+                    Apri i report
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Personale e turni
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Inviti ai membri, ruoli verificati dal database, costo orario
+                  e pianificazione turni.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/personale">
+                    Apri il personale
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Sedi
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Più sedi per organizzazione, con dati operativi separati e
+                  sede attiva selezionabile.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/sedi">
+                    Gestisci le sedi
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Integrazioni e stampanti
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Stampanti scontrino 58/80 mm, test email e SMS, ricezione
+                  messaggi e nota scontrino.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/integrazioni">
+                    Apri le integrazioni
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Abbonamento
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Piano dell&apos;organizzazione, attivazione con Stripe e
+                  gestione della fatturazione.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/abbonamento">
+                    Gestisci il piano
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  Sicurezza account
+                </h3>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  Verifica in due passaggi con app di autenticazione e sessioni
+                  elevate per le aree operative.
+                </p>
+                <Button className="mt-3" size="sm" asChild>
+                  <Link href="/dashboard/sicurezza">
+                    Proteggi l&apos;account
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </section>
         ) : null}

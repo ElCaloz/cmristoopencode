@@ -7,7 +7,7 @@ export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   if (!isSupabaseConfigured()) {
-    return { response, user: null, configured: false };
+    return { response, user: null, assurance: null, configured: false };
   }
 
   const { url, anonKey } = getSupabaseEnv();
@@ -33,7 +33,20 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { response, user, configured: true };
+  let assurance: {
+    currentLevel: "aal1" | "aal2" | null;
+    nextLevel: "aal1" | "aal2" | null;
+  } | null = null;
+
+  if (user) {
+    const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    assurance = {
+      currentLevel: (level?.currentLevel as "aal1" | "aal2" | null) ?? null,
+      nextLevel: (level?.nextLevel as "aal1" | "aal2" | null) ?? null,
+    };
+  }
+
+  return { response, user, assurance, configured: true };
 }
 
 export function copyResponseCookies(source: NextResponse, target: NextResponse) {

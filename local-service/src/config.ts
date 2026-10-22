@@ -18,6 +18,11 @@ export type ServiceConfig = {
     token: string | null;
     testMode: boolean;
   };
+  printPoll: {
+    url: string | null;
+    token: string | null;
+    intervalMs: number;
+  };
   worker: {
     disabled: boolean;
     intervalMs: number;
@@ -71,6 +76,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServiceConfig 
     throw new Error("CLOUD_SYNC_TOKEN è obbligatorio quando CLOUD_SYNC_URL è impostato");
   }
 
+  const printPollUrl = env.PRINT_POLL_URL?.trim() || null;
+  const printPollToken = env.PRINT_POLL_TOKEN?.trim() || token;
+
   const root = resolve(env.LOCAL_SERVICE_DATA_DIR ?? ".local-service");
 
   return {
@@ -81,6 +89,15 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServiceConfig 
     spoolDir: resolve(root, "spool"),
     printer: { mode: printerMode, host: printerHost, port: printerPort },
     sync: { url: syncUrl, token: syncToken, testMode },
+    printPoll: {
+      url: printPollUrl,
+      token: printPollToken,
+      intervalMs: integer(
+        env.PRINT_POLL_INTERVAL_MS,
+        3000,
+        "PRINT_POLL_INTERVAL_MS",
+      ),
+    },
     worker: {
       disabled: boolean(env.LOCAL_SERVICE_WORKER_DISABLED, false),
       intervalMs: integer(env.LOCAL_SERVICE_POLL_MS, 2000, "LOCAL_SERVICE_POLL_MS"),
