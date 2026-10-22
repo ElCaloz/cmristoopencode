@@ -161,14 +161,14 @@
 - **Interventi necessari:** nessuno
 - **Istruzioni:** per limitare l'accesso al solo progetto del prodotto, cambiare URL in `https://mcp.supabase.com/mcp?project_ref=<REF>`; rinnovo login: `opencode mcp auth supabase`
 
-### 15. Twilio — INSTALLATO, AUTENTICAZIONE PENDENTE
+### 15. Twilio — INSTALLATO E TESTATO
 - **Fonte e repository:** Twilio (ufficiale) — `github.com/twilio-labs/mcp`, pacchetto npm `@twilio-alpha/mcp` v0.7.0 (server per le API pubbliche Twilio)
 - **Server MCP:** locale, `type: local` — comando `cmd /c npx -y -p zod@3.25.76 -p @twilio-alpha/mcp twilio-mcp-server %TWILIO_ACCOUNT_SID%/%TWILIO_API_KEY%/%TWILIO_API_SECRET%` con blocco `environment` `{env:TWILIO_*}`
 - **Installazione:** voce `twilio` in `opencode.json`. **Fix applicato:** il pacchetto pubblicato non risolve la dipendenza `zod/v3` con l'ultima zod 3.x (errore reale `Cannot find module 'zod/v3'`); risolto pinnando `zod@3.25.76` nella stessa installazione npx
-- **Autenticazione:** **mancano `TWILIO_ACCOUNT_SID`, `TWILIO_API_KEY`, `TWILIO_API_SECRET`** (creabili nella Twilio Console → Account → API keys)
-- **Test effettuati:** con credenziali di prova il server si avvia ed espone **197 strumenti** (`TwilioApiV2010--*`); con credenziali vuote esce con errore `Invalid AccountSid` (comportamento atteso); nessun SMS/WhatsApp inviato
-- **Interventi necessari:** creare API key SID/Secret su Twilio Console, poi `setx TWILIO_ACCOUNT_SID "AC..."`, `setx TWILIO_API_KEY "SK..."`, `setx TWILIO_API_SECRET "..."` e riavviare OpenCode
-- **Istruzioni:** verificare con `opencode mcp list` (`✓ twilio connected`). **Attenzione:** gli strumenti inviano SMS/WhatsApp reali — non usarli nei test
+- **Autenticazione:** **attiva** — credenziali (Account SID `AC…`, API Key SID `SK…` e secret) validate direttamente sull'API Twilio (`HTTP 200`) e iniettate nel servizio con `opencode service set env`/`service.json` (persistenti, fuori dal repository). Il server espone **197 strumenti** (`TwilioApiV2010--*`)
+- **Test effettuati:** stato MCP `connected`; **chiamata reale di lettura** `TwilioApiV2010--ListIncomingPhoneNumber` → 0 numeri presenti sull'account; lettura diretta API `Messages.json` → `HTTP 200`, 0 messaggi; **nessun SMS/WhatsApp inviato**
+- **Interventi necessari:** nessuno. L'account non ha numeri né messaggi: per inviare SMS servirà acquistare/verificare un numero (operazione a pagamento, non eseguita)
+- **Istruzioni:** verifica: `opencode mcp list` (`✓ twilio connected`). **Attenzione:** gli strumenti inviano SMS/WhatsApp reali — non usarli nei test
 
 ### 16. Vercel — INSTALLATO E TESTATO
 - **Fonte e repository:** Vercel (ufficiale) — `https://vercel.com/docs/agent-resources/vercel-mcp`, server `https://mcp.vercel.com`
@@ -261,7 +261,7 @@
 | 12 | Sentry | `https://mcp.sentry.dev/mcp` | **INSTALLATO E TESTATO** |
 | 13 | Stripe | `https://mcp.stripe.com` | **INSTALLATO E TESTATO** |
 | 14 | Supabase | `https://mcp.supabase.com/mcp` | **INSTALLATO E TESTATO** |
-| 15 | Twilio | locale `@twilio-alpha/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
+| 15 | Twilio | locale `@twilio-alpha/mcp` | **INSTALLATO E TESTATO** |
 | 16 | Vercel | `https://mcp.vercel.com` | **INSTALLATO E TESTATO** |
 | 17 | GitHub | `https://api.githubcopilot.com/mcp/` | **INSTALLATO E TESTATO** |
 | 18 | Grafana | `https://mcp.grafana.com/mcp` | **INSTALLATO E TESTATO** |
@@ -271,7 +271,7 @@
 | 22 | Git | locale `mcp-server-git` | **INSTALLATO E TESTATO** |
 | 23 | Chrome DevTools | locale `chrome-devtools-mcp` | **INSTALLATO E TESTATO** |
 
-**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **19 INSTALLATO E TESTATO**, **4 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
+**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **20 INSTALLATO E TESTATO**, **3 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
 
 ---
 
@@ -280,7 +280,6 @@
 | Priorità | Voce | Cosa serve | Comando/azione chiave |
 |---|---|---|---|
 | 1 | Google Docs/Sheets/Slides | Progetto Google Cloud + OAuth client "AI-powered agent" | `setx GOOGLE_OAUTH_CLIENT_ID "..."` e `setx GOOGLE_OAUTH_CLIENT_SECRET "..."`, poi `opencode mcp auth google-docs` (e `google-sheets`, `google-slides`) |
-| 2 | Twilio | Account SID + API key SID/Secret | `setx TWILIO_ACCOUNT_SID "AC..."`, `setx TWILIO_API_KEY "SK..."`, `setx TWILIO_API_SECRET "..."` |
 
 Le variabili possono essere iniettate in modo persistente nel servizio con `opencode service set env NOME_VAR valore` (riavvia automaticamente il servizio), oppure impostate a livello utente con `setx` e seguite da `opencode service restart`. Verifica finale: `opencode mcp list`.
 
