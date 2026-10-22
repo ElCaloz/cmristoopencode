@@ -114,7 +114,7 @@ Rotazione consigliata: `RECEPTIONIST_INTERNAL_*` e `LOCAL_SERVICE_TOKEN` ogni 90
 - job CI `security` (audit produzione + selftest + scansione), job `codeql` (`javascript-typescript`), `dependency-review` sulle PR, `permissions: contents: read` globale e permessi elevati solo dove necessario;
 - trigger CI anche sui branch `audit/**`.
 
-**Verifica:** `node scripts/scan-secrets.mjs --selftest` → 6/6; scansione → 285 file, 0 riscontri; `npm audit --omit=dev` → 0 vulnerabilità. **Prima esecuzione CI (22/10/2026):** fallita su `typecheck` (tipi `LayoutProps`/`PageProps` non generati su checkout pulito) e sul falso positivo dello scanner che rilevava il proprio pattern `private-key`. Entrambi corretti (`next typegen` nello script e auto-esclusione dello scanner); seconda esecuzione da verificare.
+**Verifica:** `node scripts/scan-secrets.mjs --selftest` → 6/6; scansione → 285 file, 0 riscontri; `npm audit --omit=dev` → 0 vulnerabilità. **Prima esecuzione CI (22/10/2026):** fallita su `typecheck` (tipi `LayoutProps`/`PageProps` non generati su checkout pulito) e sul falso positivo dello scanner che rilevava il proprio pattern `private-key`. Entrambi corretti (`next typegen` nello script e auto-esclusione dello scanner). **Seconda esecuzione CI (run #39802102414): PASS** — Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR.
 
 ### F-05 — Heading `h1` mancante in due viste (severità: bassa, accessibilità) — CORRETTO
 
@@ -249,7 +249,7 @@ Non esistono endpoint webhook da testare, quindi non è stata simulata alcuna ve
 | Webhook Stripe/Twilio/Resend | NON APPLICABILE (nessuna integrazione webhook) |
 | Segreti assenti dal repository/client | COMPLETATO E VERIFICATO (working tree) |
 | Scansione cronologia Git | NON IMPLEMENTATO |
-| CI security gates | IMPLEMENTATO, NON ANCORA VERIFICATO (prima esecuzione al push) |
+| CI security gates | COMPLETATO E VERIFICATO (run #39802102414: Security e CodeQL verdi; dependency review configurato ma saltato perché non c'è una PR) |
 | Dipendenze vulnerabili | PARZIALE — 0 in produzione; 5 high dev-only senza fix non-breaking |
 | MCP verificati in lettura | COMPLETATO E VERIFICATO |
 | Monitoraggio errori produzione | NON IMPLEMENTATO (Sentry non collegato al runtime) |

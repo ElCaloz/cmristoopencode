@@ -41,7 +41,7 @@ Alla fine di ogni sessione di lavoro significativa aggiorna:
 | `npx supabase test db` | attivo e verificato (pgTAP, 656 test: 30 RLS + 14 escalation + 28 auth/onboarding + 30 menu + 34 sala/tavoli + 33 piantina sala + 58 POS + 41 KDS + 59 dispositivi + 81 operatori/palmare + 72 prenotazioni/receptionist + 58 comande palmare + 23 magazzino + 34 ricette + 61 acquisti) |
 | `npm run security:audit` | attivo e verificato (0 vulnerabilità di produzione al 22/10/2026) |
 | `npm run security:secrets` | attivo e verificato (285 file, 0 finding al 22/10/2026; selftest 6/6) |
-| CI GitHub Actions | predisposta in `.github/workflows/ci.yml` (qualità, security/audit/secret scan, CodeQL, dependency review, pgTAP, e2e su stack locale); prima esecuzione reale il 22/10/2026: typecheck e scanner corretti, seconda esecuzione da verificare (D-029, D-048, D-049) |
+| CI GitHub Actions | predisposta e **verificata** il 22/10/2026 con il run **#39802102414** su `f25c19a`: Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR (D-029, D-048, D-049) |
 
 Le API interne del receptionist richiedono `RECEPTIONIST_INTERNAL_TOKEN` e `RECEPTIONIST_INTERNAL_SECRET` (almeno 32 caratteri) in `.env.local`, mai committati. La telefonia reale e il budget provider non sono collegati: non dichiarare operativa l'integrazione vocale.
 

@@ -15,10 +15,10 @@
   - secret scanner con selftest e script `security:audit`/`security:secrets`; CI ampliata con job security, CodeQL, dependency review e permessi minimi;
   - accessibilità: `h1` nel KDS e nello stato "area non disponibile" (`EmptyState` con `headingLevel`);
   - lint reso robusto rispetto agli artefatti Playwright.
-- **Verifiche reali:** `npm run lint` pulito; `npm run typecheck` pulito (con `next typegen`); **70/70 unit** (13 file); **656/656 pgTAP** (15 file); **26/26 E2E** (15 auth reali + 1 security + 7 demo + 3 dark mode); `npm run build` **55 route**; `npm audit --omit=dev` **0 vulnerabilità**; secret scan **285 file, 0 finding**; header verificati su build di produzione (`:3100`), `X-Powered-By` assente; browser QA su 16 pagine demo e pagine pubbliche con **0 errori console**; cookie `HttpOnly`/`Lax` verificati su login reale; `/dashboard` anonimo → 307 login; API vocale anonima → 401; nessun valore di `SUPABASE_SERVICE_ROLE_KEY` nel bundle client.
+- **Verifiche reali:** `npm run lint` pulito; `npm run typecheck` pulito (con `next typegen`); **70/70 unit** (13 file); **656/656 pgTAP** (15 file); **26/26 E2E** (15 auth reali + 1 security + 7 demo + 3 dark mode); `npm run build` **55 route**; `npm audit --omit=dev` **0 vulnerabilità**; secret scan **285 file, 0 finding**; header verificati su build di produzione (`:3100`), `X-Powered-By` assente; browser QA su 16 pagine demo e pagine pubbliche con **0 errori console**; cookie `HttpOnly`/`Lax` verificati su login reale; `/dashboard` anonimo → 307 login; API vocale anonima → 401; nessun valore di `SUPABASE_SERVICE_ROLE_KEY` nel bundle client; **CI run #39802102414** (commit `f25c19a`): Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR.
 - **MCP:** 20/23 server installati, connessi e testati in lettura; 3 Google parcheggiati su istruzione dell'utente; Revit non toccato. Nessun MCP è integrato nel runtime del prodotto (uso solo sviluppo/ops).
-- **Problemi aperti:** MFA admin non implementata; rate limiting non distribuito; CSP con `'unsafe-inline'`; Sentry SDK non collegato; scansione segreti solo working tree; CSRF senza test dedicato; `Secure` cookie verificabile solo in HTTPS; 5 advisory `high` dev-only nel tooling lint senza patch non-breaking; provider vocale, Stripe, Twilio e Resend non integrati nel prodotto; seconda esecuzione CI da verificare (la prima è fallita su typecheck e falso positivo scanner, entrambi corretti).
-- **Prossimi passi:** verificare la seconda esecuzione CI (run successivo al push delle correzioni), eventuale PR senza merge; approvazioni per deploy/Vercel, Supabase cloud, Cloudflare e provider esterni; completamento OAuth Google quando l'utente fornirà le credenziali.
+- **Problemi aperti:** MFA admin non implementata; rate limiting non distribuito; CSP con `'unsafe-inline'`; Sentry SDK non collegato; scansione segreti solo working tree; CSRF senza test dedicato; `Secure` cookie verificabile solo in HTTPS; 5 advisory `high` dev-only nel tooling lint senza patch non-breaking; provider vocale, Stripe, Twilio e Resend non integrati nel prodotto; dependency review da verificare su una PR reale.
+- **Prossimi passi:** aprire eventuale PR senza merge; approvazioni per deploy/Vercel, Supabase cloud, Cloudflare e provider esterni; completamento OAuth Google quando l'utente fornirà le credenziali.
 
 ---
 
@@ -141,7 +141,7 @@
 ## In corso
 
 - **Sprint 3 - parte 2c:** base `local-service/` realizzata (coda, stampa ESC/POS, sync adapter, API). Restano WebSocket/realtime cloud, discovery LAN, integrazione con il palmare, riconciliazione conflitti e collaudo con stampante fisica (D-008).
-- **CI GitHub Actions** predisposta (D-029): prima esecuzione reale da verificare al primo push eseguito il 21/10/2026 su repository `ElCaloz/cmristoopencode`.
+- **CI GitHub Actions** predisposta (D-029) e **verificata** il 22/10/2026 con il run **#39802102414**: Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR.
 - **QA responsive/visiva Fase 2:** completata su landing, dashboard, KDS, prenotazioni, POS, desktop/mobile/tablet/dark; resta la QA manuale su dispositivi fisici e palmare reale.
 - **Fase B del receptionist:** richiede approvazione esplicita, provider vocale, eventuale chiave OpenAI/budget, LiveKit Cloud e numero telefonico. Nessuna spesa o chiamata reale Ã¨ stata effettuata.
 
@@ -177,7 +177,7 @@
 1. **Fase B (solo su approvazione esplicita):** collegare ambiente vocale di test con provider/LiveKit e numero dedicato, budget e observability; verificare con chiamate reali prima di dichiararla operativa.
 2. Completare lo **Sprint 3 parte 2c** oltre la base giÃ  realizzata: endpoint cloud reale, WebSocket/realtime, discovery LAN, integrazione palmare, riconciliazione conflitti e collaudo stampante fisica (D-008, D-040).
 3. **Sprint 4 restante:** report, CRM, personale e multi-sede.
-4. Verificare la seconda esecuzione CI dopo le correzioni (typegen e auto-esclusione scanner) e correggere eventuali problemi residui del runner.
+4. CI verificata il 22/10/2026 (run #39802102414, tutti i job verdi); aprire eventuale PR senza merge.
 5. QA su dispositivi fisici/palmare e testi legali definitivi.
 6. ~~Effettuare il primo commit solo se richiesto esplicitamente.~~ Fatto: repository GitHub `ElCaloz/cmristoopencode` creato e primo commit eseguito il 21/10/2026; da allora ogni modifica completata viene salvata (regola 12 di `AGENTS.md`).
 

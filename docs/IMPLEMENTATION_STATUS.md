@@ -6,6 +6,7 @@
 **Branch di lavoro:** `audit/hardening-sicurezza` (creato da `main`, base `d07d00b`)
 **Stato Git iniziale:** albero pulito, `main` allineato a `origin/main`, nessuna modifica utente sovrascritta.
 **Commit dell'audit:** creato al termine di questo lavoro sul branch dedicato (vedi `git log -1`); nessun merge su `main`, nessun deploy.
+**CI:** run **#39802102414** sul commit `f25c19a` — Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR.
 
 ---
 
@@ -66,7 +67,7 @@
 | F-01 | Header di sicurezza assenti, `X-Powered-By` esposto | Media | `src/lib/security/headers.ts` + `next.config.ts` (CSP, HSTS prod, XFO, nosniff, Referrer, Permissions, poweredBy off) | `tests/unit/security-headers.test.ts` (3), `tests/e2e/security.spec.ts`, verifica HTTP produzione | COMPLETATO E VERIFICATO |
 | F-02 | Cookie sessione senza `HttpOnly`/`SameSite` espliciti | Media | `src/lib/supabase/cookie-options.ts` applicato ai client server | E2E su login reale: cookie `HttpOnly`, `SameSite=Lax` | COMPLETATO E VERIFICATO (Secure solo prod: implementato, non testato su HTTPS) |
 | F-03 | Nessun rate limit su avvio chiamata vocale | Bassa-media | `src/lib/security/rate-limit.ts` + 120 req/min per IP sulla route | `tests/unit/rate-limit.test.ts` (4); 401 anonimo verificato | PARZIALE (limiter in memoria, 429 non forzato E2E) |
-| F-04 | CI senza audit dipendenze/secret scan/CodeQL | Bassa | Script `security:*`, job `security`, `codeql`, `dependency-review`, permessi minimi | Scanner 285 file 0 finding; selftest 6/6; audit 0 vuln | IMPLEMENTATO, NON ANCORA VERIFICATO (prima esecuzione CI fallita su typecheck e falso positivo scanner, corretti; seconda esecuzione in corso) |
+| F-04 | CI senza audit dipendenze/secret scan/CodeQL | Bassa | Script `security:*`, job `security`, `codeql`, `dependency-review`, permessi minimi | Scanner 285 file 0 finding; selftest 6/6; audit 0 vuln; CI run #39802102414 verde | COMPLETATO E VERIFICATO (run #39802102414: Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché si attiva solo sulle PR) |
 | F-05 | `h1` mancante in KDS e stato accesso negato | Bassa (a11y) | `h1` sr-only nel KDS; `EmptyState` con `headingLevel` | E2E 25/25 + browser build produzione (1 `h1` per pagina) | COMPLETATO E VERIFICATO |
 | F-06 | MFA assente per admin | Media | — | — | NON IMPLEMENTATO |
 | F-07 | `audit_logs` inseribili da membri del tenant | Bassa | Accettato per MVP | — | PARZIALE (rischio documentato) |
@@ -102,6 +103,7 @@ Nessuna funzionalità esistente è stata rimossa o riscritta. Nessuna nuova dipe
 | `npm test` | **PASS** | **70/70** test, 13 file (62 preesistenti + 8 nuovi) |
 | `npm run build` | **PASS** | **55 route**, proxy attivo, 6 route API |
 | `npm run e2e` | **PASS** | **26/26** test, 4 spec (15 auth reali + 1 security + 7 demo + 3 dark mode), 2,2 min |
+| CI GitHub Actions | **PASS** | Run **#39802102414** (commit `f25c19a`: Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR) |
 | `npx supabase test db` | **PASS** | **656/656** pgTAP, 15 file |
 | `npm audit --omit=dev` | **PASS** | 0 vulnerabilità di produzione |
 | `npm audit` (completo) | **PARZIALE** | 5 advisory `high` solo devDependencies (tooling lint), nessun fix non-breaking disponibile |
@@ -120,13 +122,13 @@ Nessuna funzionalità esistente è stata rimossa o riscritta. Nessuna nuova dipe
 1. **E2E, 2 test falliti** dopo l'aggiunta degli `h1`: strict mode violation per heading duplicato e per "Kitchen Display System". **Causa:** due heading con lo stesso nome accessibile. **Correzione:** `EmptyState` con `headingLevel` e `h1` KDS distinto. **Esito:** 25/25 al momento, **26/26** nella suite finale con il nuovo test di sicurezza.
 2. **Lint fallito** durante un'esecuzione parallela a Playwright: race sui file temporanei `test-results/`. **Correzione:** aggiunti `test-results/**` e `playwright-report/**` a `globalIgnores`. **Riesito:** lint pulito.
 3. **Docker spento** all'inizio: stack Supabase non disponibile. **Azione:** avviato Docker Desktop; pgTAP e E2E eseguiti con successo.
-4. **Prima esecuzione CI (run #39799160801):** `quality` fallito su `typecheck` perché `LayoutProps`/`PageProps` sono tipi generati da Next e il runner pulito non aveva `.next`; `security` fallito perché lo scanner rilevava il proprio pattern `private-key` alla riga 143. **Correzione:** aggiunto `next typegen` allo script `typecheck` e auto-esclusione di `scripts/scan-secrets.mjs` (con caso di selftest dedicato). **Verifica locale:** typecheck verde anche senza `.next`, 285 file scansionati, 0 finding, selftest 6/6. Inoltre il job E2E carica `.env.local` nel processo Playwright e riceve `MAILPIT_URL` dal workflow, per usare Mailpit sulla porta corretta in CI. **Seconda esecuzione CI:** da verificare.
+4. **Prima esecuzione CI (run #39799160801):** `quality` fallito su `typecheck` perché `LayoutProps`/`PageProps` sono tipi generati da Next e il runner pulito non aveva `.next`; `security` fallito perché lo scanner rilevava il proprio pattern `private-key` alla riga 143. **Correzione:** aggiunto `next typegen` allo script `typecheck` e auto-esclusione di `scripts/scan-secrets.mjs` (con caso di selftest dedicato). **Verifica locale:** typecheck verde anche senza `.next`, 285 file scansionati, 0 finding, selftest 6/6. Inoltre il job E2E carica `.env.local` nel processo Playwright e riceve `MAILPIT_URL` dal workflow, per usare Mailpit sulla porta corretta in CI. **Seconda esecuzione CI (run #39802102414): PASS** — Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR.
 
 ### Test non eseguiti e motivi
 
 | Test | Motivo |
 |---|---|
-| CI GitHub Actions (seconda esecuzione) | La prima è fallita su typecheck e falso positivo dello scanner, entrambi corretti; l'esito della seconda esecuzione è da verificare |
+| Dependency review su PR | Il job è configurato ma si attiva solo quando viene aperta una pull request; in questa sessione non è stata aperta |
 | Deploy preview/produzione Vercel | Richiede approvazione e configurazione progetto |
 | Webhook Stripe/Twilio/Resend (firma, replay, duplicati) | **Nessuna integrazione webhook esiste nel codice** |
 | Sandbox reale provider vocale | Mancano provider, numero e budget |
@@ -264,10 +266,10 @@ Nessuna funzionalità esistente è stata rimossa o riscritta. Nessuna nuova dipe
 | Requisito | Stato |
 |---|---|
 | Installazione riproducibile | COMPLETATO E VERIFICATO in locale (`npm ci` implicito nel setup; lockfile presente) |
-| Lint/typecheck/test/build in CI | IMPLEMENTATO, NON ANCORA VERIFICATO |
-| pgTAP in CI | IMPLEMENTATO, NON ANCORA VERIFICATO |
-| E2E in CI | IMPLEMENTATO, NON ANCORA VERIFICATO |
-| Audit dipendenze/secret scan/CodeQL | IMPLEMENTATO, NON ANCORA VERIFICATO |
+| Lint/typecheck/test/build in CI | COMPLETATO E VERIFICATO (run #39802102414, job Quality) |
+| pgTAP in CI | COMPLETATO E VERIFICATO (run #39802102414, job Database) |
+| E2E in CI | COMPLETATO E VERIFICATO (run #39802102414, job E2E) |
+| Audit dipendenze/secret scan/CodeQL | COMPLETATO E VERIFICATO (run #39802102414: Security e CodeQL verdi; dependency review non eseguito perché non c'è una PR) |
 | Preview deploy | NON IMPLEMENTATO |
 | Deploy produzione | NON ESEGUITO (richiede approvazione) |
 
@@ -345,14 +347,13 @@ Nessuna migrazione distruttiva è stata creata o eseguita.
 ## 12. Passaggi manuali necessari
 
 1. **Revisione del branch** `audit/hardening-sicurezza` e del diff; nessun merge automatico.
-2. **Push** su `origin` (autorizzato da `AGENTS.md`, regola 12) e verifica della **prima esecuzione CI** (quality, security, CodeQL, pgTAP, E2E).
-3. Se la CI fallisce: correggere e ripetere; non disattivare i controlli.
-4. **Approvazione** per merge su `main`.
-5. **Vercel:** collegare il progetto, impostare le env (inclusa `NEXT_PUBLIC_SUPABASE_URL` HTTPS) e autorizzare i preview deploy.
-6. **Supabase cloud:** creare il progetto dedicato, applicare le migrazioni con backup e approvazione.
-7. **Sentry:** aggiungere SDK/DSN e release.
-8. **Cloudflare:** valutare WAF/rate limiting con approvazione.
-9. **Google MCP:** fornire OAuth Client ID/Secret e completare i login (parcheggiato).
-10. **Stripe/Twilio/Resend/provider vocale:** implementare le integrazioni prima di qualsiasi test reale; usare solo sandbox.
-11. **MFA:** pianificare l'enrollment TOTP per owner/admin.
-12. **Scansione storica Git:** eseguire gitleaks/trufflehog una tantum.
+2. **CI verificata:** run **#39802102414** sul commit `f25c19a` — Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR. Il push su `origin` è già stato eseguito (regola 12).
+3. **Approvazione** per merge su `main`.
+4. **Vercel:** collegare il progetto, impostare le env (inclusa `NEXT_PUBLIC_SUPABASE_URL` HTTPS) e autorizzare i preview deploy.
+5. **Supabase cloud:** creare il progetto dedicato, applicare le migrazioni con backup e approvazione.
+6. **Sentry:** aggiungere SDK/DSN e release.
+7. **Cloudflare:** valutare WAF/rate limiting con approvazione.
+8. **Google MCP:** fornire OAuth Client ID/Secret e completare i login (parcheggiato).
+9. **Stripe/Twilio/Resend/provider vocale:** implementare le integrazioni prima di qualsiasi test reale; usare solo sandbox.
+10. **MFA:** pianificare l'enrollment TOTP per owner/admin.
+11. **Scansione storica Git:** eseguire gitleaks/trufflehog una tantum.
