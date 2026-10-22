@@ -30,7 +30,7 @@
 | Rischi potenziali documentati | 5 |
 | Vulnerabilità critiche o alte confermate | 0 |
 | Tabelle senza RLS | 0 su 36 |
-| Segreti trovati nei file tracciati | 0 (273 file scansionati) |
+| Segreti trovati nei file tracciati | 0 (285 file scansionati) |
 | Vulnerabilità dipendenze di produzione | 0 (`npm audit --omit=dev`) |
 | Vulnerabilità devDependencies (tooling lint) | 5 high, senza fix non-breaking (dettaglio §7 R-11) |
 
@@ -114,7 +114,7 @@ Rotazione consigliata: `RECEPTIONIST_INTERNAL_*` e `LOCAL_SERVICE_TOKEN` ogni 90
 - job CI `security` (audit produzione + selftest + scansione), job `codeql` (`javascript-typescript`), `dependency-review` sulle PR, `permissions: contents: read` globale e permessi elevati solo dove necessario;
 - trigger CI anche sui branch `audit/**`.
 
-**Verifica:** `node scripts/scan-secrets.mjs --selftest` → 5/5; scansione → 273 file, 0 riscontri; `npm audit --omit=dev` → 0 vulnerabilità. **La pipeline aggiornata non è ancora stata eseguita su GitHub**: prima esecuzione da verificare al push del branch.
+**Verifica:** `node scripts/scan-secrets.mjs --selftest` → 6/6; scansione → 285 file, 0 riscontri; `npm audit --omit=dev` → 0 vulnerabilità. **Prima esecuzione CI (22/10/2026):** fallita su `typecheck` (tipi `LayoutProps`/`PageProps` non generati su checkout pulito) e sul falso positivo dello scanner che rilevava il proprio pattern `private-key`. Entrambi corretti (`next typegen` nello script e auto-esclusione dello scanner); seconda esecuzione da verificare.
 
 ### F-05 — Heading `h1` mancante in due viste (severità: bassa, accessibilità) — CORRETTO
 
@@ -170,7 +170,7 @@ Le policy consentono a un membro autenticato di inserire righe `audit_logs` per 
 
 - Nessun `.env` tracciato (solo `.env.example` con placeholder); `.gitignore` copre `.env*`.
 - `SUPABASE_SERVICE_ROLE_KEY` non compare nel bundle client; la ricerca in `.next/static` trova solo testo UI che nomina `RECEPTIONIST_INTERNAL_*` (nessun valore).
-- Secret scanner: 273 file, 0 findings; selftest 5/5.
+- Secret scanner: 285 file, 0 findings; selftest 6/6.
 - Cronologia Git: non scansionata integralmente in questo audit (rischio residuo).
 
 ### 5.5 Servizio locale
@@ -223,7 +223,7 @@ Non esistono endpoint webhook da testare, quindi non è stata simulata alcuna ve
 | API vocale senza token | `POST /api/internal/voice/calls` | PASS — 401 |
 | Escalation ruoli / isolamento tenant | pgTAP | PASS — 656/656 |
 | Open redirect | E2E `next=https://evil.example` | PASS |
-| Segreti nei file tracciati | `node scripts/scan-secrets.mjs` | PASS — 273 file, 0 findings |
+| Segreti nei file tracciati | `node scripts/scan-secrets.mjs` | PASS — 285 file, 0 findings |
 | Segreti nel bundle client | ricerca nomi in `.next/static` | PASS — nessun valore |
 | Dipendenze di produzione | `npm audit --omit=dev` | PASS — 0 vulnerabilità |
 | Dipendenze di sviluppo | `npm audit` | 5 high dev-only, senza fix non-breaking (R-11); non nel bundle |

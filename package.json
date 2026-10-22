@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit && tsc -p local-service/tsconfig.json",
+    "typecheck": "next typegen && tsc --noEmit && tsc -p local-service/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "local-service:build": "tsc -p local-service/tsconfig.json --noEmit false",

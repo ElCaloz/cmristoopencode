@@ -66,7 +66,7 @@
 | F-01 | Header di sicurezza assenti, `X-Powered-By` esposto | Media | `src/lib/security/headers.ts` + `next.config.ts` (CSP, HSTS prod, XFO, nosniff, Referrer, Permissions, poweredBy off) | `tests/unit/security-headers.test.ts` (3), `tests/e2e/security.spec.ts`, verifica HTTP produzione | COMPLETATO E VERIFICATO |
 | F-02 | Cookie sessione senza `HttpOnly`/`SameSite` espliciti | Media | `src/lib/supabase/cookie-options.ts` applicato ai client server | E2E su login reale: cookie `HttpOnly`, `SameSite=Lax` | COMPLETATO E VERIFICATO (Secure solo prod: implementato, non testato su HTTPS) |
 | F-03 | Nessun rate limit su avvio chiamata vocale | Bassa-media | `src/lib/security/rate-limit.ts` + 120 req/min per IP sulla route | `tests/unit/rate-limit.test.ts` (4); 401 anonimo verificato | PARZIALE (limiter in memoria, 429 non forzato E2E) |
-| F-04 | CI senza audit dipendenze/secret scan/CodeQL | Bassa | Script `security:*`, job `security`, `codeql`, `dependency-review`, permessi minimi | Scanner 273 file 0 finding; selftest 5/5; audit 0 vuln | IMPLEMENTATO, NON ANCORA VERIFICATO (CI non ancora eseguita su GitHub) |
+| F-04 | CI senza audit dipendenze/secret scan/CodeQL | Bassa | Script `security:*`, job `security`, `codeql`, `dependency-review`, permessi minimi | Scanner 285 file 0 finding; selftest 6/6; audit 0 vuln | IMPLEMENTATO, NON ANCORA VERIFICATO (prima esecuzione CI fallita su typecheck e falso positivo scanner, corretti; seconda esecuzione in corso) |
 | F-05 | `h1` mancante in KDS e stato accesso negato | Bassa (a11y) | `h1` sr-only nel KDS; `EmptyState` con `headingLevel` | E2E 25/25 + browser build produzione (1 `h1` per pagina) | COMPLETATO E VERIFICATO |
 | F-06 | MFA assente per admin | Media | — | — | NON IMPLEMENTATO |
 | F-07 | `audit_logs` inseribili da membri del tenant | Bassa | Accettato per MVP | — | PARZIALE (rischio documentato) |
@@ -84,7 +84,7 @@ Dettaglio completo: `docs/SECURITY_AUDIT.md`.
 | Header di sicurezza centralizzati e CSP | `src/lib/security/headers.ts`, `next.config.ts` | Unit + HTTP produzione + browser |
 | Cookie di sessione rafforzati | `src/lib/supabase/cookie-options.ts`, `server.ts`, `proxy.ts` | E2E login reale |
 | Rate limiting endpoint vocale | `src/lib/security/rate-limit.ts`, `src/app/api/internal/voice/calls/route.ts` | Unit; route compilata |
-| Secret scanner + script sicurezza | `scripts/scan-secrets.mjs`, `package.json` | 273 file, 0 finding; selftest |
+| Secret scanner + script sicurezza | `scripts/scan-secrets.mjs`, `package.json` | 285 file, 0 finding; selftest 6/6 |
 | CI: security, CodeQL, dependency review, permessi minimi | `.github/workflows/ci.yml` | Config valida; prima esecuzione al push |
 | Accessibilità: heading | `src/components/ui/empty-state.tsx`, `src/components/app/app-shell.tsx`, `src/app/app/cucina/page.tsx` | E2E + browser |
 | ESLint ignora artefatti Playwright | `eslint.config.mjs` | Lint pulito |
@@ -98,15 +98,15 @@ Nessuna funzionalità esistente è stata rimossa o riscritta. Nessuna nuova dipe
 | Comando | Esito | Dettaglio |
 |---|---|---|
 | `npm run lint` | **PASS** | 0 errori, 0 warning (eseguito più volte) |
-| `npm run typecheck` | **PASS** | App + local-service, nessun errore |
+| `npm run typecheck` | **PASS** | `next typegen` + app + local-service, nessun errore (verificato anche senza `.next` preesistente) |
 | `npm test` | **PASS** | **70/70** test, 13 file (62 preesistenti + 8 nuovi) |
 | `npm run build` | **PASS** | **55 route**, proxy attivo, 6 route API |
 | `npm run e2e` | **PASS** | **26/26** test, 4 spec (15 auth reali + 1 security + 7 demo + 3 dark mode), 2,2 min |
 | `npx supabase test db` | **PASS** | **656/656** pgTAP, 15 file |
 | `npm audit --omit=dev` | **PASS** | 0 vulnerabilità di produzione |
 | `npm audit` (completo) | **PARZIALE** | 5 advisory `high` solo devDependencies (tooling lint), nessun fix non-breaking disponibile |
-| `node scripts/scan-secrets.mjs --selftest` | **PASS** | 5/5 casi |
-| `node scripts/scan-secrets.mjs` | **PASS** | 273 file, 0 findings |
+| `node scripts/scan-secrets.mjs --selftest` | **PASS** | 6/6 casi |
+| `node scripts/scan-secrets.mjs` | **PASS** | 285 file, 0 findings |
 | HTTP build produzione `:3100` | **PASS** | `/login`, `/`, `/prezzi` → 200; CSP/HSTS/XFO/nosniff/Referrer/Permissions presenti; `X-Powered-By` assente |
 | Browser QA 16 pagine demo | **PASS** | 0 errori console; 0 immagini senza alt; 0 bottoni vuoti; 0 campi senza label; `h1` presente su tutte dopo il fix |
 | Browser QA pagine pubbliche | **PASS** | `/`, `/prezzi`, `/login` → 0 errori console |
@@ -120,12 +120,13 @@ Nessuna funzionalità esistente è stata rimossa o riscritta. Nessuna nuova dipe
 1. **E2E, 2 test falliti** dopo l'aggiunta degli `h1`: strict mode violation per heading duplicato e per "Kitchen Display System". **Causa:** due heading con lo stesso nome accessibile. **Correzione:** `EmptyState` con `headingLevel` e `h1` KDS distinto. **Esito:** 25/25 al momento, **26/26** nella suite finale con il nuovo test di sicurezza.
 2. **Lint fallito** durante un'esecuzione parallela a Playwright: race sui file temporanei `test-results/`. **Correzione:** aggiunti `test-results/**` e `playwright-report/**` a `globalIgnores`. **Riesito:** lint pulito.
 3. **Docker spento** all'inizio: stack Supabase non disponibile. **Azione:** avviato Docker Desktop; pgTAP e E2E eseguiti con successo.
+4. **Prima esecuzione CI (run #39799160801):** `quality` fallito su `typecheck` perché `LayoutProps`/`PageProps` sono tipi generati da Next e il runner pulito non aveva `.next`; `security` fallito perché lo scanner rilevava il proprio pattern `private-key` alla riga 143. **Correzione:** aggiunto `next typegen` allo script `typecheck` e auto-esclusione di `scripts/scan-secrets.mjs` (con caso di selftest dedicato). **Verifica locale:** typecheck verde anche senza `.next`, 285 file scansionati, 0 finding, selftest 6/6. **Seconda esecuzione CI:** da verificare.
 
 ### Test non eseguiti e motivi
 
 | Test | Motivo |
 |---|---|
-| CI GitHub Actions (prima esecuzione) | Il workflow aggiornato sarà eseguito solo dopo il push del branch; esito da verificare |
+| CI GitHub Actions (seconda esecuzione) | La prima è fallita su typecheck e falso positivo dello scanner, entrambi corretti; l'esito della seconda esecuzione è da verificare |
 | Deploy preview/produzione Vercel | Richiede approvazione e configurazione progetto |
 | Webhook Stripe/Twilio/Resend (firma, replay, duplicati) | **Nessuna integrazione webhook esiste nel codice** |
 | Sandbox reale provider vocale | Mancano provider, numero e budget |

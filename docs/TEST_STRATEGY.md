@@ -69,7 +69,7 @@
 - `database`: `supabase start`, `supabase test db`, stop.
 - `e2e`: `supabase start`, generazione `.env.local` da `supabase status -o env`, Playwright Chromium, suite completa, artifact `test-results/` in caso di errore, stop stack.
 
-**Stato CI:** workflow predisposto e ampliato, **prima esecuzione reale da verificare** dopo il push del branch `audit/hardening-sicurezza` (trigger `main` + `audit/**` + PR).
+**Stato CI:** workflow predisposto e ampliato. **Prima esecuzione (22/10/2026):** CodeQL e pgTAP verdi; `quality` fallito su `typecheck` perché i tipi `LayoutProps`/`PageProps` di Next non erano generati su checkout pulito; `security` fallito per un falso positivo dello scanner sul proprio pattern `private-key`. Correzioni applicate (`next typegen` nello script `typecheck`, auto-esclusione dello scanner con selftest 6/6); **seconda esecuzione da verificare** dopo il push.
 
 ---
 
@@ -78,7 +78,7 @@
 | Quando | Comando | Note |
 |---|---|---|
 | Sempre | `npm run lint` | ESLint, 0 warning tollerati |
-| Sempre | `npm run typecheck` | `tsc --noEmit` + `local-service/tsconfig.json` |
+| Sempre | `npm run typecheck` | `next typegen` + `tsc --noEmit` + `local-service/tsconfig.json` |
 | Logica | `npm test` | Vitest, 70 test |
 | Database | `npx supabase test db` | richiede stack attivo, 656 test |
 | UI/route | `npm run build` | 55 route |
@@ -108,7 +108,7 @@
 | Acquisti | totali | 61 | sì | ricezione unica |
 | API vocali | token (unit) | — | 401 anonimo | rate limit unit |
 | Header/cookie sicurezza | 3 | — | 1 + cookie assert | produzione verificata via HTTP |
-| Secret scanning | 1 | — | — | 273 file, 0 findings |
+| Secret scanning | 1 | - | - | 285 file, 0 findings |
 | Accessibilità base | — | — | browser QA 16 pagine | h1/alt/label/console |
 | Stripe/Twilio/Resend webhook | — | — | — | **non applicabile** (nessuna integrazione) |
 | Provider AI / prompt injection | — | — | — | **non applicabile** (modello non collegato) |

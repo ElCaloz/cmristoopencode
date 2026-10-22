@@ -10,5 +10,6 @@ describe("secret scanner", () => {
     );
 
     expect(output).toContain("Selftest superato");
+    expect(output).toContain("auto-esclusione dello scanner");
   });
 });

@@ -63,6 +63,9 @@ const ALLOWLIST = [
 
 const IGNORED_PATHS = [
   /^package-lock\.json$/,
+  // Il file contiene i pattern di rilevamento e il fixture del selftest:
+  // scansionarlo produrrebbe un falso positivo sul proprio stesso codice.
+  /^scripts\/scan-secrets\.mjs$/,
   /(^|\/)node_modules\//,
   /(^|\/)\.next\//,
   /(^|\/)test-results\//,
@@ -161,11 +164,21 @@ function selftest() {
   ];
 
   let failures = 0;
+  let checks = 0;
   for (const testCase of cases) {
+    checks += 1;
     const found = scanText(testCase.text, "fixture").length;
     const ok = found === testCase.expected;
     if (!ok) failures += 1;
     console.log(`${ok ? "ok" : "FAIL"} - ${testCase.label} (attesi ${testCase.expected}, trovati ${found})`);
+  }
+
+  checks += 1;
+  if (isIgnoredPath("scripts/scan-secrets.mjs")) {
+    console.log("ok - auto-esclusione dello scanner");
+  } else {
+    failures += 1;
+    console.error("FAIL - auto-esclusione dello scanner");
   }
 
   if (failures > 0) {
@@ -173,7 +186,7 @@ function selftest() {
     process.exit(1);
   }
 
-  console.log(`Selftest superato: ${cases.length}/${cases.length}.`);
+  console.log(`Selftest superato: ${checks}/${checks}.`);
 }
 
 if (process.argv.includes("--selftest")) {
