@@ -8,9 +8,9 @@
 ## Sessione 21-22/10/2026 — Integrazioni MCP (installazione e verifica)
 
 - **Completato:** installate e configurate **23/23 integrazioni MCP** richieste in `opencode.json` (schema V2, `mcp.servers`): Bird, Canva, Context7, Figma, Firecrawl, Google Docs, Google Sheets, Google Slides, Linear, Notion, Resend, Sentry, Stripe, Supabase, Twilio, Vercel, GitHub, Grafana, Zapier, Exa, Cloudflare, Git, Chrome DevTools. Completati **11 login OAuth** con l'utente; **GitHub attivato** con il token già presente nel credential store di git (iniettato via `opencode service set env`, fuori dal repository) e **Figma passato al server hosted** `mcp.figma.com` (nessuna app desktop richiesta); eseguite verifiche reali con probe MCP diretti e chiamate di sola lettura. Report completo con schede, test e istruzioni: `docs/MCP_INSTALLATION_REPORT.md`.
-- **Stato:** 17 **INSTALLATO E TESTATO**, 6 **INSTALLATO, AUTENTICAZIONE PENDENTE** (Google Docs/Sheets/Slides, Resend, Twilio, Figma), 0 **CONFIGURATO, TEST BLOCCATO**. Nessuna voce abbandonata.
+- **Stato:** 19 **INSTALLATO E TESTATO**, 4 **INSTALLATO, AUTENTICAZIONE PENDENTE** (Google Docs/Sheets/Slides, Twilio), 0 **CONFIGURATO, TEST BLOCCATO**. Nessuna voce abbandonata.
 - **Problemi aperti:** nessuno bloccante sul repository: remoto `origin` (`https://github.com/ElCaloz/cmristoopencode.git`) verificato e **push eseguito** (commit `901b620`) come da regola 12. Da allineare solo la denominazione del repository nella documentazione (`AGENTS.md` indica `cm-risto`, il remoto reale è `ElCaloz/cmristoopencode`). Restano da fornire le credenziali mancanti elencate al paragrafo 6 del report MCP.
-- **Prossimi passi:** OAuth client Google Cloud + variabili `GOOGLE_OAUTH_CLIENT_ID/SECRET`; `RESEND_API_KEY`; credenziali Twilio (`TWILIO_ACCOUNT_SID`, `TWILIO_API_KEY`, `TWILIO_API_SECRET`); completare il login Figma hosted.
+- **Prossimi passi:** OAuth client Google Cloud + variabili `GOOGLE_OAUTH_CLIENT_ID/SECRET`; credenziali Twilio (`TWILIO_ACCOUNT_SID`, `TWILIO_API_KEY`, `TWILIO_API_SECRET`).
 
 ---
 

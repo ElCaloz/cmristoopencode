@@ -65,14 +65,14 @@
 - **Interventi necessari:** nessuno
 - **Istruzioni:** per una chiave personale (rate limit maggiori), aggiungere l'header come sopra e impostare la variabile d'ambiente
 
-### 4. Figma — INSTALLATO, AUTENTICAZIONE PENDENTE
+### 4. Figma — INSTALLATO E TESTATO
 - **Fonte e repository:** Figma (ufficiale) — server MCP hosted `https://mcp.figma.com/mcp`; documentazione `https://developers.figma.com/docs/figma-mcp-server/`
 - **Server MCP:** `https://mcp.figma.com/mcp` (remoto, OAuth) — **non** richiede l'app desktop: rispetto alla prima configurazione (Dev Mode locale su `127.0.0.1:3845`) è stato scelto il server hosted ufficiale, così l'integrazione non dipende da un'app installata
 - **Installazione:** voce `figma` in `opencode.json` (`type: remote`)
-- **Autenticazione:** OAuth 2.0 Figma **in attesa di login** (flusso avviato; link di autorizzazione generato). L'endpoint risponde `HTTP 401` con metadati OAuth corretti (`WWW-Authenticate: Bearer resource_metadata=...`), quindi il server è raggiungibile e correttamente configurato
-- **Test effettuati:** verifica endpoint (`401` + metadati OAuth validi); `opencode mcp list` → `needs_auth` (atteso prima del login); nessuna app desktop necessaria
-- **Interventi necessari:** completare il login Figma con il link di autorizzazione fornito (richiede un account Figma; il server hosted è soggetto ai limiti del piano/seat Figma)
-- **Istruzioni:** `opencode mcp auth figma` → aprire il link e autorizzare. Dopo il login: `opencode mcp list` deve mostrare `✓ figma connected`
+- **Autenticazione:** **OAuth completato** (token salvati da OpenCode fuori dalla configurazione)
+- **Test effettuati:** pre-auth `HTTP 401` con metadati OAuth validi; login completato; stato `connected`; **chiamata reale di lettura** `whoami` → utente **Mattia Calosi**, team "Mattia Calosi's team", ruolo admin
+- **Interventi necessari:** nessuno
+- **Istruzioni:** rinnovo login: `opencode mcp auth figma`. Il server hosted è soggetto ai limiti del piano/seat Figma
 
 ### 5. Firecrawl — INSTALLATO E TESTATO
 - **Fonte e repository:** Firecrawl — `https://docs.firecrawl.dev/mcp-server`, repo `github.com/firecrawl/firecrawl-mcp-server`; alternativa locale `npx -y firecrawl-mcp` con `FIRECRAWL_API_KEY`
@@ -126,14 +126,14 @@
 - **Interventi necessari:** nessuno
 - **Istruzioni:** rinnovo login: `opencode mcp auth notion`; per condividere pagine specifiche, autorizzare la connessione "OpenCode" dalle impostazioni dell'integrazione in Notion
 
-### 11. Resend — INSTALLATO, AUTENTICAZIONE PENDENTE
+### 11. Resend — INSTALLATO E TESTATO
 - **Fonte e repository:** Resend (ufficiale) — `https://resend.com/docs/mcp-server`, repo `github.com/resend/resend-mcp`
 - **Server MCP:** `https://mcp.resend.com/mcp` (remoto; non usa OAuth ma API key)
 - **Installazione:** voce `resend` in `opencode.json` (`type: remote`, `oauth: false`, header `Authorization: Bearer {env:RESEND_API_KEY}`)
-- **Autenticazione:** **manca `RESEND_API_KEY`** (la configurazione è già pronta)
-- **Test effettuati:** server raggiungibile; catalogo esposto: **137 strumenti**; senza chiave → HTTP 401 `Unauthorized: provide credentials via Authorization: Bearer <token>` (comportamento corretto); nessuna email inviata
-- **Interventi necessari:** creare una API key su `resend.com` → API Keys, poi `setx RESEND_API_KEY "re_..."` e riavviare OpenCode
-- **Istruzioni:** al termine `opencode mcp list` deve mostrare `✓ resend connected`. **Attenzione:** gli strumenti includono invio email reali — usarli solo in modalità test esplicita
+- **Autenticazione:** **attiva** — API key validata direttamente sull'endpoint MCP (`HTTP 200`) e iniettata nel servizio con `opencode service set env RESEND_API_KEY ...` (persistente, fuori dal repository)
+- **Test effettuati:** senza chiave → HTTP 401 `Unauthorized: provide credentials...`; con chiave → stato `connected`; **chiamata reale di lettura** `list-domains` → "No domains found" (account senza domini configurati); **nessuna email inviata**
+- **Interventi necessari:** nessuno. Per inviare email servirà verificare un dominio nella dashboard Resend
+- **Istruzioni:** verifica: `opencode mcp list` (`✓ resend connected`). **Attenzione:** gli strumenti includono invio email reali — usarli solo in modalità test esplicita
 
 ### 12. Sentry — INSTALLATO E TESTATO
 - **Fonte e repository:** Sentry (ufficiale) — `https://mcp.sentry.dev/`, repo `github.com/getsentry/sentry-mcp`
@@ -250,14 +250,14 @@
 | 1 | Bird | `https://mcp.bird.com` | **INSTALLATO E TESTATO** |
 | 2 | Canva | `https://mcp.canva.com/mcp` | **INSTALLATO E TESTATO** |
 | 3 | Context7 | `https://mcp.context7.com/mcp` | **INSTALLATO E TESTATO** |
-| 4 | Figma | `https://mcp.figma.com/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
+| 4 | Figma | `https://mcp.figma.com/mcp` | **INSTALLATO E TESTATO** |
 | 5 | Firecrawl | `https://mcp.firecrawl.dev/v2/mcp-oauth` | **INSTALLATO E TESTATO** |
 | 6 | Google Docs | `https://docsmcp.googleapis.com/mcp/v1` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 7 | Google Sheets | `https://sheetsmcp.googleapis.com/mcp/v1` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 8 | Google Slides | `https://slidesmcp.googleapis.com/mcp/v1` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
 | 9 | Linear | `https://mcp.linear.app/mcp` | **INSTALLATO E TESTATO** |
 | 10 | Notion | `https://mcp.notion.com/mcp` | **INSTALLATO E TESTATO** |
-| 11 | Resend | `https://mcp.resend.com/mcp` | **INSTALLATO, AUTENTICAZIONE PENDENTE** |
+| 11 | Resend | `https://mcp.resend.com/mcp` | **INSTALLATO E TESTATO** |
 | 12 | Sentry | `https://mcp.sentry.dev/mcp` | **INSTALLATO E TESTATO** |
 | 13 | Stripe | `https://mcp.stripe.com` | **INSTALLATO E TESTATO** |
 | 14 | Supabase | `https://mcp.supabase.com/mcp` | **INSTALLATO E TESTATO** |
@@ -271,7 +271,7 @@
 | 22 | Git | locale `mcp-server-git` | **INSTALLATO E TESTATO** |
 | 23 | Chrome DevTools | locale `chrome-devtools-mcp` | **INSTALLATO E TESTATO** |
 
-**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **17 INSTALLATO E TESTATO**, **6 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
+**Conteggio:** 23/23 integrazioni configurate; nessuna voce abbandonata. **19 INSTALLATO E TESTATO**, **4 INSTALLATO, AUTENTICAZIONE PENDENTE**, **0 CONFIGURATO, TEST BLOCCATO**, **0 NON INSTALLATO**. Le voci non ancora utilizzabili hanno cause precise e istruzioni di completamento (paragrafo 6).
 
 ---
 
@@ -280,9 +280,7 @@
 | Priorità | Voce | Cosa serve | Comando/azione chiave |
 |---|---|---|---|
 | 1 | Google Docs/Sheets/Slides | Progetto Google Cloud + OAuth client "AI-powered agent" | `setx GOOGLE_OAUTH_CLIENT_ID "..."` e `setx GOOGLE_OAUTH_CLIENT_SECRET "..."`, poi `opencode mcp auth google-docs` (e `google-sheets`, `google-slides`) |
-| 2 | Resend | API key | `setx RESEND_API_KEY "re_..."` |
-| 3 | Twilio | Account SID + API key SID/Secret | `setx TWILIO_ACCOUNT_SID "AC..."`, `setx TWILIO_API_KEY "SK..."`, `setx TWILIO_API_SECRET "..."` |
-| 4 | Figma | Completare il login Figma (server hosted: **nessuna app da installare**) | `opencode mcp auth figma` |
+| 2 | Twilio | Account SID + API key SID/Secret | `setx TWILIO_ACCOUNT_SID "AC..."`, `setx TWILIO_API_KEY "SK..."`, `setx TWILIO_API_SECRET "..."` |
 
 Le variabili possono essere iniettate in modo persistente nel servizio con `opencode service set env NOME_VAR valore` (riavvia automaticamente il servizio), oppure impostate a livello utente con `setx` e seguite da `opencode service restart`. Verifica finale: `opencode mcp list`.
 
