@@ -227,6 +227,22 @@ body {
   text-wrap: balance;
 }
 
+.reveal[data-reveal="hidden"] {
+  opacity: 0;
+}
+
+@keyframes drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+.animate-drift {
+  animation: drift 14s ease-in-out infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

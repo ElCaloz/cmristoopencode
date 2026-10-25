@@ -51,3 +51,6 @@ deploy/*.env.*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# artefatti revisione design (screenshot e report di inspect.mjs)
+.taste-skill/

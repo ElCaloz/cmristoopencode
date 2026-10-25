@@ -1,7 +1,21 @@
 ﻿# STATUS - CM Risto
 
-**Ultimo aggiornamento:** 22 ottobre 2026 (Sprint 7 completo + **deploy produzione**: Supabase cloud `CMRisto` migrato con legacy preservato in `legacy_v0`, Vercel progetto `cmristo` online su `cmristo-mattias-projects-0615507f.vercel.app`; 733 test pgTAP, 71 route).
+**Ultimo aggiornamento:** 25 ottobre 2026 (revisione e restyle delle pagine pubbliche con la skill `design-taste-frontend`: **0 FAIL** al metro, immagini reali del prodotto, motion layer, fix overflow 768px; installate le skill `frontend-design` e `seo-audit`).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 25/10/2026 - Revisione e restyle delle pagine pubbliche (design) + skill agent
+
+- **Revisione iniziale (sola lettura):** eseguiti `lint.mjs` su 9 pagine pubbliche e `inspect.mjs` (browser reale 1440/768/390 px) su `/` e `/prezzi` con la skill `design-taste-frontend`; misurato lo stato di partenza: **17 FAIL / 5 WARN** su `/`, **13 FAIL / 4 WARN** su `/prezzi`. Critica (formato `references/critique.md`): punteggio iniziale **overall 6.0** (cap per FAIL aperti), problemi principali gerarchia tipografica, ornamenti di serie, zero immagini reali.
+- **Fix bug reale (overflow 768px):** la pagina scrollava orizzontalmente di 54px a 768px su tutte le pagine pubbliche: `PublicHeader` mostrava nav e azioni insieme a 768–1023px; breakpoint da `md:` a `lg:` (menu a comparsa sotto 1024px). Verificato con DevTools: overflow azzerato.
+- **Restyle `/` e `/prezzi` + componenti condivisi:** rimossi 9 eyebrow/micro-label, numerazioni 01-06, 4 gradienti decorativi, ombre a riposo (`Button`, card, badge), hairline tra sezioni (`PublicHeader`, `PublicFooter`, sezioni); corpo testo 14px → 16px, niente testi di lettura sotto 13px nelle pagine pubbliche; `h1` in 2 righe con seconda frase in statement `<p>`; card con icona → liste in corpo maggiore (moduli, problemi, outcomes, ruoli); FAQ come blocchi tonali senza divisori; `PricingCards` senza box (solo il piano consigliato su campo colore, badge "Il più scelto" in sentence case); tabella `/prezzi` con testo leggibile; passi della prova in `<ol>` senza numerini. Le anteprime in pagina (panoramica, KDS) sono marcate `data-ui` come frammenti di interfaccia reali.
+- **Immagini reali del prodotto:** catturati3 screenshot dalla demo reale (`public/product/sala.jpg`, `pos.jpg`, `cucina.jpg`, Playwright + Chrome a 1440x900) e inseriti nella nuova sezione "Le schermate che usi ogni giorno." con alt descrittivi; nessuna foto inventata o stock.
+- **Motion layer:** nuovo componente client `src/components/public/reveal.tsx` (IntersectionObserver: contenuto sempre visibile senza JS, entrata `rise-in` con stagger); `animate-drift` in `globals.css` sulla screenshot principale come immagine in movimento; `prefers-reduced-motion` già gestito globalmente.
+- **Verifiche reali:** `npm run lint` pulito; `npm run typecheck` pulito; `npm test` **74/74**; `npm run build` riuscito (retry dopo un errore transiente di fetch Google Fonts, non causato dalle modifiche); `inspect.mjs` finale su `/`: **0 FAIL, 4 WARN difendibili** (lockup di brand "Restaurant Suite" a 13px, conteggio taglie 10, nessun video per un prodotto software, misura di una frase di trasparenza). Screenshot before/after in `.taste-skill/` (aggiunto a `.gitignore`). Warning React sui `key` osservati in dev durante le modifiche: non riprodotti in un run pulito (erano stati di hot-reload).
+- **Non eseguiti in questa sessione:** E2E Playwright e pgTAP — Docker Desktop non in esecuzione. Da rieseguire: `npm run e2e` (26 test) e `npx supabase test db` (733) prima del merge in `main`. Il test `tests/e2e/dark-mode.spec.ts` resta coerente con il nuovo `h1` ("Il servizio, sotto controllo.").
+- **Skill agent:** installate `anthropics/skills@frontend-design` e `coreyhaines31/marketingskills@seo-audit` dopo revisione del contenuto (gate di sicurezza `find-skills` superata); non installate varianti ridondanti o non ispezionabili (D-053).
+- **Prossimi passi:** rieseguire E2E/pgTAP con Docker attivo; valutare WARN residui (taglie, video); eventuale restyle delle pagine interne; resto dei prossimi passi della sessione 22/10 (env segrete, Auth URLs, QR menu, merge in `main`).
 
 ---
 

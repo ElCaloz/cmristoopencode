@@ -362,8 +362,9 @@ function ReservationsPanel() {
 export function ProductPreview() {
   return (
     <div className="relative mx-auto w-full max-w-[640px]">
-      <div className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(ellipse_at_center,rgba(36,132,85,0.13),transparent_65%)]" />
-      <div className="overflow-hidden rounded-[1.25rem] border border-zinc-200/90 bg-white shadow-[0_28px_70px_-32px_rgba(24,24,27,0.38)] dark:border-zinc-800 dark:bg-zinc-900">
+      <div
+        data-ui
+        className="overflow-hidden rounded-[1.25rem] border border-zinc-200/90 bg-white shadow-[0_28px_70px_-32px_rgba(24,24,27,0.38)] dark:border-zinc-800 dark:bg-zinc-900">
         <WindowChrome />
         <Tabs defaultValue="panoramica">
           <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-3 py-2 dark:border-zinc-800">

@@ -24,12 +24,12 @@ export function BillingToggle({
   onChange: (value: "monthly" | "annual") => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900">
       <button
         type="button"
         onClick={() => onChange("monthly")}
         className={cn(
-          "rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+          "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
           billing === "monthly"
             ? "bg-zinc-900 text-white"
             : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
@@ -41,7 +41,7 @@ export function BillingToggle({
         type="button"
         onClick={() => onChange("annual")}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+          "inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
           billing === "annual"
             ? "bg-zinc-900 text-white"
             : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
@@ -50,7 +50,7 @@ export function BillingToggle({
         Annuale
         <span
           className={cn(
-            "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
+            "rounded-full px-1.5 py-0.5 text-sm font-semibold",
             billing === "annual"
               ? "bg-white/15 text-white"
               : "bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400",
@@ -75,7 +75,7 @@ export function PricingCards({
       {withToggle ? (
         <div className="flex flex-col items-center gap-2">
           <BillingToggle billing={billing} onChange={setBilling} />
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-300">
+          <p className="text-sm text-zinc-500 dark:text-zinc-300">
             {billing === "annual"
               ? "Fatturazione annuale: 10 mesi al prezzo di 12."
               : "Puoi cambiare o annullare il piano in qualsiasi momento."}
@@ -98,29 +98,25 @@ export function PricingCards({
             <div
               key={plan.id}
               className={cn(
-                "relative flex flex-col rounded-xl border bg-white p-5 shadow-xs dark:bg-zinc-900",
+                "relative flex flex-col",
                 plan.highlighted
-                  ? "border-brand-600 ring-1 ring-brand-600/20"
-                  : "border-zinc-200 dark:border-zinc-800",
+                  ? "rounded-xl bg-brand-50 p-5 dark:bg-brand-950/40"
+                  : "p-5",
               )}
             >
-              {plan.highlighted ? (
-                <span className="absolute -top-3 left-5 inline-flex items-center gap-1 rounded-full bg-brand-700 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
-                  <Sparkles className="size-3" />
-                  Il più scelto
-                </span>
-              ) : null}
-
-              <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
                   {plan.name}
                 </h3>
-                <p className="min-h-8 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  {plan.tagline}
-                </p>
+                {plan.highlighted ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-700 px-2.5 py-1 text-sm font-semibold text-white">
+                    <Sparkles className="size-3" />
+                    Il più scelto
+                  </span>
+                ) : null}
               </div>
 
-              <div className="mt-4">
+              <div className="mt-3">
                 {isCustom ? (
                   <p className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
                     Su misura
@@ -129,17 +125,17 @@ export function PricingCards({
                   <>
                     <p className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
                       {monthly !== null ? formatCents(monthly) : "—"}
-                      <span className="ml-1 text-xs font-normal text-zinc-500 dark:text-zinc-300">
+                      <span className="ml-1 text-sm font-normal text-zinc-500 dark:text-zinc-300">
                         /mese
                       </span>
                     </p>
                     {billing === "annual" && total !== null ? (
-                      <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
+                      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">
                         {formatCents(total)} fatturati annualmente
                         {savings ? ` · risparmi ${formatCents(savings)}` : ""}
                       </p>
                     ) : (
-                      <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
+                      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">
                         IVA esclusa
                       </p>
                     )}
@@ -147,33 +143,35 @@ export function PricingCards({
                 )}
               </div>
 
-              <div className="my-4 h-px bg-zinc-100 dark:bg-zinc-800" />
+              <p className="mt-2 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                {plan.tagline}
+              </p>
 
-              <ul className="flex-1 space-y-2">
-                <li className="flex items-start gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-brand-600" />
+              <ul className="mt-5 flex-1 space-y-2">
+                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <Check className="mt-0.5 size-4 shrink-0 text-brand-600" />
                   {plan.users === null
                     ? "Utenti personalizzati"
                     : `Fino a ${plan.users} utenti`}
                 </li>
-                <li className="flex items-start gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-brand-600" />
+                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <Check className="mt-0.5 size-4 shrink-0 text-brand-600" />
                   {plan.locations === null
                     ? "Sedi personalizzate"
                     : plan.locations === 1
                       ? "1 sede"
                       : `Fino a ${plan.locations} sedi`}
                 </li>
-                <li className="flex items-start gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-brand-600" />
+                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <Check className="mt-0.5 size-4 shrink-0 text-brand-600" />
                   Palmari: fino a {plan.handhelds} per locale
                 </li>
                 {plan.features.slice(0, 4).map((feature) => (
                   <li
                     key={feature}
-                    className="flex items-start gap-2 text-xs text-zinc-600 dark:text-zinc-400"
+                    className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400"
                   >
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-brand-600" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-brand-600" />
                     {feature}
                   </li>
                 ))}
@@ -195,12 +193,12 @@ export function PricingCards({
       </div>
 
       <div className="flex flex-col items-center gap-2 text-center">
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Prova gratuita di {TRIAL_DAYS} giorni sul piano scelto. Nessun
           pagamento viene elaborato in questa build dimostrativa.
         </p>
         {PRICES_ARE_PROVISIONAL ? (
-          <Badge variant="warning">
+          <Badge variant="warning" className="text-sm">
             Prezzi indicativi e provvisori — non definitivi
           </Badge>
         ) : null}

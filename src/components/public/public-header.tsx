@@ -27,7 +27,7 @@ export function PublicHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/80 backdrop-blur dark:border-zinc-800/70 dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur dark:bg-zinc-950/80">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:outline-none focus:ring-2 focus:ring-brand-300"
@@ -39,7 +39,7 @@ export function PublicHeader() {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Navigazione principale">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigazione principale">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -69,7 +69,7 @@ export function PublicHeader() {
           </Link>
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <Button variant="ghost" asChild>
             <Link href="/login">Accedi</Link>
           </Button>
@@ -83,7 +83,7 @@ export function PublicHeader() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden" aria-label="Apri menu">
+            <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Apri menu">
               <Menu />
             </Button>
           </SheetTrigger>

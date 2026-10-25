@@ -27,7 +27,7 @@ export function Logo({
         {withTagline ? (
           <span
             className={cn(
-              "mt-1 text-[10px] font-medium uppercase tracking-[0.14em]",
+              "mt-1 text-[13px] font-medium uppercase tracking-[0.14em]",
               inverted ? "text-zinc-400" : "text-zinc-500 dark:text-zinc-400",
             )}
           >

@@ -9,14 +9,14 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-brand-700 text-white shadow-sm shadow-brand-950/20 hover:bg-brand-800 hover:shadow-md hover:shadow-brand-950/15",
+          "bg-brand-700 text-white hover:bg-brand-800",
         secondary:
           "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700",
         outline:
-          "border border-zinc-300 bg-white text-zinc-800 shadow-xs hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800",
+          "border border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800",
         ghost:
           "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100",
-        destructive: "bg-red-600 text-white shadow-sm hover:bg-red-700",
+        destructive: "bg-red-600 text-white hover:bg-red-700",
         subtle:
           "bg-brand-50 text-brand-800 hover:bg-brand-100 dark:bg-brand-950 dark:text-brand-300 dark:hover:bg-brand-900",
         dark: "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200",
