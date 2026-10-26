@@ -129,7 +129,10 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const area = AREA_BY_PATH[pathname];
-  const denied = area ? !canAccess(role, area) : false;
+  // La pagina "piattaforma" della demo è un avviso informativo senza dati:
+  // resta visibile a ogni ruolo, mentre l'area `platform` reale resta negata.
+  const isPlatformNotice = pathname === "/app/piattaforma";
+  const denied = area ? !isPlatformNotice && !canAccess(role, area) : false;
 
   if (denied) {
     return (

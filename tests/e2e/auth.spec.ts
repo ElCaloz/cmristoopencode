@@ -680,20 +680,20 @@ test("gestione sala reale: aree, tavoli, capienze e sospensione", async ({
   await expect(salaRow).toContainText("4 posti");
   await expect(salaRow).toContainText("Terrazza E2E");
 
-  await page.getByRole("button", { name: "Azioni" }).click();
+  await salaRow.getByRole("button", { name: "Azioni" }).click();
   await page.getByRole("menuitem", { name: "Sospendi" }).click();
-  await expect(page.getByText("Sospeso", { exact: true })).toBeVisible();
+  await expect(salaRow).toContainText("Sospeso");
 
   await salaRow.click();
   await page.getByLabel("Posti", { exact: true }).fill("6");
   await page.getByRole("button", { name: "Salva modifiche" }).click();
   await expect(salaRow).toContainText("6 posti");
 
-  await page.getByRole("button", { name: "Azioni" }).click();
+  await salaRow.getByRole("button", { name: "Azioni" }).click();
   await page.getByRole("menuitem", { name: "Riattiva" }).click();
-  await expect(page.getByText("Attivo", { exact: true })).toBeVisible();
+  await expect(salaRow).toContainText("Attivo");
 
-  await page.getByRole("button", { name: "Azioni" }).click();
+  await salaRow.getByRole("button", { name: "Azioni" }).click();
   await page.getByRole("menuitem", { name: "Elimina" }).click();
   await page.getByRole("button", { name: "Elimina", exact: true }).click();
   await expect(salaRow).not.toBeVisible();
@@ -735,6 +735,9 @@ test("sala grafica: piantina modificabile con trascinamento, arredo e salvataggi
     .selectOption({ label: "Piantina E2E" });
   await page.getByRole("button", { name: "Aggiungi tavolo" }).click();
 
+  await page
+    .getByRole("button", { name: "Piantina E2E", exact: true })
+    .click();
   await expect(
     page
       .getByRole("group", { name: "Piantina di Piantina E2E" })
@@ -1097,7 +1100,7 @@ test("dispositivi reali: quattro palmari, quinto rifiutato, revoca, sostituto e 
   await expect(page.getByText("Sala POS E2E")).toBeVisible();
   await expect(page.getByText("P1 E2E", { exact: true })).toBeVisible();
   await expect(page.getByText("P2 E2E", { exact: true })).toBeVisible();
-  await expect(page.getByText("1 di 2 tavoli occupati")).toBeVisible();
+  await expect(page.getByText(/^1 di \d+ tavoli occupati$/)).toBeVisible();
 
   await page.getByRole("button", { name: /P2 E2E/ }).click();
   const dialog = page.getByRole("dialog");
@@ -1111,7 +1114,7 @@ test("dispositivi reali: quattro palmari, quinto rifiutato, revoca, sostituto e 
     dialog.getByText("Nessun prodotto ancora ordinato."),
   ).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByText("2 di 2 tavoli occupati")).toBeVisible();
+  await expect(page.getByText(/^2 di \d+ tavoli occupati$/)).toBeVisible();
 
   await page.getByRole("button", { name: /P1 E2E/ }).click();
   await expect(

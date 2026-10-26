@@ -57,7 +57,9 @@ test("POS: apre un conto, invia la comanda e incassa", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("cambio ruolo: Super Admin e cucina", async ({ page }) => {
+test("cambio ruolo: cucina con aree coerenti, senza Super Admin in demo", async ({
+  page,
+}) => {
   const errors = trackPageErrors(page);
 
   await page.goto("/app/panoramica");
@@ -69,23 +71,10 @@ test("cambio ruolo: Super Admin e cucina", async ({ page }) => {
     .getByRole("banner")
     .getByRole("button", { name: /Marco Bellini/ })
     .click();
-  await page
-    .getByRole("menuitem", { name: /Super Admin CM Risto/ })
-    .click();
-
-  await expect(page).toHaveURL(/\/app\/piattaforma$/);
   await expect(
-    page.getByRole("heading", { name: "Console piattaforma" }),
-  ).toBeVisible();
-  await expect(page.getByText("Distribuzione piani")).toBeVisible();
-
-  await page
-    .getByRole("banner")
-    .getByRole("button", { name: /Super Admin/ })
-    .click();
-  await page
-    .getByRole("menuitem", { name: /Cucina/ })
-    .click();
+    page.getByRole("menuitem", { name: /Super Admin CM Risto/ }),
+  ).toHaveCount(0);
+  await page.getByRole("menuitem", { name: /Cucina/ }).click();
 
   await expect(page).toHaveURL(/\/app\/cucina$/);
   await expect(page.getByText(/Kitchen Display System/)).toBeVisible();
@@ -114,19 +103,21 @@ test("cambio ruolo: Super Admin e cucina", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("super admin demo può provare tutte le aree", async ({ page }) => {
+test("la console piattaforma è fuori dalla demo, le altre aree restano aperte", async ({
+  page,
+}) => {
   const errors = trackPageErrors(page);
 
-  await page.goto("/app/panoramica");
-  await page
-    .getByRole("banner")
-    .getByRole("button", { name: /Marco Bellini/ })
-    .click();
-  await page
-    .getByRole("menuitem", { name: /Super Admin CM Risto/ })
-    .click();
-
-  await expect(page).toHaveURL(/\/app\/piattaforma$/);
+  await page.goto("/app/piattaforma");
+  await expect(
+    page.getByRole("heading", { name: "Console di piattaforma" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Questa area non è disponibile nella demo."),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Non disponibile nella demo", { exact: true }),
+  ).toBeVisible();
 
   await page.goto("/app/pos");
   await expect(page.getByRole("heading", { name: "Cassa POS" })).toBeVisible();
@@ -190,16 +181,16 @@ test("sala demo: piantina grafica modificabile con arredo", async ({ page }) => 
   const plan = page.getByRole("group", { name: "Piantina di Sala principale" });
   await expect(plan).toBeVisible();
   await expect(
-    plan.getByRole("button", { name: "Apri tavolo T1" }),
+    plan.getByRole("button", { name: "Apri tavolo 28" }),
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Modifica sala" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByText("Modifica sala")).toBeVisible();
 
-  await dialog.getByRole("button", { name: "Tavolo T1" }).click();
+  await dialog.getByRole("button", { name: "Tavolo 28" }).click();
   await dialog.getByLabel("Posizione X").fill("20");
-  await dialog.getByLabel("Posizione Y").fill("6");
+  await dialog.getByLabel("Posizione Y").fill("10");
   await dialog.getByRole("button", { name: "Aggiungi oggetto" }).click();
   await dialog.getByRole("textbox", { name: "Testo" }).fill("Banco E2E");
   await dialog.getByLabel("Larghezza").fill("10");
@@ -210,9 +201,9 @@ test("sala demo: piantina grafica modificabile con arredo", async ({ page }) => 
 
   await page.getByRole("button", { name: "Modifica sala" }).click();
   const saved = page.getByRole("dialog");
-  await saved.getByRole("button", { name: "Tavolo T1" }).click();
+  await saved.getByRole("button", { name: "Tavolo 28" }).click();
   await expect(saved.getByLabel("Posizione X")).toHaveValue("20");
-  await expect(saved.getByLabel("Posizione Y")).toHaveValue("6");
+  await expect(saved.getByLabel("Posizione Y")).toHaveValue("10");
   await expect(
     saved.getByRole("button", { name: /Oggetto Banco Banco E2E/ }),
   ).toBeVisible();

@@ -1,7 +1,23 @@
 ﻿# STATUS - CM Risto
 
-**Ultimo aggiornamento:** 25 ottobre 2026 (revisione e restyle delle pagine pubbliche con la skill `design-taste-frontend`: **0 FAIL** al metro, immagini reali del prodotto, motion layer, fix overflow 768px; installate le skill `frontend-design` e `seo-audit`).
+**Ultimo aggiornamento:** 26 ottobre 2026 (verifiche complete: **733/733 pgTAP** e **26/26 E2E** con test allineati al comportamento voluto, fix della pagina-avviso `/app/piattaforma` in demo; il 25/10: restyle delle pagine pubbliche con la skill `design-taste-frontend`, **0 FAIL** al metro, immagini reali del prodotto, motion layer, fix overflow 768px; installate le skill `frontend-design` e `seo-audit`).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 25-26/10/2026 - Verifiche complete (pgTAP + E2E) e allineamento dei test al comportamento voluto
+
+- **Stack di test riportato su:** Docker Desktop e Supabase locale (55001-55006) riavviati; un'interruzione di Docker durante un run E2E ha prodotto un falso fallimento ("Servizio di autenticazione non raggiungibile"): riconosciuto come ambientale e non come regressione.
+- **pgTAP: 733/733 PASS** (16 file) — nessuna regressione dal restyle (nessuna modifica a schema/RLS).
+- **E2E Playwright: 26/26 PASS** (15 auth reali, 1 security, 7 demo, 3 dark mode) dopo l'allineamento di 5 test obsoleti rispetto al commit `8922b39` (demo senza Super Admin, seed sala `BASE_ROOM_LAYOUT` con 18 tavoli, area piattaforma fuori dalla demo):
+  - `auth.spec` "gestione sala reale": azioni e stati vincolati alla riga del tavolo (`strict mode violation` dovuta ai 18 tavoli seminati);
+  - `auth.spec` "sala grafica": selezione del tab dell'area appena creata prima di verificare la piantina;
+  - `auth.spec` "dispositivi/PIN": il contatore del palmare conta tutti i tavoli del locale ("1 di 20"), non solo quelli dell'area del test: aspettativa resa indipendente dal seed;
+  - `demo.spec` "cambio ruolo": ora verifica il cambio ruolo verso Cucina e che **Super Admin non sia selezionabile in demo**;
+  - `demo.spec` "super admin demo": sostituito con "la console piattaforma è fuori dalla demo, le altre aree restano aperte".
+- **Fix prodotto (regressione di `8922b39`):** `/app/piattaforma` nella demo era irraggiungibile (il gate dei ruoli mostrava "Area non disponibile per questo ruolo" prima dell'avviso dedicato): `src/components/app/app-shell.tsx` ora rende visibile la pagina-avviso "Console di piattaforma — non disponibile nella demo" a ogni ruolo demo; l'area `platform` reale resta negata dai permessi.
+- **Verifiche finali:** lint pulito, typecheck pulito, **74/74 unit**, **733/733 pgTAP**, **26/26 E2E**, build già verificata il 25/10. `test-results/` resta gitignored.
+- **Prossimi passi:** invariati (env segrete Vercel, Auth URLs, QR menu, restyle pagine interne, merge in `main`).
 
 ---
 
