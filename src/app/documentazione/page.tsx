@@ -119,7 +119,7 @@ const topics = [
       "L'area reale gira su Next.js 16 e Supabase, con autenticazione, ruoli e RLS attivi. La produzione è pubblicata e usa un progetto Supabase dedicato.",
       "Sono operativi: cassa, sala e piantina, cucina, menu, palmari, prenotazioni, magazzino, ricette, acquisti, report, vendite e gestione delle sedi.",
       "Sono in test: abbonamenti Stripe, email transazionali e stampa scontrini. Sono in collaudo: CRM, personale, ordini online, sicurezza MFA e monitoraggio errori.",
-      "Mancano: integrazione fiscale, SMS, telefonia del receptionist, palmare offline, aggiornamenti in tempo reale e QR stampabile del menu.",
+      "Mancano: integrazione fiscale, SMS, telefonia del receptionist, palmare offline e aggiornamenti in tempo reale.",
     ],
   },
 ];

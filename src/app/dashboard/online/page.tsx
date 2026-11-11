@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import {
+  DashboardShell,
+  DashboardSkeleton,
+} from "@/components/dashboard/dashboard-shell";
 import { NoRestaurant } from "@/components/dashboard/no-restaurant";
 import { OnlineManager } from "@/components/dashboard/online-manager";
 import { Button } from "@/components/ui/button";
@@ -51,6 +54,7 @@ async function OnlineContent() {
       <OnlineManager
         data={data}
         siteUrl={getPublicSiteUrl()}
+        restaurantName={restaurant.name}
         canManage={canManage}
         canConfirm={canConfirm}
       />
@@ -59,14 +63,7 @@ async function OnlineContent() {
 }
 
 function OnlineSkeleton() {
-  return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-        <div className="h-8 w-64 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-700" />
-        <div className="mt-6 h-40 animate-pulse rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900" />
-      </div>
-    </div>
-  );
+  return <DashboardSkeleton />;
 }
 
 export default function DashboardOnlinePage() {

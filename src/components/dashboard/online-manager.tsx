@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { QrPrintDialog } from "@/components/dashboard/qr-print-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
@@ -32,6 +33,7 @@ import {
 type Props = {
   data: OnlineData;
   siteUrl: string;
+  restaurantName: string;
   canManage: boolean;
   canConfirm: boolean;
 };
@@ -57,7 +59,7 @@ const fulfillmentLabels: Record<string, string> = {
   dine_in: "Al tavolo",
 };
 
-export function OnlineManager({ data, siteUrl, canManage, canConfirm }: Props) {
+export function OnlineManager({ data, siteUrl, restaurantName, canManage, canConfirm }: Props) {
   const [copied, setCopied] = useState<string | null>(null);
   const [formVersion, setFormVersion] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<OnlineOrderRow | null>(null);
@@ -270,6 +272,18 @@ export function OnlineManager({ data, siteUrl, canManage, canConfirm }: Props) {
                     ) : null}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
+                    {link.isActive ? (
+                      <QrPrintDialog
+                        url={url}
+                        title={restaurantName}
+                        subtitle={link.label}
+                        fileName={`qr-${link.label
+                          .trim()
+                          .toLowerCase()
+                          .replace(/\s+/g, "-")
+                          .replace(/[^a-z0-9-]/g, "") || "link-pubblico"}`}
+                      />
+                    ) : null}
                     <Button
                       type="button"
                       size="sm"

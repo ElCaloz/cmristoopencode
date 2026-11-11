@@ -258,4 +258,29 @@ body {
   .no-print {
     display: none !important;
   }
+
+  /* Stampa del QR del link pubblico: con il dialog aperto entra in stampa
+     solo il foglio QR (D-057). Le regole sono vincolate a body.qr-print-open
+     per non alterare la stampa delle altre pagine. */
+  body.qr-print-open * {
+    visibility: hidden;
+  }
+
+  body.qr-print-open .qr-print-sheet,
+  body.qr-print-open .qr-print-sheet * {
+    visibility: visible;
+    color: #18181b;
+  }
+
+  body.qr-print-open .qr-print-sheet {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    margin: 0;
+    border: 0;
+    background: #ffffff;
+    box-shadow: none;
+    align-items: center;
+    justify-content: center;
+  }
 }

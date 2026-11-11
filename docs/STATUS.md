@@ -1,7 +1,20 @@
 # STATUS - CM Risto
 
-**Ultimo aggiornamento:** 11 novembre 2026 (copy pubblico e documentazione allineati allo stato reale del prodotto; introdotta la tassonomia ufficiale in quattro stati: Operativo, Testato, Implementato, Mancante).
+**Ultimo aggiornamento:** 11 novembre 2026 (design area reale: migrazione di tutte le pagine alla `DashboardShell` condivisa; QR stampabile del menu; 27/27 E2E).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 11/11/2026 (seconda parte) - Design area reale e QR stampabile del menu
+
+- **Migrazione delle 12 pagine storiche alla `DashboardShell`:** menu, sala, cucina, POS, vendite, prenotazioni, receptionist, dispositivi, magazzino, ricette, acquisti e console piattaforma usano ora la shell condivisa; rimossi header duplicati e skeleton locali (sostituiti da `DashboardSkeleton`). La logica funzionale dei moduli non è stata toccata; gli `h1` delle pagine operative restano il nome del locale come verificato dagli E2E.
+- **`DashboardShell` e `DashboardNav` riscritte (D-056):** tono chiaro di default, tono scuro riservato a Cucina (KDS) e Console piattaforma (dove `KitchenManager` e la console usano superfici scure); topbar `h-14` con marchio e uscita; contenuto `max-w-6xl`; eyebrow grigio sentence-case e titolo 24px; skip link "Vai al contenuto"; sidebar 240px chiara con pill neutra sull'elemento attivo e gruppi sentence-case (Operatività, Gestione, Locale) più la voce "Receptionist AI"; `NoRestaurant` esteso con `tone` e azioni reali (Gestisci le sedi, Torna alla dashboard).
+- **Fix overflow orizzontale a 768/390 (D-056):** due bug reali trovati con la sonda visiva su tutte le pagine: (1) il wrapper della shell metteva nav orizzontale e contenuto sulla stessa riga anche sotto `lg` (`flex-col lg:flex-row`); (2) gli `sr-only` assoluti dentro le tabelle sfuggivano al clip di `overflow-x-auto` perché senza containing block, allargando il documento (`relative` sul wrapper del componente `Table`). Verificato: overflow 0px su 12 pagine × 3 larghezze (1440/768/390).
+- **QR stampabile del menu (D-057):** nuovo `QrPrintDialog` in `/dashboard/online` per ogni link attivo: anteprima con QR vettoriale, download PNG 1200px (correzione errori H) e stampa del foglio con nome locale, istruzioni e URL. Generazione interamente nel browser con la libreria `qrcode` (dipendenza approvata dall'utente; nessun servizio esterno, nessun dato inviato fuori). Regole di stampa in `globals.css` con scope `body.qr-print-open`: in stampa esce solo il foglio QR, le altre pagine restano invariate.
+- **Test end-to-end:** nuova scena "QR stampabile del menu: anteprima, download PNG e foglio di stampa" (creazione link, dialog, SVG, download PNG reale, scope di stampa). Allineate 6 navigazioni dei test esistenti: il pulsante "Dashboard" negli header legacy è stato sostituito dalla voce "Panoramica" della nuova sidebar. **E2E 27/27** (16 auth reali, 1 security, 7 demo, 3 dark mode) su stack locale riavviato (Docker + Supabase 55001-55006).
+- **Verifiche:** `npm run lint`, `npm run typecheck`, `npm test` **74/74**, `npm run build`, `npm run e2e` **27/27**. pgTAP non rieseguito: nessuna migrazione né modifica a schema/RLS. Aggiunto `qrcode` + `@types/qrcode` (`npm run security:audit`: 0 vulnerabilità di produzione). ESLint ignora `.taste-skill/` (scratch di verifica visiva, già in `.gitignore`).
+- **Copy pubblica allineata:** `/funzionalita` (il QR non è più in "in arrivo"; negli ordini online compare "QR del link scaricabile in PNG e stampabile") e `/documentazione` (rimosso il QR dai mancanti).
+- **Prossimi passi:** verifiche di produzione (Auth URLs, pagamento Stripe di prova, dominio email verificato, mittente SMS, stampante fisica), E2E del flusso d'ordine completo, merge in `main`.
 
 ---
 
@@ -253,7 +266,7 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 
 | Funzionalità | Cosa manca |
 |---|---|
-| Ordini online e conferma in cassa | E2E del flusso completo e QR stampabile |
+| Ordini online e conferma in cassa | E2E del flusso d'ordine completo (link e QR sono coperti) |
 | CRM clienti, fedeltà e messaggi | E2E dell'interfaccia; invii dipendono da email/SMS |
 | Marketing e campagne | E2E; invii dipendono da email/SMS |
 | Personale, inviti e turni | E2E dell'interfaccia |
@@ -270,7 +283,6 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 | Telefonia del receptionist | Nessun numero né provider |
 | Offline palmare e sincronizzazione | Nessuna coda locale |
 | Aggiornamenti in tempo reale | Sala e KDS usano polling ogni 30 s |
-| QR del menu stampabile | Oggi si genera solo il link |
 | Applicazione limiti piano (utenti, palmari) e sospensione a fine prova | Solo il limite sedi è applicato |
 | Upload immagini e foto prodotto | Nessuno Storage |
 | Test end-to-end Sprint 7 | Da scrivere |
@@ -292,7 +304,7 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 - **Telefonia, budget receptionist e SMS:** provider vocale e numerazione, applicazione del budget mensile, mittente SMS.
 - **Integrazione fiscale:** registratore telematico e scontrino fiscale.
 - **Applicazione completa dei piani:** solo il limite sedi è applicato; utenti, palmari e sospensione a fine prova no.
-- **Realtime e QR:** aggiornamenti live di sala e KDS, QR del menu stampabile.
+- **Realtime:** aggiornamenti live di sala e KDS (oggi polling ogni 30 secondi).
 - **Legale/commerciale:** privacy, cookie e termini definitivi; prezzi e condizioni di prova.
 
 ---
@@ -312,13 +324,11 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 
 ## Prossimi passi (in ordine)
 
-1. **Design e shell condivisa:** migrare le 12 pagine storiche a `DashboardShell` e rifinire l'area reale con la skill `design-taste-frontend` (navigazione, intestazioni, spaziature, responsive), senza toccare la logica dei moduli.
-2. **QR del menu:** generazione effettiva dell'immagine, download PNG e stampa.
-3. **Verifiche di produzione:** Auth URLs, pagamento di prova Stripe, dominio email, mittente SMS, stampa su hardware reale, E2E contro produzione.
-4. **Merge di `audit/hardening-sicurezza` in `main`** (branch gia pushato e verde).
-5. **Fase B receptionist (solo su approvazione esplicita):** provider vocale, numero dedicato, budget e observability, con chiamate reali prima di dichiararla operativa.
-6. **Test end-to-end Sprint 7** (CRM, marketing, personale, sedi, online, abbonamento, sicurezza).
-7. **QA su dispositivi fisici/palmare e testi legali definitivi.**
+1. **Verifiche di produzione:** Auth URLs, pagamento di prova Stripe, dominio email, mittente SMS, stampa su hardware reale, E2E contro produzione.
+2. **Merge di `audit/hardening-sicurezza` in `main`** (branch gia pushato e verde).
+3. **Fase B receptionist (solo su approvazione esplicita):** provider vocale, numero dedicato, budget e observability, con chiamate reali prima di dichiararla operativa.
+4. **Test end-to-end Sprint 7** (CRM, marketing, personale, sedi, online — incluso il flusso d'ordine completo —, abbonamento, sicurezza).
+5. **QA su dispositivi fisici/palmare e testi legali definitivi.**
 ---
 
 ## Come eseguire

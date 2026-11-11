@@ -29,16 +29,16 @@ Alla fine di ogni sessione di lavoro significativa aggiorna:
 | Comando | Stato |
 |---|---|
 | `npm run dev` | attivo |
-| `npm run build` | attivo e verificato (55 route/pagine, proxy/middleware attivo, 6 route API interne, robots.txt e sitemap.xml) |
+| `npm run build` | attivo e verificato (71 route/pagine, proxy/middleware attivo, 8 route API interne, robots.txt e sitemap.xml) |
 | `npm run lint` | attivo (0 errori, 0 warning) |
 | `npm run typecheck` | attivo e verificato (`next typegen` + `tsc --noEmit` app + `tsc -p local-service/tsconfig.json`) |
-| `npm test` | attivo e verificato (Vitest, 70 test) |
+| `npm test` | attivo e verificato (Vitest, 74 test) |
 | `npm run local-service:build` | attivo e verificato (compila `local-service/` in `dist/`) |
 | `npm run local-service` | attivo; avvia il servizio locale su `127.0.0.1:4100`, richiede `local-service/.env` da `.env.example` |
-| `npm run e2e` | attivo e verificato (Playwright, 26 test: 15 auth reali incl. menu, sala, piantina grafica, POS, vendite, cucina KDS, dispositivi, accesso col PIN, prenotazioni/receptionist, magazzino, ricette e acquisti, 1 security su header/redirect/API, 7 demo incl. piantina grafica, 3 dark mode; dev server su :3000; richiede stack Supabase attivo e `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` per la pulizia dati di prova) |
+| `npm run e2e` | attivo e verificato (Playwright, 27 test: 16 auth reali incl. menu, sala, piantina grafica, POS, vendite, cucina KDS, dispositivi, accesso col PIN, prenotazioni/receptionist, magazzino, ricette, acquisti e QR stampabile, 1 security su header/redirect/API, 7 demo incl. piantina grafica, 3 dark mode; dev server su :3000; richiede stack Supabase attivo e `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` per la pulizia dati di prova) |
 | `npx supabase start` / `stop` | attivo; stack locale verificato il 20/10/2026. Porte locali: API `55001`, DB `55002`, Studio `55003`, Mailpit `55004`, Analytics `55005`, pooler `55006` (D-035) |
-| `npx supabase migration up` | attivo; 19 migrazioni applicate (schema v1, gerarchia ruoli, auth/onboarding, fix RPC onboarding, sprint 2 menu, sprint 2 sala/tavoli, sprint 2 POS, sprint 2 KDS, sprint 3 dispositivi, sprint 3 operatori/palmare, fix hash token operatore, filtro lockout scaduto, sprint 5/Fase A prenotazioni e receptionist, sprint 4 magazzino, fix policy inventario, cascades inventario, sprint 4 ricette/food cost, sprint 4 acquisti, piantina sala/arredi) |
-| `npx supabase test db` | attivo e verificato (pgTAP, 656 test: 30 RLS + 14 escalation + 28 auth/onboarding + 30 menu + 34 sala/tavoli + 33 piantina sala + 58 POS + 41 KDS + 59 dispositivi + 81 operatori/palmare + 72 prenotazioni/receptionist + 58 comande palmare + 23 magazzino + 34 ricette + 61 acquisti) |
+| `npx supabase migration up` | attivo; 21 migrazioni applicate (schema v1, gerarchia ruoli, auth/onboarding, fix RPC onboarding, sprint 2 menu, sprint 2 sala/tavoli, sprint 2 POS, sprint 2 KDS, sprint 3 dispositivi, sprint 3 operatori/palmare, fix hash token operatore, filtro lockout scaduto, sprint 3 comande palmare, sprint 5/Fase A prenotazioni e receptionist, sprint 4 magazzino, fix policy inventario, cascades inventario, sprint 4 ricette/food cost, sprint 4 acquisti, piantina sala/arredi, sprint 7 CRM/crescita e ordini online) |
+| `npx supabase test db` | attivo e verificato (pgTAP, 733 test in 16 file: RLS, escalation ruoli, auth/onboarding, menu, sala/tavoli, piantina sala, POS, KDS, dispositivi, operatori/palmare, comande palmare, prenotazioni/receptionist, magazzino, ricette, acquisti, CRM/crescita Sprint 7) |
 | `npm run security:audit` | attivo e verificato (0 vulnerabilità di produzione al 22/10/2026) |
 | `npm run security:secrets` | attivo e verificato (285 file, 0 finding al 22/10/2026; selftest 6/6) |
 | CI GitHub Actions | predisposta e **verificata** il 22/10/2026 con il run **#39802102414** su `f25c19a`: Quality, Security, CodeQL, pgTAP ed E2E verdi; dependency review saltato perché non c'è una PR (D-029, D-048, D-049) |

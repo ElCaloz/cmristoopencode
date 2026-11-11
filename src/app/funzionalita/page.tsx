@@ -11,7 +11,6 @@ import {
   CreditCard,
   Package,
   Phone,
-  QrCode,
   ReceiptText,
   ShieldCheck,
   ShoppingBag,
@@ -189,10 +188,12 @@ const sections: FeatureSection[] = [
       "Carrello con chiave di idempotenza: nessun doppio ordine",
       "Totali ricalcolati dal database, mai dal browser",
       "Conferma dell'ordine che crea il conto in cassa",
+      "QR del link scaricabile in PNG e stampabile",
       "Limite anti-abuso: 10 ordini ogni 10 minuti per contatto",
     ],
-    evidence: "Test sul database Sprint 7 · collaudo interfaccia in corso",
-    missing: "QR stampabile e test end-to-end del flusso completo.",
+    evidence:
+      "Test sul database Sprint 7 · test end-to-end su link pubblici e QR · collaudo ordini in corso",
+    missing: "Test end-to-end del flusso d'ordine completo.",
     href: "/dashboard/online",
     cta: "Apri nell'area reale",
   },
@@ -368,12 +369,6 @@ const roadmap: Array<{
     description:
       "Sala e cucina si aggiornano oggi con polling ogni 30 secondi. Gli aggiornamenti istantanei non sono collegati.",
     icon: BarChart3,
-  },
-  {
-    title: "QR del menu stampabile",
-    description:
-      "Il link al menu pubblico è già generabile. L'immagine QR da stampare e scaricare non è ancora prodotta.",
-    icon: QrCode,
   },
 ];
 

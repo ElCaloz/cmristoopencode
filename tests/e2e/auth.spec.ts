@@ -428,7 +428,7 @@ test("ricette e food cost reali: ingredienti, sfrido, margine e rimozione", asyn
     page.getByText("Piatto Ricetta E2E", { exact: true }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Panoramica" }).click();
   await page.getByRole("link", { name: "Apri le ricette" }).click();
   await expect(page).toHaveURL(/\/dashboard\/ricette$/);
   await expect(
@@ -597,7 +597,7 @@ test("acquisti reali: ordine, ricezione parziale, giacenze e annullamento", asyn
   await expect(itemRow).toContainText("32,40");
   await expect(itemRow).toContainText(/2,40\s*€\s*\/\s*kg/);
 
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Panoramica" }).click();
   await page.getByRole("link", { name: "Apri gli acquisti" }).click();
   await page.getByRole("button", { name: "Nuovo ordine" }).click();
   dialog = page.getByRole("dialog");
@@ -833,7 +833,7 @@ test("cassa POS reale: conto, aggiunta prodotti, pagamento e chiusura", async ({
     page.getByText("Bruschetta POS E2E", { exact: true }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Panoramica" }).click();
   await page.getByRole("link", { name: "Apri la sala" }).click();
   await page.getByLabel("Nome nuova area").fill("Sala POS E2E");
   await page.getByRole("button", { name: "Aggiungi area" }).click();
@@ -848,7 +848,7 @@ test("cassa POS reale: conto, aggiunta prodotti, pagamento e chiusura", async ({
     page.getByRole("row").filter({ hasText: "P1 E2E" }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Panoramica" }).click();
   await page.getByRole("link", { name: "Apri il POS" }).click();
   await expect(page).toHaveURL(/\/dashboard\/pos$/);
 
@@ -936,7 +936,7 @@ test("cucina KDS reale: righe dalla cassa con transizioni di stato", async ({
   await page.getByRole("button", { name: /^Bruschetta POS E2E/ }).click();
   await expect(page.getByText("1× Bruschetta POS E2E")).toBeVisible();
 
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Panoramica" }).click();
   await page.getByRole("link", { name: "Apri la cucina" }).click();
   await expect(page).toHaveURL(/\/dashboard\/cucina$/);
 
@@ -1191,7 +1191,7 @@ test("prenotazioni e receptionist reali: disponibilità, conferma, annullamento 
   await expect(page.getByText("Prenotazione annullata.")).toBeVisible();
   await expect(reservationRow).toContainText("Annullata");
 
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Panoramica" }).click();
   await page.getByRole("link", { name: "Configura il receptionist" }).click();
   await expect(page).toHaveURL(/\/dashboard\/receptionist$/);
   await expect(
@@ -1216,6 +1216,63 @@ test("prenotazioni e receptionist reali: disponibilità, conferma, annullamento 
   await page.getByRole("tab", { name: "Chiamate" }).click();
   await expect(page.getByText("Nessuna chiamata registrata.")).toBeVisible();
   await expect(page.getByText("Telefonia non collegata")).toBeVisible();
+
+  expect(errors).toEqual([]);
+});
+
+test("QR stampabile del menu: anteprima, download PNG e foglio di stampa", async ({
+  page,
+}) => {
+  const errors = trackPageErrors(page);
+
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(account.email);
+  await page.getByLabel("Password", { exact: true }).fill(account.newPassword);
+  await page.getByRole("button", { name: "Accedi" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+
+  await page.goto("/dashboard/online");
+  await expect(
+    page.getByRole("heading", { name: restaurantName }),
+  ).toBeVisible();
+
+  await page.getByLabel("Etichetta", { exact: true }).fill("Menu E2E");
+  await page.getByRole("button", { name: "Crea link" }).click();
+  await expect(page.getByText(/Link creato/)).toBeVisible();
+
+  await page
+    .getByRole("listitem")
+    .filter({ hasText: "Menu E2E" })
+    .getByRole("button", { name: "QR" })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await expect(
+    dialog.getByRole("heading", { name: "Codice QR" }),
+  ).toBeVisible();
+
+  // L'anteprima contiene il QR vettoriale del link pubblico.
+  await expect(dialog.locator(".qr-print-sheet svg")).toHaveCount(1);
+  await expect(
+    dialog.getByText("Inquadra il codice per aprire il link"),
+  ).toBeVisible();
+
+  // Il download produce un PNG reale.
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    dialog.getByRole("button", { name: "Scarica PNG" }).click(),
+  ]);
+  expect(download.suggestedFilename()).toMatch(/\.png$/);
+
+  // Il foglio di stampa è pronto e la classe di scope stampa è attiva.
+  await expect(dialog.locator(".qr-print-sheet")).toBeVisible();
+  expect(
+    await page.evaluate(() => document.body.classList.contains("qr-print-open")),
+  ).toBe(true);
+
+  await dialog.getByRole("button", { name: "Chiudi" }).click();
+  expect(
+    await page.evaluate(() => document.body.classList.contains("qr-print-open")),
+  ).toBe(false);
 
   expect(errors).toEqual([]);
 });
