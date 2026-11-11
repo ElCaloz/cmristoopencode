@@ -225,7 +225,7 @@ const sections: FeatureSection[] = [
     title: "Il cliente non è una riga di scontrino",
     description:
       "Anagrafica, visite, spesa, preferenze e consensi raccolti in un solo posto, con punti fedeltà gestiti lato database.",
-    status: "implementato",
+    status: "operativo",
     points: [
       "Anagrafica con visite, spesa totale e ultima visita",
       "Allergie, note e tag per il servizio",
@@ -233,8 +233,9 @@ const sections: FeatureSection[] = [
       "Punti fedeltà con transazioni idempotenti",
       "Messaggi diretti al cliente",
     ],
-    evidence: "Test sul database Sprint 7 · collaudo interfaccia in corso",
-    missing: "Invii reali solo con email e SMS configurati; test end-to-end sulle pagine.",
+    evidence:
+      "Test sul database Sprint 7 · test end-to-end su anagrafica, punti fedeltà e messaggi",
+    missing: "Invii reali solo con email e SMS configurati.",
     href: "/app/clienti",
     cta: "Apri i clienti in demo",
   },
@@ -245,7 +246,7 @@ const sections: FeatureSection[] = [
     title: "Ruoli dal database, turni espliciti",
     description:
       "Ogni membro ha un ruolo e un perimetro. Costo orario e turni sono dati gestiti, non appunti fuori dal gestionale.",
-    status: "implementato",
+    status: "operativo",
     points: [
       "Inviti con ruolo e permessi",
       "Costo orario e data di assunzione",
@@ -253,8 +254,10 @@ const sections: FeatureSection[] = [
       "Sospensione di un membro senza eliminarlo",
       "Permessi verificati lato server, non nel browser",
     ],
-    evidence: "Test sul database Sprint 7 · collaudo interfaccia in corso",
-    missing: "Pianificazione automatica dei turni e timbratura presenze.",
+    evidence:
+      "Test sul database Sprint 7 · test end-to-end su inviti, aggiornamento membri e turni",
+    missing:
+      "Pianificazione automatica dei turni e timbratura presenze. Gli inviti reali dipendono dall'email SMTP di Supabase.",
     href: "/app/personale",
     cta: "Apri il personale in demo",
   },
@@ -292,7 +295,7 @@ const sections: FeatureSection[] = [
       "Ruoli e permessi per singola sede",
       "Console di piattaforma separata dagli admin cliente",
     ],
-    evidence: "30 test RLS · test di isolamento cross-tenant",
+    evidence: "30 test RLS · test di isolamento cross-tenant · test end-to-end su creazione e profilo sedi",
     missing: "Il registro attività esiste nel database ma non ha ancora una vista.",
     href: "/app/panoramica",
     cta: "Gestisci il gruppo demo",

@@ -1,7 +1,22 @@
 # STATUS - CM Risto
 
-**Ultimo aggiornamento:** 11 novembre 2026 (design area reale e QR; produzione aggiornata; Auth URLs verificati; **fix bug FK ordini online** e E2E del flusso d'ordine completo: 28/28 E2E, 735/735 pgTAP).
+**Ultimo aggiornamento:** 11 novembre 2026 (design area reale e QR; produzione aggiornata; Auth URLs verificati; **fix di due bug reali scoperti dagli E2E** — FK ordini online e creazione sedi — e copertura E2E Sprint 7: 31/31 E2E, 735/735 pgTAP).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 11/11/2026 (quinta parte) - E2E Sprint 7 e secondo bug reale: "Crea sede" non funzionava (D-060)
+
+- **Bug reale #2 scoperto dagli E2E — creazione delle sedi impossibile:** `createRestaurantAction` usava `insert(...).select("id").single()` su `restaurants`, ma la policy SELECT (`id in (select auth_restaurant_ids())`) viene valutata sullo snapshot della statement, che **non include la riga appena inserita**: l'`INSERT ... RETURNING` falliva con violazione RLS e l'azione rispondeva "Creazione della sede non riuscita." — **"Crea sede" non ha mai funzionato** (riprodotto direttamente via psql: insert ok senza `returning`, violazione RLS con `returning`).
+  - Fix: l'id della sede è generato lato server (`crypto.randomUUID()`) e l'insert non usa più `RETURNING` (D-060); verificato con riproduzione reale ("Nuova sede creata e attivata." e sede presente in elenco).
+- **E2E Sprint 7 — tre nuove scene** su moduli finora scoperti:
+  - "clienti CRM reali": anagrafica (creazione cliente), punti fedeltà con saldo, messaggio diretto e programma fedeltà;
+  - "personale reale": invito membro con ruolo, aggiornamento (telefono, costo orario) e aggiunta turno;
+  - "sedi reali": creazione sede e aggiornamento del profilo (questa scena ha scoperto il bug sopra).
+- **E2E 31/31** (20 auth reali, 1 security, 7 demo, 3 dark mode); **pgTAP 735/735**; 74/74 unit; lint/typecheck/build puliti.
+- **Copy pubblica aggiornata:** CRM e Personale da "In collaudo" a **Operativo** (azioni principali coperte da test end-to-end); residui dichiarati solo dove reali (invii email/SMS dai provider, inviti dipendenti dall'SMTP Supabase, pianificazione turni).
+- **Verifiche di produzione ripetute:** migrazione FK applicata al cloud (`20261111180000`), deployment `dpl_GeRgHeykjZjoroF5LFhrZod27Uvn` promosso a produzione e **flusso d'ordine completo verificato su produzione** (creazione categoria/prodotto, link pubblico, ordine del cliente, conferma staff e conto in cassa); dati di test rimossi (resta solo l'organizzazione reale).
+- **Prossimi passi:** allineare `STRIPE_SECRET_KEY`/prezzi e pagamento di prova; SMTP email auth su Supabase; stampa su hardware reale; merge in `main`.
 
 ---
 

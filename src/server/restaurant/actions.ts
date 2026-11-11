@@ -158,22 +158,23 @@ export async function createRestaurantAction(
 
   const slug = parsed.data.slug || slugBase(parsed.data.name);
 
-  const { data: created, error } = await supabase
-    .from("restaurants")
-    .insert({
-      organization_id: membership.organizationId,
-      name: parsed.data.name,
-      slug,
-      description: parsed.data.description,
-      cuisine: parsed.data.cuisine,
-      address: parsed.data.address || null,
-      phone: parsed.data.phone || null,
-    })
-    .select("id")
-    .single();
+  // L'id è generato qui perché `insert ... returning` fallisce: la policy
+  // SELECT di restaurants valuta `auth_restaurant_ids()` sullo snapshot della
+  // statement, che non include la riga appena inserita (D-060).
+  const newRestaurantId = crypto.randomUUID();
+  const { error } = await supabase.from("restaurants").insert({
+    id: newRestaurantId,
+    organization_id: membership.organizationId,
+    name: parsed.data.name,
+    slug,
+    description: parsed.data.description,
+    cuisine: parsed.data.cuisine,
+    address: parsed.data.address || null,
+    phone: parsed.data.phone || null,
+  });
 
-  if (error || !created) {
-    if (error?.code === "23505") {
+  if (error) {
+    if (error.code === "23505") {
       return {
         status: "error",
         message: "Esiste già una sede con questo slug. Scegline un altro.",
@@ -184,21 +185,21 @@ export async function createRestaurantAction(
 
   await supabase.from("audit_logs").insert({
     organization_id: membership.organizationId,
-    restaurant_id: created.id,
+    restaurant_id: newRestaurantId,
     actor_user_id: session.user.id,
     action: "restaurant.created",
     entity_type: "restaurant",
-    entity_id: created.id,
+    entity_id: newRestaurantId,
     metadata: { name: parsed.data.name, slug },
   });
 
   await seedBaseRoomPlan({
     organizationId: membership.organizationId,
-    restaurantId: created.id as string,
+    restaurantId: newRestaurantId,
   });
 
   const cookieStore = await cookies();
-  cookieStore.set(ACTIVE_RESTAURANT_COOKIE, created.id as string, {
+  cookieStore.set(ACTIVE_RESTAURANT_COOKIE, newRestaurantId, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

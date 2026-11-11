@@ -1369,3 +1369,143 @@ test("ordini online reali: menu pubblico, ordine del cliente, conferma e conto i
   expect(publicErrors).toEqual([]);
   await publicPage.close();
 });
+
+test("clienti CRM reali: anagrafica, punti fedeltà e messaggi", async ({
+  page,
+}) => {
+  const errors = trackPageErrors(page);
+
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(account.email);
+  await page.getByLabel("Password", { exact: true }).fill(account.newPassword);
+  await page.getByRole("button", { name: "Accedi" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+
+  await page.goto("/dashboard/clienti");
+  await expect(
+    page.getByRole("heading", { name: restaurantName }),
+  ).toBeVisible();
+
+  // Anagrafica
+  await page.getByLabel("Nome", { exact: true }).fill("Giulia");
+  await page.getByLabel("Cognome", { exact: true }).fill("Verdi CRM");
+  await page.getByLabel("Email", { exact: true }).fill("giulia.verdi@example.test");
+  await page.getByLabel("Telefono", { exact: true }).fill("+393330001111");
+  await page.getByRole("button", { name: "Crea cliente" }).click();
+  await expect(page.getByText("Cliente creato.")).toBeVisible();
+  const customerRow = page
+    .getByRole("listitem")
+    .filter({ hasText: "Giulia Verdi CRM" });
+  await expect(customerRow).toBeVisible();
+
+  // Seleziona il cliente per punti e messaggi
+  await customerRow.getByRole("button", { name: "Gestisci" }).click();
+  await expect(
+    page.getByRole("heading", { name: /Modifica Giulia Verdi CRM/ }),
+  ).toBeVisible();
+
+  // Punti fedeltà
+  await page.getByLabel("Punti (usa - per scalare)").fill("50");
+  await page.getByLabel("Motivo").fill("Premio E2E");
+  await page.getByRole("button", { name: "Registra movimento" }).click();
+  await expect(page.getByText(/Punti aggiornati\./)).toBeVisible();
+
+  // Messaggio diretto
+  await page.getByLabel("Oggetto (solo email)").fill("Benvenuto E2E");
+  await page.getByLabel("Messaggio").fill("Messaggio di prova E2E.");
+  await page.getByRole("button", { name: "Invia e traccia" }).click();
+  // L'invio reale dipende dal provider email/SMS configurato: in locale senza
+  // provider il messaggio resta registrato ma non inviato.
+  await expect(
+    page.getByText(
+      /Messaggio inviato e tracciato\.|Messaggio registrato ma non inviato/,
+    ),
+  ).toBeVisible();
+
+  // Programma fedeltà
+  await page.getByLabel("Punti per euro").fill("10");
+  await page.getByLabel("Valore punto (centesimi)").fill("1");
+  await page.getByLabel("Soglia riscatto").fill("50");
+  await page.getByRole("button", { name: "Salva impostazioni" }).click();
+  await expect(page.getByText("Programma fedeltà aggiornato.")).toBeVisible();
+
+  expect(errors).toEqual([]);
+});
+
+test("personale reale: invito membro, aggiornamento e turno", async ({
+  page,
+}) => {
+  const errors = trackPageErrors(page);
+
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(account.email);
+  await page.getByLabel("Password", { exact: true }).fill(account.newPassword);
+  await page.getByRole("button", { name: "Accedi" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+
+  await page.goto("/dashboard/personale");
+  await expect(
+    page.getByRole("heading", { name: restaurantName }),
+  ).toBeVisible();
+
+  // Invito
+  await page.getByLabel("Email", { exact: true }).fill("nuovo.membro@example.test");
+  await page.getByLabel("Ruolo", { exact: true }).selectOption({ label: "Cameriere" });
+  await page.getByRole("button", { name: "Invita" }).click();
+  await expect(page.getByText(/Invito inviato/).first()).toBeVisible();
+  const memberRow = page
+    .getByRole("listitem")
+    .filter({ hasText: "Invitato" })
+    .first();
+  await expect(memberRow).toBeVisible();
+
+  // Aggiornamento del membro (pannello inline)
+  await memberRow.getByRole("button", { name: "Modifica" }).click();
+  await expect(
+    page.getByRole("heading", { name: /Modifica/ }),
+  ).toBeVisible();
+  await page.getByLabel("Telefono", { exact: true }).fill("+393330002222");
+  await page.getByLabel("Costo orario (€)").fill("12,50");
+  await page.getByRole("button", { name: "Salva", exact: true }).click();
+  await expect(page.getByText("Membro aggiornato.")).toBeVisible();
+
+  // Turno
+  await page.getByLabel("Membro").selectOption({ index: 0 });
+  await page.getByLabel("Data", { exact: true }).fill("2026-12-01");
+  await page.getByLabel("Inizio", { exact: true }).fill("18:00");
+  await page.getByLabel("Fine", { exact: true }).fill("23:00");
+  await page.getByRole("button", { name: "Aggiungi turno" }).click();
+  await expect(page.getByText(/Turno aggiunto/).first()).toBeVisible();
+
+  expect(errors).toEqual([]);
+});
+
+test("sedi reali: creazione sede e aggiornamento profilo", async ({
+  page,
+}) => {
+  const errors = trackPageErrors(page);
+
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(account.email);
+  await page.getByLabel("Password", { exact: true }).fill(account.newPassword);
+  await page.getByRole("button", { name: "Accedi" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+
+  await page.goto("/dashboard/sedi");
+  await expect(
+    page.getByRole("heading", { level: 1, name: restaurantName }),
+  ).toBeVisible();
+
+  await page.getByLabel("Nome sede").fill("Sede E2E");
+  await page.getByRole("button", { name: "Crea sede" }).click();
+  await expect(page.getByText("Nuova sede creata e attivata.")).toBeVisible();
+  await expect(
+    page.getByRole("listitem").filter({ hasText: "Sede E2E" }),
+  ).toBeVisible();
+
+  await page.locator("#profile-phone").fill("+390550000000");
+  await page.getByRole("button", { name: "Salva dati sede" }).click();
+  await expect(page.getByText("Dati della sede aggiornati.")).toBeVisible();
+
+  expect(errors).toEqual([]);
+});
