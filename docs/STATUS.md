@@ -1,7 +1,19 @@
 # STATUS - CM Risto
 
-**Ultimo aggiornamento:** 11 novembre 2026 (design area reale: migrazione di tutte le pagine alla `DashboardShell` condivisa; QR stampabile del menu; 27/27 E2E).
+**Ultimo aggiornamento:** 11 novembre 2026 (design area reale: migrazione di tutte le pagine alla `DashboardShell` condivisa; QR stampabile del menu; 27/27 E2E; promozione produzione e verifiche reali, checkout Stripe bloccato da config).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 11/11/2026 (terza parte) - Produzione aggiornata e verifiche reali (D-058)
+
+- **Produzione promossa all'ultimo commit:** l'URL `cmristo-mattias-projects-0615507f.vercel.app` serviva ancora la versione del 22/10 (deployment `8922b39` con target `production`); i commit successivi venivano solo deployati come preview protette. Con approvazione dell'utente è stato creato il deployment di produzione **`dpl_Acu6G5twpCB1BCof6XBCt2TekePK`** dal commit `ab85ef3` (target `production`, alias `cmristo.vercel.app`, `cmristo-mattias-...`, alias git): il sito pubblico serve ora copy aggiornata, shell del dashboard e QR. L'API `request_promote` rispondeva 422; la via usata è `create_deployment` con `target: production` dallo stesso commit.
+- **Database di produzione in pausa e ripristinato:** il progetto Supabase cloud `CMRisto` (`sdgojsopwztjdkphbzof`) era **`INACTIVE`** (progetto free in pausa): il sito era online ma login e dati non funzionavano. Il ripristino era bloccato dal limite free (2 progetti attivi); su scelta dell'utente è stato messo in pausa `sistemaristoranteMAIN` (nessun dato cancellato, riattivabile) e `CMRisto` è tornato **`ACTIVE_HEALTHY`** (dati integri: 1 organizzazione, 1 utente).
+- **Smoke test su produzione (verificati):** `/`, `/funzionalita`, `/prezzi`, `/documentazione`, `/login`, `/registrati` → 200 con la copy nuova; `/dashboard` anonimo → redirect a `/login?reason=session&next=%2Fdashboard`; `/api/internal/print/jobs` senza token → 401; `/m/<token-non-valido>` → "Link non disponibile"; header di sicurezza completi (HSTS preload, X-Frame-Options DENY, nosniff, referrer-policy, permissions-policy). Nei runtime log resta solo il rumore dev/prod noto del prerender PPR (`Date.now()` da `__loadSession` di supabase-js, righe stderr, pagine 200).
+- **Email:** confermato che le email di Supabase Auth passano dal mailer integrato GoTrue e non da Resend: il limite `over_email_send_rate_limit` (pochi invii/ora sul piano free) blocca registrazione e recupero password dopo pochi tentativi. Resend continua a gestire solo le email dell'app (22/10: invio di prova reale riuscito). **Da fare: configurare SMTP/dominio verificato su Supabase** per le email auth di produzione.
+- **Checkout Stripe di prova — BLOCCATO da configurazione:** flusso reale testato su un'account/organizzazione gettibili (creati, usati e rimossi): login, onboarding e pagina abbonamento funzionano; il click su "Attiva con Stripe" fallisce con **"No such price: 'price_1UTSmQ4QBUZB0Cxn7xACTdmy'"**: l'ID prezzo configurato nelle env `STRIPE_PRICE_*` di Vercel non esiste per l'account della `STRIPE_SECRET_KEY` impostata (prezzo e webhook creati il 22/10 nell'account test `acct_1TJzyL4QBUZB0Cxn` via MCP). **Azione richiesta (dashboard):** allineare `STRIPE_SECRET_KEY` all'account test che contiene i prezzi (oppure ricreare i prezzi nell'account della chiave). Nessun pagamento effettuato.
+- **Non verificabili da qui:** Auth URLs Supabase (la config vive in GoTrue, non leggibile via MCP/SQL; serve un click sul link di un'email di verifica oppure la dashboard Supabase > Authentication > URL Configuration), stampa su stampante fisica (hardware), SMS (disattivati per scelta dell'utente), inbound email/SMS.
+- **Prossimi passi:** allineare la chiave Stripe di Vercel e completare il pagamento di prova; configurare SMTP/URL auth Supabase; verifiche su stampante reale; E2E contro produzione; merge in `main`.
 
 ---
 
