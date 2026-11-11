@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Documentazione",
   description:
-    "Guida rapida a CM Risto: demo, ruoli, cassa, cucina, dispositivi, dati dimostrativi e stato delle integrazioni.",
+    "Guida rapida a CM Risto: demo, area reale, ruoli, cassa, cucina, dispositivi e stato reale delle integrazioni.",
 };
 
 const quickStart = [
@@ -48,13 +48,23 @@ const quickStart = [
 
 const topics = [
   {
+    id: "ambienti",
+    title: "Demo, area reale e stati",
+    icon: LayoutDashboard,
+    body: [
+      "La demo (/app) non richiede registrazione e usa dati fittizi salvati nel browser. L'area reale (/dashboard) richiede un account e lavora su Supabase, con organizzazione, ruoli e dati letti dal database.",
+      "Le funzionalità sono classificate in quattro stati: Operativo (usabile su un locale reale), In test (provider esterno in modalità di prova), In collaudo (codice completo, collaudo end-to-end in corso) e In arrivo (non disponibile).",
+      "La pagina Funzionalità riporta lo stato di ogni modulo e di ogni integrazione esterna, con le verifiche che lo sostengono.",
+    ],
+  },
+  {
     id: "ruoli",
     title: "Ruoli e cambio ruolo nella demo",
     icon: Users,
     body: [
-      "In alto a destra, dal menu dell'utente demo, puoi cambiare ruolo: Amministratore, Cassiere, Cameriere, Cucina e Super Admin.",
-      "In modalità reale il ruolo deriverà dall'identità autenticata e dai permessi assegnati lato server: il selettore esiste solo nella demo.",
-      "Alcune sezioni non sono visibili per tutti i ruoli. Questo replica i permessi previsti, ma nella demo la protezione è solo di interfaccia.",
+      "In alto a destra, dal menu dell'utente demo, puoi cambiare ruolo: Amministratore, Cassiere, Cameriere e Cucina. Il ruolo Super Admin è escluso dalla demo: la console di piattaforma vive solo nell'area reale.",
+      "Nell'area reale non esiste alcun selettore: ruolo e permessi arrivano dall'identità autenticata e sono verificati lato server, con policy RLS sul database.",
+      "Alcune sezioni non sono visibili per tutti i ruoli. Nella demo il controllo è di interfaccia; nell'area reale è applicato anche dal database.",
     ],
   },
   {
@@ -62,10 +72,10 @@ const topics = [
     title: "Flusso di cassa",
     icon: CreditCard,
     body: [
-      "Apri la sezione Cassa POS, scegli un tavolo libero e aggiungi prodotti dal menu. Puoi impostare coperti, varianti e note.",
-      "«Invia in cucina» crea un ordine reale nella demo: lo vedrai nella sala, nel KDS e nelle vendite dopo il pagamento.",
-      "«Incassa» apre il dialog di pagamento. Il pagamento è dimostrativo: nessun importo viene addebitato e nessun scontrino fiscale viene emesso.",
-      "La cassa reale richiederà integrazione fiscale e provider di pagamento; qui l'interfaccia è predisposta.",
+      "Nella demo apri la Cassa POS, scegli un tavolo libero e aggiungi prodotti dal menu: puoi impostare coperti, varianti e note.",
+      "«Invia in cucina» crea un ordine reale nella demo: lo vedrai nel KDS e nelle vendite dopo il pagamento. Il pagamento della demo è dimostrativo e non produce scontrini fiscali.",
+      "Nell'area reale il POS apre un conto per tavolo, aggiunge righe, annulla righe o l'intero conto e registra l'incasso con metodo e mancia. Alla chiusura il conto viene accodato alla stampa.",
+      "Mancano ancora l'integrazione fiscale, gli sconti e il trasferimento di articoli tra conti.",
     ],
   },
   {
@@ -73,10 +83,10 @@ const topics = [
     title: "Kitchen Display",
     icon: ChefHat,
     body: [
-      "Le comande attive sono divise in In arrivo, In preparazione e Pronti. Filtra per reparto (cucina, pizzeria, bar, dolci).",
-      "Avvia la preparazione, segna le portate come pronte e completa l'ordine. Gli stati sono condivisi con sala e cassa.",
-      "La modalità schermo intero usa il fullscreen del browser. Il timer si aggiorna ogni secondo lato client.",
-      "Nella versione reale gli aggiornamenti arriveranno da Supabase Realtime o da un servizio locale, con fallback offline.",
+      "Le comande attive sono divise in In arrivo, In preparazione e Pronti al pass, con il tempo trascorso su ogni portata.",
+      "Avvia la preparazione, segna le portate come pronte e completa l'ordine. Gli stati sono condivisi con cassa e sala: sono gli stessi dati, non una copia.",
+      "La modalità schermo intero usa il fullscreen del browser. Nella demo la vista si aggiorna subito; nell'area reale il KDS aggiorna i dati ogni 30 secondi, con un pulsante di refresh manuale.",
+      "Reparti, priorità automatiche e allergeni sulle portate non sono ancora implementati.",
     ],
   },
   {
@@ -85,9 +95,9 @@ const topics = [
     icon: Smartphone,
     body: [
       "La pagina Dispositivi mostra i device associati al locale, lo stato e l'ultimo contatto.",
-      "Nella demo puoi associare un nuovo palmare: il limite di 4 per locale viene applicato dallo store dimostrativo.",
-      "L'associazione reale richiederà un codice monouso, un PIN e una verifica lato server. Non è sufficiente un identificatore salvato nel browser.",
-      "Puoi revocare un dispositivo per simulare la perdita o la sostituzione di un palmare.",
+      "Nell'area reale l'associazione usa un codice monouso legato al locale; l'operatore entra con un PIN personale da 4 a 6 cifre e il limite di 4 palmari è applicato dal database.",
+      "Nella demo associazione, PIN e limite sono simulati dallo store locale, con le stesse regole visibili nell'interfaccia.",
+      "Puoi revocare un dispositivo per simulare la perdita o la sostituzione di un palmare. Il palmare non funziona offline.",
     ],
   },
   {
@@ -95,10 +105,10 @@ const topics = [
     title: "Dati demo e ripristino",
     icon: Database,
     body: [
-      "Tutti i ristoranti, gli ordini, i clienti e gli importi sono fittizi e generati in modo deterministico.",
+      "Tutti i ristoranti, gli ordini, i clienti e gli importi della demo sono fittizi e generati in modo deterministico.",
       "La demo salva le modifiche nel browser per mantenere lo stato tra le pagine. Il comando «Ripristina demo» ricarica i dati iniziali.",
-      "Per nessun motivo la demo invia pagamenti, email, comande o dati a sistemi esterni.",
-      "In futuro i dati demo saranno separati a livello di backend dai dati reali dei tenant.",
+      "I dati demo restano nel browser e non vengono inviati al database. L'area reale usa tabelle separate, con isolamento per organizzazione.",
+      "Nessun ordine, pagamento o messaggio della demo viene inviato a sistemi esterni.",
     ],
   },
   {
@@ -106,10 +116,10 @@ const topics = [
     title: "Stato del backend e integrazioni",
     icon: ShieldCheck,
     body: [
-      "Questa build è un frontend completo con dati dimostrativi. Supabase è previsto per autenticazione, database multi-tenant e RLS.",
-      "Nessuna integrazione fiscale, di pagamento, stampa o telefonia è dichiarata attiva.",
-      "Le integrazioni saranno implementate come adapter separati e testate con servizi reali prima di essere mostrate come disponibili.",
-      "Sicurezza: in produzione autorizzazioni, prezzi e importi saranno verificati lato server; il frontend non sarà una fonte di verità.",
+      "L'area reale gira su Next.js 16 e Supabase, con autenticazione, ruoli e RLS attivi. La produzione è pubblicata e usa un progetto Supabase dedicato.",
+      "Sono operativi: cassa, sala e piantina, cucina, menu, palmari, prenotazioni, magazzino, ricette, acquisti, report, vendite e gestione delle sedi.",
+      "Sono in test: abbonamenti Stripe, email transazionali e stampa scontrini. Sono in collaudo: CRM, personale, ordini online, sicurezza MFA e monitoraggio errori.",
+      "Mancano: integrazione fiscale, SMS, telefonia del receptionist, palmare offline, aggiornamenti in tempo reale e QR stampabile del menu.",
     ],
   },
 ];
@@ -130,8 +140,9 @@ export default function DocumentationPage() {
                 Come esplorare CM Risto.
               </h1>
               <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-400">
-                Una guida rapida per orientarsi nella demo e capire quali parti
-                sono già utilizzabili e quali richiedono ancora il backend.
+                Una guida rapida per orientarsi tra demo e area reale, capire
+                quale parte del prodotto è operativa, quale è in prova e quale
+                deve ancora arrivare.
               </p>
             </div>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">

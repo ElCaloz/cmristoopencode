@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
-  ArrowRight,
   Armchair,
+  ArrowRight,
   BarChart3,
   BookOpen,
   Building2,
@@ -10,195 +10,370 @@ import {
   ChefHat,
   CreditCard,
   Package,
+  Phone,
+  QrCode,
+  ReceiptText,
   ShieldCheck,
+  ShoppingBag,
   Smartphone,
+  UserCog,
   Users,
-  UtensilsCrossed,
+  WifiOff,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/public-footer";
 import { PublicHeader } from "@/components/public/public-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  FEATURE_STATUS,
+  FEATURE_STATUS_ORDER,
+  type FeatureStatus,
+} from "@/lib/feature-status";
 
 export const metadata: Metadata = {
   title: "Funzionalità",
   description:
-    "Cassa, sala, cucina, palmari, prenotazioni, magazzino, report e multi-sede: tutte le funzioni di CM Risto, con demo interattiva.",
+    "Cosa fa oggi CM Risto: moduli operativi con dati reali, integrazioni in modalità di prova e funzioni ancora in arrivo, con lo stato dichiarato di ogni parte.",
 };
 
-const sections = [
+type FeatureSection = {
+  id: string;
+  eyebrow: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  status: FeatureStatus;
+  points: string[];
+  evidence: string;
+  missing?: string;
+  href: string;
+  cta: string;
+};
+
+const sections: FeatureSection[] = [
   {
     id: "cassa",
+    eyebrow: "Cassa",
     icon: CreditCard,
-    eyebrow: "Operatività",
-    title: "Cassa veloce, conti sempre chiari",
+    title: "Conti chiari dal primo tavolo all'ultimo incasso",
     description:
-      "Un POS touchscreen pensato per i momenti di punta: pochi tocchi, feedback immediato e nessun conto perso.",
+      "Un conto per tavolo, righe modificabili e incasso registrato con metodo di pagamento. Ogni operazione passa da funzioni atomiche e idempotenti del database.",
+    status: "operativo",
     points: [
-      "Apertura e gestione di più conti contemporaneamente",
-      "Inserimento per categorie, ricerca rapida e varianti",
-      "Note per cucina, sconti autorizzati e trasferimento articoli",
-      "Anteprima del conto e metodi di pagamento",
-      "Stati di connessione e indicazione della modalità offline",
+      "Più conti aperti contemporaneamente, uno per tavolo",
+      "Prodotti filtrabili per categoria, con nota di riga e nota di conto",
+      "Annullamento di una singola riga o dell'intero conto",
+      "Incasso con metodo di pagamento e mancia",
+      "Scontrino accodato alla stampa alla chiusura del conto",
     ],
-    demo: "Apri la cassa nella demo",
+    evidence: "58 test sul database · test end-to-end sulla cassa reale",
+    missing: "Sconti, varianti e trasferimento di articoli tra conti.",
+    href: "/app/pos",
+    cta: "Apri la cassa nella demo",
   },
   {
     id: "sala",
-    icon: Armchair,
     eyebrow: "Sala",
-    title: "La sala, leggibile a colpo d'occhio",
+    icon: Armchair,
+    title: "La piantina è un dato del gestionale",
     description:
-      "Tavoli liberi, occupati, prenotati e da riordinare. Il cameriere sa sempre dove andare e cosa manca.",
+      "Aree, tavoli e arredi sono salvati nel database e modificabili con un editor grafico. La stessa sala alimenta cassa, prenotazioni e palmari.",
+    status: "operativo",
     points: [
-      "Mappa tavoli per sala con stato in tempo reale",
-      "Apertura tavolo, coperti e comanda",
-      "Trasferimento tavolo e richiesta del conto",
-      "Storico delle proprie attività",
-      "Interfaccia mobile-first per il servizio in piedi",
+      "Aree e tavoli con posti, forma e posizione",
+      "Editor della piantina con trascinamento, ridimensionamento, muri e arredi",
+      "Sospensione temporanea di un tavolo senza cancellarlo",
+      "18 tavoli di partenza in ogni nuovo locale",
+      "Tavoli e conti aperti collegati alla cassa",
     ],
-    demo: "Prova la vista sala",
+    evidence: "33 test sul database · 2 test end-to-end sulla piantina",
+    missing: "Vista servizio con stato dei tavoli aggiornato in automatico.",
+    href: "/app/sala",
+    cta: "Prova la vista sala",
   },
   {
     id: "cucina",
-    icon: ChefHat,
     eyebrow: "Cucina",
-    title: "Kitchen Display che si legge da lontano",
+    icon: ChefHat,
+    title: "Kitchen Display con stati condivisi",
     description:
-      "Le comande arrivano ordinate per reparto, con timer e priorità. Nessun foglio appeso, nessuna voce ripetuta.",
+      "Le comande arrivano dalla cassa e dal palmare e avanzano su tre colonne. Lo stato è lo stesso che vede la sala, senza passaggi a voce.",
+    status: "operativo",
     points: [
-      "Colonne in arrivo, in preparazione e pronti",
-      "Suddivisione per reparto (cucina, pizzeria, bar, dolci)",
-      "Timer, ritardi e priorità visive",
-      "Note, allergeni e personalizzazioni in evidenza",
-      "Avanzamento per singola portata e modalità schermo intero",
+      "Tre colonne: in arrivo, in preparazione, pronti al pass",
+      "Tempo trascorso su ogni portata",
+      "Avanzamento per singola riga, condiviso con cassa e sala",
+      "Note di cucina in evidenza e modalità schermo intero",
+      "Aggiornamento automatico ogni 30 secondi, più refresh manuale",
     ],
-    demo: "Apri il Kitchen Display",
+    evidence: "41 test sul database · test end-to-end sulla cucina reale",
+    missing: "Reparti, priorità automatiche e allergeni sulle portate.",
+    href: "/app/cucina",
+    cta: "Apri il Kitchen Display",
   },
   {
     id: "palmari",
+    eyebrow: "Palmari",
     icon: Smartphone,
-    eyebrow: "Dispositivi",
-    title: "Palmari associati, non semplici browser aperti",
+    title: "Dispositivi autorizzati, non browser qualsiasi",
     description:
-      "Il locale autorizza i dispositivi, non si affida a un identificatore salvato nel browser. Fino a 4 palmari per locale.",
+      "Il locale associa il palmare con un codice monouso e l'operatore entra con il proprio PIN. Il limite di dispositivi è applicato dal database.",
+    status: "operativo",
     points: [
-      "Flusso di associazione controllato per locale e postazione",
-      "Autenticazione rapida prevista via PIN lato backend",
-      "Limite di 4 palmari applicato dal servizio, non solo dalla UI",
-      "Revoca immediata di un dispositivo smarrito",
-      "Stato online e ultimo contatto per ogni dispositivo",
+      "Associazione con codice monouso legato al locale",
+      "Accesso operatore con PIN personale da 4 a 6 cifre",
+      "Limite di 4 palmari per locale applicato dal database",
+      "Revoca immediata e ultimo contatto di ogni dispositivo",
+      "Comande dal palmare: apertura conto e invio prodotti",
     ],
-    demo: "Gestisci i dispositivi demo",
-    note: "Nella demo associazione e PIN sono simulati: la protezione reale arriverà con il backend.",
+    evidence:
+      "59 + 81 + 58 test sul database · test end-to-end su dispositivi e comande",
+    missing: "Modalità offline: oggi il palmare richiede connessione.",
+    href: "/app/dispositivi",
+    cta: "Gestisci i dispositivi demo",
   },
   {
     id: "prenotazioni",
-    icon: CalendarCheck,
     eyebrow: "Prenotazioni",
-    title: "Agenda, coperti e clienti in un unico posto",
+    icon: CalendarCheck,
+    title: "Disponibilità calcolata, non a occhio",
     description:
-      "Prenotazioni, arrivi, no-show e preferenze del cliente non vivono più su fogli o rubriche separate.",
+      "La disponibilità dipende da orari, chiusure, preavviso e capienza dei tavoli. La prenotazione nasce nello stesso database del servizio.",
+    status: "operativo",
     points: [
-      "Prenotazioni per data, ora e coperti",
-      "Conferma, accoglienza, annullamento e no-show",
-      "Note su allergie, compleanni e richieste speciali",
-      "Anagrafica clienti con visite e spesa totale",
-      "Tag e preferenze per un servizio più personale",
+      "Disponibilità su orari, chiusure, preavviso e capienza dei tavoli",
+      "Conferma, arrivo, completamento, no-show e annullamento",
+      "Note su allergie e richieste speciali",
+      "Orari di apertura e date di chiusura configurabili",
+      "API interne pronte per un agente vocale, con token firmati",
     ],
-    demo: "Apri le prenotazioni demo",
+    evidence:
+      "72 test sul database · test end-to-end su prenotazioni e receptionist",
+    missing: "Chiamate in ingresso: manca il provider telefonico.",
+    href: "/app/prenotazioni",
+    cta: "Apri le prenotazioni demo",
   },
   {
     id: "menu",
-    icon: BookOpen,
     eyebrow: "Menu",
-    title: "Menu e margini sotto controllo",
+    icon: BookOpen,
+    title: "Menu, prezzi e margini nello stesso posto",
     description:
-      "Prezzi, costi e disponibilità nello stesso sistema: se un piatto finisce, la cassa lo sa subito.",
+      "Categorie, prodotti e disponibilità vivono nel database. Il food cost arriva dalle ricette, non da un foglio di calcolo separato.",
+    status: "operativo",
     points: [
-      "Categorie, prodotti, varianti e allergeni",
-      "Prezzo di vendita e food cost per piatto",
-      "Margine calcolato e disponibilità in tempo reale",
-      "Duplicazione e archiviazione dei prodotti",
-      "Aggiornamenti immediati su cassa e palmari",
+      "Categorie e prodotti con descrizione e prezzo in centesimi",
+      "Disponibilità attivabile e disattivabile in un tocco",
+      "Food cost e margine per piatto calcolati dalle ricette",
+      "Menu pubblico con link token-only, senza registrazione",
+      "Gli ordini online diventano conti in cassa",
     ],
-    demo: "Modifica il menu demo",
+    evidence: "30 + 34 test sul database · test end-to-end su menu e ricette",
+    missing:
+      "Varianti, allergeni strutturati, foto prodotto e duplicazione dei piatti.",
+    href: "/app/menu",
+    cta: "Modifica il menu demo",
+  },
+  {
+    id: "online",
+    eyebrow: "Ordini online",
+    icon: ShoppingBag,
+    title: "Ordini dal menu pubblico, senza doppioni",
+    description:
+      "Un link con token apre il menu del locale. L'ordine viene ricalcolato dal database e, una volta confermato, diventa un conto in cassa.",
+    status: "implementato",
+    points: [
+      "Link pubblici per menu o singolo tavolo, con scadenza e revoca",
+      "Carrello con chiave di idempotenza: nessun doppio ordine",
+      "Totali ricalcolati dal database, mai dal browser",
+      "Conferma dell'ordine che crea il conto in cassa",
+      "Limite anti-abuso: 10 ordini ogni 10 minuti per contatto",
+    ],
+    evidence: "Test sul database Sprint 7 · collaudo interfaccia in corso",
+    missing: "QR stampabile e test end-to-end del flusso completo.",
+    href: "/dashboard/online",
+    cta: "Apri nell'area reale",
   },
   {
     id: "magazzino",
-    icon: Package,
     eyebrow: "Magazzino",
-    title: "Scorte, fornitori e soglie minime",
+    icon: Package,
+    title: "Scorte tracciate, non stimate",
     description:
-      "Sai cosa sta finendo prima che finisca. Carichi, rettifiche e fornitori ordinati per categoria.",
+      "Le giacenze cambiano solo con un movimento registrato: carico, scarico, spreco o rettifica. Ogni passaggio ha una motivazione.",
+    status: "operativo",
     points: [
-      "Giacenze con unità di misura e soglia minima",
-      "Avvisi sulle scorte in esaurimento",
-      "Carico merce e rettifiche di inventario",
-      "Fornitori collegati alle categorie di acquisto",
-      "Costi di acquisto per voce",
+      "Giacenze in millesimi con soglia minima e stato esaurito",
+      "Movimenti di carico, scarico, spreco e rettifica con motivazione",
+      "Fornitori, lotti e scadenze",
+      "Ordini ai fornitori con ricezioni anche parziali",
+      "Costi aggiornati all'ultima ricezione",
     ],
-    demo: "Apri il magazzino demo",
+    evidence: "23 + 61 test sul database · test end-to-end su magazzino e acquisti",
+    missing: "Scansione barcode e conversione automatica delle unità di misura.",
+    href: "/app/magazzino",
+    cta: "Apri il magazzino demo",
+  },
+  {
+    id: "clienti",
+    eyebrow: "Clienti",
+    icon: Users,
+    title: "Il cliente non è una riga di scontrino",
+    description:
+      "Anagrafica, visite, spesa, preferenze e consensi raccolti in un solo posto, con punti fedeltà gestiti lato database.",
+    status: "implementato",
+    points: [
+      "Anagrafica con visite, spesa totale e ultima visita",
+      "Allergie, note e tag per il servizio",
+      "Consensi email e SMS separati",
+      "Punti fedeltà con transazioni idempotenti",
+      "Messaggi diretti al cliente",
+    ],
+    evidence: "Test sul database Sprint 7 · collaudo interfaccia in corso",
+    missing: "Invii reali solo con email e SMS configurati; test end-to-end sulle pagine.",
+    href: "/app/clienti",
+    cta: "Apri i clienti in demo",
+  },
+  {
+    id: "personale",
+    eyebrow: "Personale",
+    icon: UserCog,
+    title: "Ruoli dal database, turni espliciti",
+    description:
+      "Ogni membro ha un ruolo e un perimetro. Costo orario e turni sono dati gestiti, non appunti fuori dal gestionale.",
+    status: "implementato",
+    points: [
+      "Inviti con ruolo e permessi",
+      "Costo orario e data di assunzione",
+      "Turni con aggiunta e annullamento",
+      "Sospensione di un membro senza eliminarlo",
+      "Permessi verificati lato server, non nel browser",
+    ],
+    evidence: "Test sul database Sprint 7 · collaudo interfaccia in corso",
+    missing: "Pianificazione automatica dei turni e timbratura presenze.",
+    href: "/app/personale",
+    cta: "Apri il personale in demo",
   },
   {
     id: "report",
+    eyebrow: "Report",
     icon: BarChart3,
-    eyebrow: "Analisi",
-    title: "Report che rispondono a domande concrete",
+    title: "Numeri che derivano dagli incassi",
     description:
-      "Incassi, scontrino medio, metodi di pagamento e prodotti più venduti. Dati leggibili, non grafici decorativi.",
+      "Le vendite nascono dai pagamenti registrati, non da un riepilogo compilato a mano. Ogni importo è in centesimi interi.",
+    status: "operativo",
     points: [
-      "Andamento incassi per periodo",
-      "Ordini, coperti e scontrino medio",
+      "Incassi per giornata di servizio",
+      "Scontrino medio e coperti",
       "Mix dei metodi di pagamento",
       "Top prodotti per ricavi",
-      "Export CSV dei dati visualizzati",
+      "Confronto tra sedi ed export CSV",
     ],
-    demo: "Apri i report demo",
+    evidence: "Test sul database · test end-to-end su vendite e report",
+    href: "/app/report",
+    cta: "Apri i report demo",
   },
   {
     id: "multi-sede",
+    eyebrow: "Sedi e ruoli",
     icon: Building2,
-    eyebrow: "Gruppi",
-    title: "Più sedi, permessi espliciti",
+    title: "Più sedi, confini espliciti",
     description:
-      "Ogni record operativo appartiene a un locale. Gli admin vedono solo ciò che gli è stato assegnato.",
+      "Ogni record operativo appartiene a un locale. L'isolamento tra tenant è applicato dal database, non dall'interfaccia.",
+    status: "operativo",
     points: [
-      "Cambio sede rapido dalla barra superiore",
-      "Personale e dispositivi per singola sede",
-      "Piani Business ed Enterprise per la gestione centralizzata",
-      "Console Super Admin separata dagli admin cliente",
-      "Registro delle attività amministrative",
+      "Più sedi nella stessa organizzazione",
+      "Cambio sede dalla barra superiore",
+      "Limite di sedi del piano applicato lato server",
+      "Ruoli e permessi per singola sede",
+      "Console di piattaforma separata dagli admin cliente",
     ],
-    demo: "Gestisci il gruppo demo",
+    evidence: "30 test RLS · test di isolamento cross-tenant",
+    missing: "Il registro attività esiste nel database ma non ha ancora una vista.",
+    href: "/app/panoramica",
+    cta: "Gestisci il gruppo demo",
   },
 ];
 
-const roadmap = [
+const integrations: Array<{
+  name: string;
+  status: FeatureStatus;
+  detail: string;
+}> = [
+  {
+    name: "Stripe — abbonamenti",
+    status: "testato",
+    detail:
+      "Prodotti, prezzi, checkout, portale clienti e webhook firmato sono attivi in modalità test. Manca un pagamento reale.",
+  },
+  {
+    name: "Email transazionali",
+    status: "testato",
+    detail:
+      "Invio verificato verso il proprietario dell'account. Manca un dominio verificato per scrivere ai clienti finali.",
+  },
+  {
+    name: "SMS",
+    status: "implementato",
+    detail:
+      "Il codice di invio è pronto, ma l'account non ha un mittente: gli SMS restano disattivati.",
+  },
+  {
+    name: "Stampa scontrini 58/80 mm",
+    status: "testato",
+    detail:
+      "Coda di stampa, formattazione ESC/POS e servizio locale sono pronti. Nessuna prova su una stampante fisica.",
+  },
+  {
+    name: "Receptionist vocale",
+    status: "implementato",
+    detail:
+      "Le API interne con token firmati esistono e proteggono le prenotazioni. Non c'è un provider telefonico collegato.",
+  },
+  {
+    name: "Monitoraggio errori",
+    status: "implementato",
+    detail:
+      "Route di osservabilità e chiavi configurate. L'SDK non è ancora collegato agli errori in tempo reale.",
+  },
+];
+
+const roadmap: Array<{
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}> = [
   {
     title: "Integrazione fiscale",
     description:
-      "Registratore telematico e scontrino fiscale: previsti come adapter configurabili, da verificare con un dispositivo reale prima di dichiararli disponibili.",
-    icon: ShieldCheck,
+      "Registratore telematico e scontrino fiscale: adapter da verificare con un dispositivo reale prima di dichiararli disponibili.",
+    icon: ReceiptText,
   },
   {
-    title: "Pagamenti reali",
+    title: "Telefonia del receptionist",
     description:
-      "Il flusso è predisposto per un provider come Stripe. Nessun pagamento viene elaborato in questa build.",
-    icon: CreditCard,
+      "Numero dedicato, provider vocale e trasferimento delle chiamate. Oggi esistono solo le API interne.",
+    icon: Phone,
   },
   {
-    title: "Servizio locale e offline",
+    title: "Palmare offline",
     description:
-      "Un servizio dedicato al locale gestirà stampanti, palmari e sincronizzazione offline con idempotenza.",
-    icon: UtensilsCrossed,
+      "Coda locale e sincronizzazione differita con idempotenza. Oggi il palmare richiede connessione.",
+    icon: WifiOff,
   },
   {
-    title: "Receptionist AI e telefonia",
+    title: "Aggiornamenti in tempo reale",
     description:
-      "Prenotazioni telefoniche e assistenza vocale richiedono integrazioni esterne e test dedicati. Non sono simulate come se fossero reali.",
-    icon: Users,
+      "Sala e cucina si aggiornano oggi con polling ogni 30 secondi. Gli aggiornamenti istantanei non sono collegati.",
+    icon: BarChart3,
+  },
+  {
+    title: "QR del menu stampabile",
+    description:
+      "Il link al menu pubblico è già generabile. L'immagine QR da stampare e scaricare non è ancora prodotta.",
+    icon: QrCode,
   },
 ];
 
@@ -213,13 +388,14 @@ export default function FeaturesPage() {
               <Badge variant="muted" className="mb-4">
                 Funzionalità di CM Risto
               </Badge>
-              <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">
-                Tutto il locale, dall&apos;ordine al margine.
+              <h1 className="text-balance text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">
+                Quello che il gestionale fa oggi.
               </h1>
               <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-400">
-                Ogni sezione della demo è navigabile e usa dati coerenti. Questa
-                pagina descrive cosa fa il prodotto, senza promesse su
-                integrazioni non ancora verificate.
+                Ogni modulo riporta il proprio stato reale. Cassa, sala, cucina,
+                magazzino e report lavorano su dati salvati nel database; le
+                integrazioni esterne sono distinte tra prova e funzionamento
+                effettivo.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Button asChild>
@@ -233,6 +409,34 @@ export default function FeaturesPage() {
                 </Button>
               </div>
             </div>
+
+            <div className="mt-12">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                Come leggere lo stato
+              </h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {FEATURE_STATUS_ORDER.map((status) => {
+                  const meta = FEATURE_STATUS[status];
+                  return (
+                    <div
+                      key={status}
+                      className="rounded-xl border border-zinc-200 bg-zinc-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/50"
+                    >
+                      <Badge variant={meta.badge} dot>
+                        {meta.label}
+                      </Badge>
+                      <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                        {meta.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
+                Stato aggiornato all&apos;11 novembre 2026.
+              </p>
+            </div>
+
             <nav className="mt-8 flex flex-wrap gap-2" aria-label="Sezioni funzionalità">
               {sections.map((section) => (
                 <a
@@ -248,142 +452,176 @@ export default function FeaturesPage() {
         </section>
 
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          {sections.map((section, index) => (
-            <section
-              key={section.id}
-              id={section.id}
-              className="scroll-mt-24 border-b border-zinc-100 py-14 sm:py-16 dark:border-zinc-800"
-            >
-              <div
-                className={`grid gap-8 lg:grid-cols-2 lg:items-center ${
-                  index % 2 === 1 ? "lg:[&>:first-child]:order-2" : ""
-                }`}
+          {sections.map((section, index) => {
+            const meta = FEATURE_STATUS[section.status];
+            return (
+              <section
+                key={section.id}
+                id={section.id}
+                className="scroll-mt-24 border-b border-zinc-100 py-14 sm:py-16 dark:border-zinc-800"
               >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400">
-                      <section.icon className="size-4.5" />
-                    </span>
-                    <span className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-400">
-                      {section.eyebrow}
-                    </span>
-                  </div>
-                  <h2 className="mt-4 text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-                    {section.title}
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    {section.description}
-                  </p>
-                  <ul className="mt-5 space-y-2.5">
-                    {section.points.map((point) => (
-                      <li
-                        key={point}
-                        className="flex items-start gap-2.5 text-sm text-zinc-700 dark:text-zinc-300"
-                      >
-                        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-400">
-                          <Check className="size-3" />
-                        </span>
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                  {section.note ? (
-                    <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-800 dark:border-amber-900/50 dark:bg-amber-950 dark:text-amber-300">
-                      {section.note}
-                    </p>
-                  ) : null}
-                  <Button variant="outline" className="mt-5" asChild>
-                    <Link
-                      href={
-                        section.id === "cucina"
-                          ? "/app/cucina"
-                          : section.id === "palmari"
-                            ? "/app/dispositivi"
-                            : section.id === "multi-sede"
-                              ? "/app/piattaforma"
-                              : section.id === "sala"
-                                ? "/app/sala"
-                                : section.id === "cassa"
-                                  ? "/app/pos"
-                                  : section.id === "prenotazioni"
-                                    ? "/app/prenotazioni"
-                                    : section.id === "menu"
-                                      ? "/app/menu"
-                                      : section.id === "magazzino"
-                                        ? "/app/magazzino"
-                                        : "/app/report"
-                      }
-                    >
-                      {section.demo}
-                      <ArrowRight />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="rounded-xl border border-zinc-200 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
-                  <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-                    <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-                      <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                <div
+                  className={`grid gap-8 lg:grid-cols-2 lg:items-start ${
+                    index % 2 === 1 ? "lg:[&>:first-child]:order-2" : ""
+                  }`}
+                >
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400">
+                        <section.icon className="size-4.5" />
+                      </span>
+                      <span className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-400">
                         {section.eyebrow}
-                      </p>
-                      <Badge variant="warning" className="text-[9px]">
-                        ANTEPRIMA DEMO
+                      </span>
+                      <Badge variant={meta.badge} dot>
+                        {meta.label}
                       </Badge>
                     </div>
-                    <div className="mt-3 space-y-2">
-                      {section.points.slice(0, 4).map((point, pointIndex) => (
-                        <div
+                    <h2 className="mt-4 text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                      {section.title}
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {section.description}
+                    </p>
+                    <ul className="mt-5 space-y-2.5">
+                      {section.points.map((point) => (
+                        <li
                           key={point}
-                          className="flex items-center justify-between rounded-md border border-zinc-100 bg-zinc-50/60 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-800/60"
+                          className="flex items-start gap-2.5 text-sm text-zinc-700 dark:text-zinc-300"
                         >
-                          <span className="text-[11px] text-zinc-600 dark:text-zinc-400">
-                            {point}
+                          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-400">
+                            <Check className="size-3" />
                           </span>
-                          <span
-                            className={`size-1.5 shrink-0 rounded-full ${
-                              pointIndex % 3 === 0
-                                ? "bg-brand-500"
-                                : pointIndex % 3 === 1
-                                  ? "bg-amber-400"
-                                  : "bg-zinc-300 dark:bg-zinc-600"
-                            }`}
-                          />
-                        </div>
+                          {point}
+                        </li>
                       ))}
+                    </ul>
+                    <Button variant="outline" className="mt-5" asChild>
+                      <Link href={section.href}>
+                        {section.cta}
+                        <ArrowRight />
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                        Stato del modulo
+                      </p>
+                      <Badge variant={meta.badge} dot>
+                        {meta.label}
+                      </Badge>
                     </div>
+                    <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {meta.description}
+                    </p>
+                    <dl className="mt-4 space-y-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+                      <div>
+                        <dt className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                          Verificato con
+                        </dt>
+                        <dd className="mt-0.5 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                          {section.evidence}
+                        </dd>
+                      </div>
+                      {section.missing ? (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            Non ancora disponibile
+                          </dt>
+                          <dd className="mt-0.5 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                            {section.missing}
+                          </dd>
+                        </div>
+                      ) : null}
+                    </dl>
                   </div>
                 </div>
-              </div>
-            </section>
-          ))}
+              </section>
+            );
+          })}
         </div>
 
         <section className="py-14 sm:py-20">
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl">
               <Badge variant="outline" className="mb-3">
+                Servizi esterni
+              </Badge>
+              <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                Integrazioni, stato per stato
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Un&apos;integrazione pronta nel codice non è un servizio attivo per
+                il ristorante. Qui la differenza è esplicita.
+              </p>
+            </div>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {integrations.map((integration) => {
+                const meta = FEATURE_STATUS[integration.status];
+                return (
+                  <div
+                    key={integration.name}
+                    className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                        {integration.name}
+                      </h3>
+                      <Badge variant={meta.badge} dot>
+                        {meta.label}
+                      </Badge>
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {integration.detail}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-8">
+              <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Lo stato delle integrazioni è consultabile anche dall&apos;area
+                reale, nella pagina{" "}
+                <Link
+                  href="/dashboard/integrazioni"
+                  className="font-medium text-brand-700 underline-offset-4 hover:underline dark:text-brand-400"
+                >
+                  Integrazioni
+                </Link>
+                , che legge la configurazione effettiva del servizio.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-zinc-50/60 py-14 sm:py-20 dark:bg-zinc-900/50">
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl">
+              <Badge variant="muted" className="mb-3">
                 Trasparenza
               </Badge>
               <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-                Cosa non è ancora attivo
+                Cosa non è ancora disponibile
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                Queste funzioni sono progettate ma richiedono integrazioni
-                esterne e verifica reale. Non le dichiariamo complete finché non
-                lo sono.
+                Funzioni progettate ma non collegate a un servizio reale. Non le
+                dichiariamo attive finché non lo sono.
               </p>
             </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {roadmap.map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-5 dark:border-zinc-700 dark:bg-zinc-900/50"
+                  className="rounded-xl border border-dashed border-zinc-300 bg-white/60 p-5 dark:border-zinc-700 dark:bg-zinc-900/40"
                 >
                   <item.icon className="size-5 text-zinc-500 dark:text-zinc-400" />
                   <div className="mt-3 flex items-center gap-2">
                     <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
                       {item.title}
                     </h3>
-                    <Badge variant="muted">In sviluppo</Badge>
+                    <Badge variant="muted">In arrivo</Badge>
                   </div>
                   <p className="mt-1.5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                     {item.description}
@@ -391,11 +629,17 @@ export default function FeaturesPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Button asChild>
                 <Link href="/app/panoramica">
                   Prova ciò che è già utilizzabile
                   <ArrowRight />
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/registrati">
+                  <ShieldCheck />
+                  Crea un account
                 </Link>
               </Button>
             </div>

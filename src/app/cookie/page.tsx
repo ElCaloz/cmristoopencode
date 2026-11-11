@@ -24,7 +24,7 @@ export default function CookiePage() {
           title: "Cookie tecnici necessari",
           paragraphs: [
             "Il servizio richiederà cookie tecnici per autenticazione, sicurezza delle sessioni e preferenze essenziali. Questi strumenti non richiedono consenso quando sono strettamente necessari al funzionamento.",
-            "Nella build attuale la demo salva lo stato dimostrativo nel local storage del browser (chiave cm-risto-demo-v1). Non vengono impostati cookie di profilazione.",
+            "L'area reale usa cookie tecnici di sessione per autenticazione e sicurezza, marcati HttpOnly e SameSite. La demo salva lo stato dimostrativo nel local storage del browser (chiave cm-risto-demo-v1). Non vengono impostati cookie di profilazione.",
           ],
         },
         {

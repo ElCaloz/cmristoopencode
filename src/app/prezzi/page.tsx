@@ -108,17 +108,17 @@ const comparisonRows: Array<{
 const pricingFaqs = [
   {
     question: "Quanto dura la prova gratuita?",
-    answer: `La durata prevista è di ${TRIAL_DAYS} giorni, configurabile in un unico punto del codice (src/lib/plans.ts). In questa build dimostrativa la prova non viene attivata su un account reale.`,
+    answer: `Ogni nuovo locale parte con ${TRIAL_DAYS} giorni di prova. Il conteggio è registrato nel database e non richiede una carta di credito. Alla scadenza non viene addebitato nulla: l'abbonamento si attiva solo con un pagamento completato.`,
   },
   {
     question: "Serve una carta di credito?",
     answer:
-      "Il flusso di pagamento non è ancora collegato a un provider. Non raccogliamo numeri di carta né codici di sicurezza. Quando il backend di fatturazione sarà attivo, le condizioni della prova verranno mostrate prima di qualsiasi addebito.",
+      "Per la prova no. La fatturazione è collegata a Stripe in modalità di test: il checkout e il portale sono funzionanti, ma nessun importo viene addebitato. Prima dell'attivazione commerciale le condizioni saranno mostrate prima di qualsiasi pagamento.",
   },
   {
     question: "Come funzionano rinnovi e cancellazione?",
     answer:
-      "Il piano previsto è mensile o annuale con rinnovo automatico, disdetta dal pannello abbonamento. La pagina dimostrativa mostra l'interfaccia di gestione, ma nessun rinnovo o addebito è reale.",
+      "Il piano è mensile o annuale con rinnovo automatico. La disdetta si gestisce dal pannello Abbonamento, che apre il portale clienti del provider di pagamento. In modalità di test nessun rinnovo viene addebitato.",
   },
   {
     question: "I prezzi sono definitivi?",
@@ -128,12 +128,12 @@ const pricingFaqs = [
   {
     question: "Cosa succede alla fine della prova?",
     answer:
-      "Il comportamento previsto è: nessun addebito automatico senza metodo di pagamento valido e conferma esplicita. In alternativa il locale passa al piano gratuito limitato o viene sospeso. La scelta commerciale definitiva è ancora da approvare.",
+      "Nessun addebito automatico: senza un pagamento completato il locale resta in prova scaduta e le funzioni restano accessibili. La gestione della scadenza e della sospensione è una decisione commerciale ancora da approvare.",
   },
   {
     question: "Posso cambiare piano in seguito?",
     answer:
-      "Sì, il prodotto è progettato per consentire cambio piano con adeguamento proporzionale. La fatturazione reale arriverà con l'integrazione del provider (ad esempio Stripe).",
+      "Sì. Il cambio piano passa dal pannello Abbonamento e dal portale del provider di pagamento; il limite di sedi del piano è applicato lato server. Gli altri limiti di piano non sono ancora applicati dal prodotto.",
   },
 ];
 
@@ -253,12 +253,12 @@ export default function PricingPage() {
                   },
                   {
                     title: `Esplora per ${TRIAL_DAYS} giorni`,
-                    text: "Configura il locale e usa il gestionale con i tuoi dati, quando il backend sarà collegato.",
+                    text: "Configura il locale e usa il gestionale con i tuoi dati: il database è attivo dalla registrazione.",
                     icon: ShieldCheck,
                   },
                   {
                     title: "Decidi con calma",
-                    text: "Prima della scadenza ricevi un avviso. Nessun addebito senza conferma.",
+                    text: "Prima della scadenza ricevi un avviso. Nessun addebito senza un pagamento completato.",
                     icon: Check,
                   },
                 ].map((item) => (
@@ -278,10 +278,10 @@ export default function PricingPage() {
               </ol>
             </div>
             <div className="mt-6 rounded-lg bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-              Nota di trasparenza: in questa build il backend di autenticazione
-              e fatturazione non è collegato. La demo usa dati fittizi nel
-              browser; la prova reale sarà attivabile quando il servizio sarà
-              pubblicato.
+              Nota di trasparenza: autenticazione e database sono attivi. La
+              fatturazione è collegata a Stripe in modalità di test: nessun
+              addebito reale viene effettuato finché non sarà completata la
+              verifica con un pagamento di prova.
             </div>
           </div>
         </section>
@@ -315,7 +315,7 @@ export default function PricingPage() {
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild>
                 <Link href="/registrati">
-                  Inizia con la demo
+                  Crea un account
                   <ArrowRight />
                 </Link>
               </Button>

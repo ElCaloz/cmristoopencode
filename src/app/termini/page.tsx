@@ -18,7 +18,7 @@ export default function TermsPage() {
           title: "Oggetto del servizio",
           paragraphs: [
             "CM Risto è una piattaforma software per la gestione di ristoranti e attività di ristorazione: cassa, sala, cucina, prenotazioni, menu, magazzino e analisi. Il servizio può essere erogato in modalità SaaS con piani differenti.",
-            "La build attuale è dimostrativa: non eroga servizi fiscali, di pagamento o di comunicazione reale e non crea account utilizzabili in produzione.",
+            "Il servizio è pubblicato in produzione: l'area reale crea account utilizzabili e salva i dati su un database dedicato. Non eroga ancora servizi fiscali, addebiti reali o comunicazioni reali verso clienti finali; le integrazioni esterne sono in modalità di test e sono elencate con il loro stato nella pagina Funzionalità.",
           ],
         },
         {

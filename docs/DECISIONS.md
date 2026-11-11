@@ -1,4 +1,4 @@
-﻿# DECISIONS â€” Registro delle decisioni tecniche
+# DECISIONS â€” Registro delle decisioni tecniche
 
 Formato: ID, data, decisione, motivazione, stato. Le decisioni superseded restano registrate.
 
@@ -425,3 +425,12 @@ Formato: ID, data, decisione, motivazione, stato. Le decisioni superseded restan
   - cinque test E2E scritti prima del commit `8922b39` sono stati allineati al comportamento voluto e documentato (demo senza ruolo Super Admin, seed sala `BASE_ROOM_LAYOUT` con 18 tavoli): vincolo delle azioni/degli stati alla riga del tavolo, selezione del tab dell'area nella piantina, contatore tavoli del palmare indipendente dal seed, cambio ruolo senza Super Admin e nuova copertura dell'avviso "console piattaforma fuori dalla demo".
 - Motivazione: dopo `8922b39` la pagina-avviso era irraggiungibile (il gate ruoli la intercettava) e i test cadevano per aspettative obsolete, non per regressioni: mantenere test che descrivono un comportamento dismesso avrebbe nascosto la reale copertura. Nessuna funzionalità è stata rimossa: le verifiche coprono ora i comportamenti correnti.
 - Stato: attiva e verificata: **26/26 E2E** (15 auth reali + 1 security + 7 demo + 3 dark mode), **733/733 pgTAP**, **74/74 unit**, lint e typecheck puliti.
+**D-055 - Tassonomia ufficiale delle funzionalità in quattro stati e copy pubblico allineato al prodotto reale** (11/11/2026)
+- Decisione:
+  - quattro stati ufficiali, definiti in `src/lib/feature-status.ts` e usati in tutta la documentazione: **Operativo** (usabile su un locale reale, dati su database e azioni principali coperte da test), **Testato** (collegato a un provider esterno in modalità di prova), **Implementato** (codice completo e test del database, collaudo end-to-end assente), **Mancante** (non esiste nel prodotto);
+  - nelle pagine pubbliche le etichette sono Operativo, In test, In collaudo e In arrivo, con legenda esplicita e stato dichiarato per ogni modulo e integrazione;
+  - `/funzionalita` riscritta su 12 moduli con evidenze di test e limiti espliciti; rimossi i claim non veri su realtime della sala, varianti/allergeni/duplicazione del menu, sconti e trasferimento articoli nel POS, Super Admin nella demo e "protezione reale futura" dei palmari; aggiunta la sezione "Integrazioni, stato per stato";
+  - `/prezzi` aggiornata: prova reale di 30 giorni registrata nel database, Stripe in modalità test, nessun addebito, limiti di piano applicati solo per le sedi; CTA "Crea un account";
+  - `/documentazione`, FAQ della home, privacy, cookie e termini riallineati: demo (browser) e area reale (database) sono descritte separatamente e il prodotto non è più presentato come solo dimostrativo.
+- Motivazione: un'integrazione tecnicamente pronta non è un servizio utilizzabile da un ristorante. La distinzione esplicita evita dichiarazioni non verificate (regola 5 di `AGENTS.md`) e rende confrontabili copy, documentazione e stato del codice.
+- Stato: attiva e verificata con lint, typecheck, unit test e build. Restano da migrare le 12 pagine storiche alla `DashboardShell`, generare il QR stampabile e completare le verifiche di produzione.

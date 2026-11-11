@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           title: "Dati raccolti",
           paragraphs: [
             "Il servizio intende raccogliere: dati identificativi e di contatto dell'utente (nome, email, telefono), dati del locale (denominazione, indirizzo, partita IVA), dati operativi (ordini, prenotazioni, clienti finali inseriti dal ristoratore) e dati tecnici di utilizzo necessari al funzionamento.",
-            "La build dimostrativa attuale non invia dati a un server: le modifiche alla demo restano nel browser dell'utente e possono essere cancellate con il comando di ripristino.",
+            "La demo usa dati fittizi salvati nel browser e non li invia a un server. L'area reale, invece, salva i dati del locale su un database gestito: ordini, prenotazioni, clienti e movimenti di magazzino sono trattati come descritto in questa informativa.",
           ],
         },
         {

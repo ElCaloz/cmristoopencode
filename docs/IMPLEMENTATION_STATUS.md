@@ -1,5 +1,7 @@
 # Implementation Status — Audit, Hardening e Integrazione MCP
 
+> **Snapshot al 22 ottobre 2026.** Questo documento fotografa l'audit di sicurezza e hardening di quella data e non descrive lo stato attuale del prodotto. Per lo stato corrente e per la tassonomia ufficiale (Operativo / Testato / Implementato / Mancante) la fonte è `docs/STATUS.md`.
+
 **Data:** 22 ottobre 2026
 **Progetto:** CM Risto — `C:\Users\calos\CM-Risto`
 **Repository:** `ElCaloz/cmristoopencode` (remote `origin`)

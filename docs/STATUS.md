@@ -1,7 +1,24 @@
-﻿# STATUS - CM Risto
+# STATUS - CM Risto
 
-**Ultimo aggiornamento:** 26 ottobre 2026 (verifiche complete: **733/733 pgTAP** e **26/26 E2E** con test allineati al comportamento voluto, fix della pagina-avviso `/app/piattaforma` in demo; il 25/10: restyle delle pagine pubbliche con la skill `design-taste-frontend`, **0 FAIL** al metro, immagini reali del prodotto, motion layer, fix overflow 768px; installate le skill `frontend-design` e `seo-audit`).
+**Ultimo aggiornamento:** 11 novembre 2026 (copy pubblico e documentazione allineati allo stato reale del prodotto; introdotta la tassonomia ufficiale in quattro stati: Operativo, Testato, Implementato, Mancante).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 11/11/2026 - Copy pubblico e documentazione allineati allo stato reale
+
+- **Tassonomia ufficiale delle funzionalità (D-055):** quattro stati, definiti in `src/lib/feature-status.ts` e usati in tutto il progetto.
+  - **Operativo** — usabile su un locale reale: dati salvati nel database, azioni principali coperte da test end-to-end.
+  - **Testato** — collegato a un provider esterno in modalità di prova; funziona tecnicamente ma non è utilizzabile in esercizio.
+  - **Implementato** — codice completo e verificato nei test del database; manca il collaudo end-to-end dell'interfaccia.
+  - **Mancante** — non esiste nel prodotto e non viene dichiarato attivo.
+  - Nelle pagine pubbliche le etichette sono: Operativo, In test, In collaudo, In arrivo.
+- **`/funzionalita` riscritta:** 12 moduli (cassa, sala, cucina, palmari, prenotazioni, menu, ordini online, magazzino, clienti, personale, report, sedi) con stato dichiarato, verifiche reali e limiti espliciti. Rimossi i claim non veri: "stato in tempo reale" della sala, varianti/allergeni/duplicazione del menu, sconti e trasferimento articoli nel POS, Super Admin nella demo, "la protezione reale arriverà con il backend" sui palmari. Aggiunta la sezione "Integrazioni, stato per stato" (Stripe, email, SMS, stampa, receptionist vocale, monitoraggio errori) e la roadmap aggiornata (fiscale, telefonia, offline, realtime, QR).
+- **`/prezzi` corretta:** FAQ su prova, carta di credito, rinnovi, fine prova e cambio piano riscritte (database attivo, Stripe in modalità test, nessun addebito); nota di trasparenza aggiornata; CTA "Crea un account".
+- **`/documentazione` aggiornata:** nuovo tema "Demo, area reale e stati"; corretti ruoli (Super Admin fuori dalla demo), cassa, KDS (aggiornamento ogni 30 secondi, non realtime), palmari (associazione con codice monouso già reale) e stato del prodotto.
+- **Home e pagine legali:** FAQ su prova e integrazioni riscritte; rimosso "sconti" dal riepilogo POS; privacy, cookie e termini non descrivono più il prodotto come solo dimostrativo e distinguono demo (browser) e area reale (database).
+- **Verifiche:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- **Prossimi passi:** migrazione delle 12 pagine storiche alla `DashboardShell` con design pass; QR stampabile del menu; verifiche di produzione.
 
 ---
 
@@ -17,7 +34,7 @@
   - `demo.spec` "super admin demo": sostituito con "la console piattaforma è fuori dalla demo, le altre aree restano aperte".
 - **Fix prodotto (regressione di `8922b39`):** `/app/piattaforma` nella demo era irraggiungibile (il gate dei ruoli mostrava "Area non disponibile per questo ruolo" prima dell'avviso dedicato): `src/components/app/app-shell.tsx` ora rende visibile la pagina-avviso "Console di piattaforma — non disponibile nella demo" a ogni ruolo demo; l'area `platform` reale resta negata dai permessi.
 - **Verifiche finali:** lint pulito, typecheck pulito, **74/74 unit**, **733/733 pgTAP**, **26/26 E2E**, build già verificata il 25/10. `test-results/` resta gitignored.
-- **Prossimi passi:** invariati (env segrete Vercel, Auth URLs, QR menu, restyle pagine interne, merge in `main`).
+- **Prossimi passi:** migrazione delle pagine interne alla shell condivisa, QR del menu, Auth URLs, verifica delle integrazioni su produzione e merge in `main`. Le env di produzione sono state importate e verificate il 22/10: non sono più un passo aperto.
 
 ---
 
@@ -31,7 +48,7 @@
 - **Verifiche reali:** `npm run lint` pulito; `npm run typecheck` pulito; `npm test` **74/74**; `npm run build` riuscito (retry dopo un errore transiente di fetch Google Fonts, non causato dalle modifiche); `inspect.mjs` finale su `/`: **0 FAIL, 4 WARN difendibili** (lockup di brand "Restaurant Suite" a 13px, conteggio taglie 10, nessun video per un prodotto software, misura di una frase di trasparenza). Screenshot before/after in `.taste-skill/` (aggiunto a `.gitignore`). Warning React sui `key` osservati in dev durante le modifiche: non riprodotti in un run pulito (erano stati di hot-reload).
 - **Non eseguiti in questa sessione:** E2E Playwright e pgTAP — Docker Desktop non in esecuzione. Da rieseguire: `npm run e2e` (26 test) e `npx supabase test db` (733) prima del merge in `main`. Il test `tests/e2e/dark-mode.spec.ts` resta coerente con il nuovo `h1` ("Il servizio, sotto controllo.").
 - **Skill agent:** installate `anthropics/skills@frontend-design` e `coreyhaines31/marketingskills@seo-audit` dopo revisione del contenuto (gate di sicurezza `find-skills` superata); non installate varianti ridondanti o non ispezionabili (D-053).
-- **Prossimi passi:** rieseguire E2E/pgTAP con Docker attivo; valutare WARN residui (taglie, video); eventuale restyle delle pagine interne; resto dei prossimi passi della sessione 22/10 (env segrete, Auth URLs, QR menu, merge in `main`).
+- **Prossimi passi:** rieseguire E2E/pgTAP con Docker attivo; valutare WARN residui (taglie, video); eventuale restyle delle pagine interne; Auth URLs, QR del menu, verifica integrazioni su produzione e merge in `main`.
 
 ---
 
@@ -202,6 +219,64 @@
 
 ---
 
+## Stato delle funzionalità (tassonomia ufficiale, 11/11/2026)
+
+Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni principali coperte da test; **Testato** = collegato a un provider esterno in modalità di prova; **Implementato** = codice completo e test del database, collaudo end-to-end assente; **Mancante** = non esiste nel prodotto.
+
+### Operativo
+
+| Funzionalità | Evidenza |
+|---|---|
+| Autenticazione, onboarding, ruoli e permessi | E2E reali + 30 RLS + 14 escalation |
+| Menu e prodotti | 30 pgTAP + E2E |
+| Sala, aree e piantina grafica | 33 pgTAP + 2 E2E |
+| Cassa POS, conti e pagamenti | 58 pgTAP + E2E |
+| Vendite | E2E |
+| Cucina KDS | 41 pgTAP + E2E |
+| Dispositivi, PIN e comande palmare | 59 + 81 + 58 pgTAP + E2E |
+| Prenotazioni | 72 pgTAP + E2E |
+| Magazzino | 23 pgTAP + E2E |
+| Ricette e food cost | 34 pgTAP + E2E |
+| Acquisti e ricezioni | 61 pgTAP + E2E |
+| Report ed export CSV | E2E |
+| Multi-sede e isolamento tenant | 30 RLS + test cross-tenant |
+
+### Testato (modalità di prova)
+
+| Funzionalità | Cosa manca |
+|---|---|
+| Abbonamenti Stripe (checkout, portale, webhook firmato) | Un pagamento reale completato |
+| Email transazionali Resend | Dominio verificato per i clienti finali |
+| Stampa scontrini 58/80 mm (coda, ESC/POS, servizio locale) | Prova su stampante fisica |
+
+### Implementato (collaudo end-to-end in corso)
+
+| Funzionalità | Cosa manca |
+|---|---|
+| Ordini online e conferma in cassa | E2E del flusso completo e QR stampabile |
+| CRM clienti, fedeltà e messaggi | E2E dell'interfaccia; invii dipendono da email/SMS |
+| Marketing e campagne | E2E; invii dipendono da email/SMS |
+| Personale, inviti e turni | E2E dell'interfaccia |
+| MFA TOTP e enforcement `aal2` | Test E2E dedicati |
+| API interne receptionist vocale | Provider telefonico |
+| Monitoraggio errori | SDK collegato agli errori runtime |
+| Invio SMS | Mittente Twilio |
+
+### Mancante
+
+| Funzionalità | Nota |
+|---|---|
+| Integrazione fiscale (registratore telematico) | Solo prevista, nessun adapter |
+| Telefonia del receptionist | Nessun numero né provider |
+| Offline palmare e sincronizzazione | Nessuna coda locale |
+| Aggiornamenti in tempo reale | Sala e KDS usano polling ogni 30 s |
+| QR del menu stampabile | Oggi si genera solo il link |
+| Applicazione limiti piano (utenti, palmari) e sospensione a fine prova | Solo il limite sedi è applicato |
+| Upload immagini e foto prodotto | Nessuno Storage |
+| Test end-to-end Sprint 7 | Da scrivere |
+
+---
+
 ## In corso
 
 - **Sprint 3 - parte 2c:** base `local-service/` realizzata (coda, stampa ESC/POS, sync adapter, API). Restano WebSocket/realtime cloud, discovery LAN, integrazione con il palmare, riconciliazione conflitti e collaudo con stampante fisica (D-008).
@@ -213,12 +288,11 @@
 
 ## Mancante (non ancora iniziato)
 
-- **Offline palmare e stampa reale:** `local-service/` ha coda, adapter e API, ma mancano WebSocket/realtime cloud, discovery LAN, integrazione UI, riconciliazione conflitti e collaudo su stampante fisica.
-- **Telefonia reale:** provider vocale, numero, webhook firmati, trasferimento effettivo, gestione errori e costi. Le API interne sono pronte, ma la telefonia non Ã¨ collegata.
-- **Budget receptionist:** `monthly_budget_cents` Ã¨ configurato e mostrato, ma non ancora applicato perchÃ© manca un provider che esponga i costi reali.
-- **Sprint 4 restante:** report, CRM, personale e multi-sede. Magazzino, ricette/food cost e acquisti sono completati.
-- **Sprint 5 restante:** menu pubblico/QR/ordini online, inbox, marketing/fidelizzazione; il receptionist di Fase A Ã¨ predisposto ma non telefonico.
-- **Sprint 6:** Stripe Billing, limiti piano server-side, monitoraggio, backup, collaudo e release.
+- **Offline palmare e stampa reale:** `local-service/` ha coda, adapter e API; mancano realtime cloud, discovery LAN, integrazione UI, riconciliazione conflitti e collaudo su stampante fisica.
+- **Telefonia, budget receptionist e SMS:** provider vocale e numerazione, applicazione del budget mensile, mittente SMS.
+- **Integrazione fiscale:** registratore telematico e scontrino fiscale.
+- **Applicazione completa dei piani:** solo il limite sedi è applicato; utenti, palmari e sospensione a fine prova no.
+- **Realtime e QR:** aggiornamenti live di sala e KDS, QR del menu stampabile.
 - **Legale/commerciale:** privacy, cookie e termini definitivi; prezzi e condizioni di prova.
 
 ---
@@ -238,13 +312,13 @@
 
 ## Prossimi passi (in ordine)
 
-1. **Fase B (solo su approvazione esplicita):** collegare ambiente vocale di test con provider/LiveKit e numero dedicato, budget e observability; verificare con chiamate reali prima di dichiararla operativa.
-2. Completare lo **Sprint 3 parte 2c** oltre la base giÃ  realizzata: endpoint cloud reale, WebSocket/realtime, discovery LAN, integrazione palmare, riconciliazione conflitti e collaudo stampante fisica (D-008, D-040).
-3. **Sprint 4 restante:** report, CRM, personale e multi-sede.
-4. CI verificata il 22/10/2026 (run #39802102414, tutti i job verdi); aprire eventuale PR senza merge.
-5. QA su dispositivi fisici/palmare e testi legali definitivi.
-6. ~~Effettuare il primo commit solo se richiesto esplicitamente.~~ Fatto: repository GitHub `ElCaloz/cmristoopencode` creato e primo commit eseguito il 21/10/2026; da allora ogni modifica completata viene salvata (regola 12 di `AGENTS.md`).
-
+1. **Design e shell condivisa:** migrare le 12 pagine storiche a `DashboardShell` e rifinire l'area reale con la skill `design-taste-frontend` (navigazione, intestazioni, spaziature, responsive), senza toccare la logica dei moduli.
+2. **QR del menu:** generazione effettiva dell'immagine, download PNG e stampa.
+3. **Verifiche di produzione:** Auth URLs, pagamento di prova Stripe, dominio email, mittente SMS, stampa su hardware reale, E2E contro produzione.
+4. **Merge di `audit/hardening-sicurezza` in `main`** (branch gia pushato e verde).
+5. **Fase B receptionist (solo su approvazione esplicita):** provider vocale, numero dedicato, budget e observability, con chiamate reali prima di dichiararla operativa.
+6. **Test end-to-end Sprint 7** (CRM, marketing, personale, sedi, online, abbonamento, sicurezza).
+7. **QA su dispositivi fisici/palmare e testi legali definitivi.**
 ---
 
 ## Come eseguire

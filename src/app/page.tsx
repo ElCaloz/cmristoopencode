@@ -90,16 +90,16 @@ const modules = [
   {
     title: "Cassa e incassi",
     description:
-      "Conti aperti, righe, sconti e pagamenti. Le vendite derivano dai pagamenti registrati, non da un foglio separato.",
+      "Conti aperti, righe, mance e pagamenti. Le vendite derivano dai pagamenti registrati, non da un foglio separato.",
     icon: CreditCard,
     detail: "POS touch · pagamenti · giornata vendite",
   },
   {
     title: "Sala e tavoli",
     description:
-      "Aree, tavoli e capienze reali. Lo stato della sala resta allineato alle comande in corso.",
+      "Aree, tavoli e piantina grafica modificabile. I conti aperti in cassa restano legati al tavolo giusto.",
     icon: UtensilsCrossed,
-    detail: "Mappa sala · coperti · stati tavolo",
+    detail: "Piantina · aree · tavoli · conti",
   },
   {
     title: "Cucina, senza ambiguità",
@@ -186,12 +186,12 @@ const faqs = [
   {
     question: "La prova gratuita richiede una carta di credito?",
     answer:
-      "La demo non richiede carta e non elabora pagamenti. Il piano commerciale prevede una prova, ma in questa build il backend di fatturazione non è ancora collegato.",
+      "No. Ogni nuovo locale parte con 30 giorni di prova e senza dati di pagamento. La fatturazione è collegata a Stripe in modalità di test: nessun importo viene addebitato.",
   },
   {
     question: "Le integrazioni fiscali, i pagamenti e la telefonia sono attivi?",
     answer:
-      "No. Le integrazioni esterne sono predisposte come adapter separati e saranno dichiarate disponibili solo dopo una verifica reale. La configurazione del receptionist AI è già presente, ma la telefonia non è collegata.",
+      "Sono cose diverse. L'integrazione fiscale non è disponibile. Gli abbonamenti passano da Stripe in modalità di test, l'email è verificata in test mode e la stampa scontrini è pronta ma non provata su hardware reale. Telefonia e SMS non sono attivi: mancano provider e mittente.",
   },
   {
     question: "I dati che vedo sono reali?",
