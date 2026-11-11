@@ -5,7 +5,7 @@ grant usage on schema extensions to authenticated, anon;
 grant execute on all functions in schema extensions to authenticated, anon;
 set local search_path = public, extensions, pg_temp;
 
-select plan(77);
+select plan(79);
 
 insert into auth.users (
   id,
@@ -1145,6 +1145,34 @@ select is(
 );
 
 reset role;
+
+-- La FK (table_id, restaurant_id) verso restaurant_tables deve esistere:
+-- senza relazione l'embed PostgREST `restaurant_tables(name)` della dashboard
+-- fallisce e la lista degli ordini online resta vuota anche con ordini
+-- presenti (fix 20261111180000_fix_online_orders_table_fk.sql).
+select ok(
+  exists (
+    select 1
+    from pg_constraint
+    where conname = 'online_orders_table_fkey'
+      and conrelid = 'public.online_orders'::regclass
+  ),
+  'online_orders has a foreign key to restaurant_tables'
+);
+
+select throws_ok(
+  format(
+    $$insert into public.online_orders
+        (organization_id, restaurant_id, customer_name, email, idempotency_key, table_id)
+      values (%L, %L, 'FK Sprint7', 'fk@example.test', 'sprint7-fk-0001', %L)$$,
+    :'org_a',
+    :'restaurant_a',
+    '99999999-9999-4999-8999-999999999999'
+  ),
+  '23503',
+  null,
+  'online_orders rejects a table_id outside restaurant_tables'
+);
 
 select * from finish();
 rollback;

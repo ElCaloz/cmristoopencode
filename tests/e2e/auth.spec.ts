@@ -1276,3 +1276,96 @@ test("QR stampabile del menu: anteprima, download PNG e foglio di stampa", async
 
   expect(errors).toEqual([]);
 });
+
+test("ordini online reali: menu pubblico, ordine del cliente, conferma e conto in cassa", async ({
+  page,
+  browser,
+}) => {
+  const errors = trackPageErrors(page);
+
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(account.email);
+  await page.getByLabel("Password", { exact: true }).fill(account.newPassword);
+  await page.getByRole("button", { name: "Accedi" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+
+  // Prepara un prodotto nel menu (i prodotti senza categoria non compaiono
+  // nel menu pubblico: vedi D-059).
+  await page.goto("/dashboard/menu");
+  await expect(
+    page.getByRole("heading", { name: restaurantName }),
+  ).toBeVisible();
+  await page.getByLabel("Nome nuova categoria").fill("Ordini E2E");
+  await page.getByRole("button", { name: "Aggiungi categoria" }).click();
+  await expect(
+    page.getByRole("listitem").filter({ hasText: "Ordini E2E" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Nuovo prodotto" }).first().click();
+  await page.getByLabel("Nome", { exact: true }).fill("Piatto Ordini E2E");
+  await page.getByLabel("Prezzo (€)").fill("9,00");
+  await page
+    .getByLabel("Categoria", { exact: true })
+    .selectOption({ label: "Ordini E2E" });
+  await page.getByRole("button", { name: "Aggiungi prodotto" }).click();
+  await expect(
+    page.getByText("Piatto Ordini E2E", { exact: true }),
+  ).toBeVisible();
+
+  // Crea un link pubblico con ordinazione attiva.
+  await page.goto("/dashboard/online");
+  await expect(
+    page.getByRole("heading", { name: restaurantName }),
+  ).toBeVisible();
+  await page.getByLabel("Etichetta", { exact: true }).fill("Menu Ordini E2E");
+  await expect(
+    page.getByLabel("Consenti ordini online da questo link"),
+  ).toBeChecked();
+  await page.getByRole("button", { name: "Crea link" }).click();
+  await expect(page.getByText(/Link creato/)).toBeVisible();
+  const linkRow = page
+    .getByRole("listitem")
+    .filter({ hasText: "Menu Ordini E2E" });
+  const menuUrl = (await linkRow.locator("p.font-mono").first().innerText()).trim();
+  expect(menuUrl).toContain("/m/");
+
+  // Il cliente ordina dal menu pubblico, senza account.
+  const publicPage = await browser.newPage();
+  const publicErrors = trackPageErrors(publicPage);
+  await publicPage.goto(menuUrl);
+  await expect(
+    publicPage.getByRole("heading", { name: restaurantName }),
+  ).toBeVisible();
+  await expect(
+    publicPage.getByText("Piatto Ordini E2E", { exact: true }),
+  ).toBeVisible();
+  // Attende l'idratazione: prima il click su "Aggiungi" verrebbe perso.
+  await publicPage.waitForLoadState("networkidle");
+  await expect(async () => {
+    await publicPage.getByRole("button", { name: "Aggiungi" }).first().click();
+    await expect(publicPage.getByText(/articoli/).first()).toBeVisible();
+  }).toPass({ timeout: 15000 });
+  await publicPage.getByLabel("Nome e cognome").fill("Mario Rossi E2E");
+  await publicPage.getByLabel("Telefono").fill("+393331234567");
+  await publicPage
+    .getByRole("button", { name: "Invia ordine al ristorante" })
+    .click();
+  await expect(publicPage.getByText(/Ordine .* ricevuto/)).toBeVisible();
+
+  // Lo staff conferma: l'ordine diventa conto reale in cassa.
+  await page.goto("/dashboard/online");
+  const orderRow = page
+    .getByRole("listitem")
+    .filter({ hasText: "Mario Rossi E2E" });
+  await expect(orderRow).toContainText("Da confermare");
+  await orderRow.getByRole("button", { name: "Conferma e invia" }).click();
+  await expect(orderRow).toContainText("Confermato");
+
+  await page.goto("/dashboard/pos");
+  const counter = page.getByText(/cont[io] apert/i).first();
+  await expect(counter).toBeVisible();
+  expect((await counter.innerText()).trim()).not.toMatch(/^0\b/);
+
+  expect(errors).toEqual([]);
+  expect(publicErrors).toEqual([]);
+  await publicPage.close();
+});

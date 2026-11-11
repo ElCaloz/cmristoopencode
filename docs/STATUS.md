@@ -1,7 +1,22 @@
 # STATUS - CM Risto
 
-**Ultimo aggiornamento:** 11 novembre 2026 (design area reale: migrazione di tutte le pagine alla `DashboardShell` condivisa; QR stampabile del menu; 27/27 E2E; promozione produzione e verifiche reali, checkout Stripe bloccato da config).
+**Ultimo aggiornamento:** 11 novembre 2026 (design area reale e QR; produzione aggiornata; Auth URLs verificati; **fix bug FK ordini online** e E2E del flusso d'ordine completo: 28/28 E2E, 735/735 pgTAP).
 **Percorso del progetto:** `C:\Users\calos\CM-Risto` (branch di lavoro `audit/hardening-sicurezza` creato da `main` al commit `d07d00b`; `main` non modificato; repository GitHub `ElCaloz/cmristoopencode`, commit/push al termine di ogni modifica come da regola 12 di `AGENTS.md`).
+
+---
+
+## Sessione 11/11/2026 (quarta parte) - Auth URLs verificati, bug ordini online e E2E del flusso completo (D-059)
+
+- **Auth URLs Supabase verificati comportamentalmente:** sonde reali su `/auth/v1/verify` con token di prova e lettura dell'URL finale: Site URL = `https://cmristo-mattias-projects-0615507f.vercel.app`, `redirect_to` verso `/login` e `/auth/callback` dell'app **onorati** dall'allow-list, redirect esterni (`evil.example`, `cmristo.vercel.app`) **rifiutati** con fallback sul Site URL. La configurazione Auth URLs è corretta; resta solo il collaudo della mail con un click umano (il link usa il mailer GoTrue, non leggibile dagli strumenti).
+- **Bug reale scoperto ed eliminato — ordini online invisibili in dashboard:** la query `getOnlineData` usa l'embed PostgREST `restaurant_tables(name)` su `online_orders`, ma mancava la foreign key verso `restaurant_tables` (i link pubblici ce l'avevano, gli ordini no). L'embed falliva e il fallback `data ?? []` nascondeva l'errore: **la lista ordini online restava sempre vuota anche con ordini presenti**, e il flusso "conferma ordine → conto in cassa" era di fatto irraggiungibile dall'interfaccia.
+  - Fix: nuova migrazione `20261111180000_fix_online_orders_table_fk.sql` con FK composita `(table_id, restaurant_id) → restaurant_tables(id, restaurant_id) ON DELETE SET NULL (table_id)`, allineata a `restaurant_public_links`;
+  - 2 nuovi test pgTAP (esistenza della FK e rifiuto di un `table_id` estraneo): **735/735 pgTAP**;
+  - il fix è applicato allo stack locale, **da applicare anche al database cloud di produzione** (migrazione su ambiente non locale: serve la tua approvazione).
+- **E2E del flusso d'ordine completo (il "mancante" dichiarato in `/funzionalita`):** nuova scena "ordini online reali": creazione categoria e prodotto, link pubblico con ordinazione attiva, ordine dal menu pubblico in un contesto senza sessione (con verifica che il click perda l'idratazione e retry), conferma dallo staff e **conto reale in cassa** (`online_orders.order_id` valorizzato, POS "1 conto aperto"). **E2E 28/28** (17 auth reali, 1 security, 7 demo, 3 dark mode).
+- **Limite reale documentato:** i prodotti "Senza categoria" non compaiono nel menu pubblico (la RPC `get_public_menu` aggrega per categoria): aggiunto ai limiti del modulo menu in `/funzionalita`.
+- **Stati aggiornati:** ordini online da "In collaudo" a **Operativo** in `/funzionalita` (flussi principali coperti da test end-to-end); il pagamento resta dichiaratamente in cassa, senza pagamenti online.
+- **Verifiche:** lint, typecheck, `npm test` 74/74, `npm run build`, `npm run e2e` **28/28**, `npx supabase test db` **735/735**.
+- **Prossimi passi:** applicare la migrazione FK al cloud di produzione (approvazione richiesta); allineare `STRIPE_SECRET_KEY`/prezzi e completare il pagamento di prova; SMTP email auth su Supabase; stampa su hardware reale; merge in `main`.
 
 ---
 
@@ -263,6 +278,7 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 | Magazzino | 23 pgTAP + E2E |
 | Ricette e food cost | 34 pgTAP + E2E |
 | Acquisti e ricezioni | 61 pgTAP + E2E |
+| Ordini online e conferma in cassa | 77 pgTAP + E2E su link pubblici, QR e flusso completo |
 | Report ed export CSV | E2E |
 | Multi-sede e isolamento tenant | 30 RLS + test cross-tenant |
 
@@ -278,7 +294,6 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 
 | Funzionalità | Cosa manca |
 |---|---|
-| Ordini online e conferma in cassa | E2E del flusso d'ordine completo (link e QR sono coperti) |
 | CRM clienti, fedeltà e messaggi | E2E dell'interfaccia; invii dipendono da email/SMS |
 | Marketing e campagne | E2E; invii dipendono da email/SMS |
 | Personale, inviti e turni | E2E dell'interfaccia |
@@ -336,11 +351,12 @@ Legenda: **Operativo** = usabile su un locale reale, dati su database e azioni p
 
 ## Prossimi passi (in ordine)
 
-1. **Verifiche di produzione:** Auth URLs, pagamento di prova Stripe, dominio email, mittente SMS, stampa su hardware reale, E2E contro produzione.
-2. **Merge di `audit/hardening-sicurezza` in `main`** (branch gia pushato e verde).
-3. **Fase B receptionist (solo su approvazione esplicita):** provider vocale, numero dedicato, budget e observability, con chiamate reali prima di dichiararla operativa.
-4. **Test end-to-end Sprint 7** (CRM, marketing, personale, sedi, online — incluso il flusso d'ordine completo —, abbonamento, sicurezza).
-5. **QA su dispositivi fisici/palmare e testi legali definitivi.**
+1. **Applicare la migrazione FK `20261111180000` al database cloud di produzione** (operazione su ambiente non locale: serve approvazione esplicita) — senza, la lista ordini online resta vuota anche in produzione.
+2. **Verifiche di produzione:** pagamento di prova Stripe (serve prima l'allineamento `STRIPE_SECRET_KEY`/prezzi), dominio email e SMTP Supabase per le email auth, mittente SMS, stampa su hardware reale, E2E contro produzione. Auth URLs già verificati (D-059).
+3. **Merge di `audit/hardening-sicurezza` in `main`** (branch gia pushato e verde).
+4. **Fase B receptionist (solo su approvazione esplicita):** provider vocale, numero dedicato, budget e observability, con chiamate reali prima di dichiararla operativa.
+5. **Test end-to-end Sprint 7** (CRM, marketing, personale, sedi, abbonamento, sicurezza — il flusso ordini online è già coperto).
+6. **QA su dispositivi fisici/palmare e testi legali definitivi.**
 ---
 
 ## Come eseguire

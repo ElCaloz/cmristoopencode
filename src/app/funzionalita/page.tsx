@@ -171,7 +171,7 @@ const sections: FeatureSection[] = [
     ],
     evidence: "30 + 34 test sul database · test end-to-end su menu e ricette",
     missing:
-      "Varianti, allergeni strutturati, foto prodotto e duplicazione dei piatti.",
+      "Varianti, allergeni strutturati, foto prodotto e duplicazione dei piatti. I prodotti senza categoria non compaiono nel menu pubblico.",
     href: "/app/menu",
     cta: "Modifica il menu demo",
   },
@@ -182,7 +182,7 @@ const sections: FeatureSection[] = [
     title: "Ordini dal menu pubblico, senza doppioni",
     description:
       "Un link con token apre il menu del locale. L'ordine viene ricalcolato dal database e, una volta confermato, diventa un conto in cassa.",
-    status: "implementato",
+    status: "operativo",
     points: [
       "Link pubblici per menu o singolo tavolo, con scadenza e revoca",
       "Carrello con chiave di idempotenza: nessun doppio ordine",
@@ -192,8 +192,9 @@ const sections: FeatureSection[] = [
       "Limite anti-abuso: 10 ordini ogni 10 minuti per contatto",
     ],
     evidence:
-      "Test sul database Sprint 7 · test end-to-end su link pubblici e QR · collaudo ordini in corso",
-    missing: "Test end-to-end del flusso d'ordine completo.",
+      "Test sul database Sprint 7 · test end-to-end su link pubblici, QR e flusso d'ordine completo (dal menu pubblico al conto in cassa)",
+    missing:
+      "Pagamenti online non previsti: il pagamento avviene in cassa al ritiro o alla consegna.",
     href: "/dashboard/online",
     cta: "Apri nell'area reale",
   },
