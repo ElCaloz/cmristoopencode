@@ -3,7 +3,10 @@ import { cn } from "@/lib/utils";
 
 export function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
-    <div className="w-full overflow-x-auto">
+    // `relative` fa da containing block agli elementi assoluti delle celle
+    // (es. gli sr-only dell'accessibilita): altrimenti sfuggono al clip di
+    // overflow-x-auto e allargano il documento (D-056).
+    <div className="relative w-full overflow-x-auto">
       <table
         className={cn("w-full caption-bottom border-collapse text-sm", className)}
         {...props}

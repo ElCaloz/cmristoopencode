@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "test-results/**",
     "playwright-report/**",
+    // Scratch di verifica visiva (gia escluso da git in .gitignore):
+    ".taste-skill/**",
   ]),
 ]);
 
